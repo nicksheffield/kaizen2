@@ -1,0 +1,232 @@
+import { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+	FSDesc,
+	FileDesc,
+	convertGeneratedFilesToDescs,
+	getFileHandle,
+	getHandleTreeFromHandle,
+	isDir,
+	isFile,
+	sortFilesByPath,
+	syncFiles,
+} from '../lib/handle'
+import { AppContext } from '../lib/AppContext'
+import { db } from '../lib/db'
+import { useLocalStorage } from 'usehooks-ts'
+import { Project, ProjectSchema } from '@/lib/schemas'
+import generate from '@/generators/express'
+import deepEqual from 'deep-equal'
+
+const checkFilesChanged = (a: FSDesc[], b: FSDesc[]) => {
+	if (a.length !== b.length) return true
+
+	for (let i = 0; i < a.length; i++) {
+		if (a[i].path !== b[i].path) return true
+	}
+
+	for (let i = 0; i < a.length; i++) {
+		const x = a[i]
+		const y = b[i]
+
+		if (isDir(x)) continue
+		if (isDir(y)) continue
+
+		if (x.content !== y.content) return true
+	}
+
+	return false
+}
+
+export const AppProvider = ({ children }: PropsWithChildren) => {
+	const [rootHandle, setRootHandle] = useState<FileSystemDirectoryHandle | null>(null)
+	const [fs, setFs] = useState<FSDesc[]>([])
+
+	const [openPaths, setOpenPaths] = useLocalStorage<string[]>('openPaths', [])
+	const [selectedPath, setSelectedPath] = useLocalStorage<string | undefined>('selectedPath', undefined)
+	const [dirOpenStatus, setDirOpenStatus] = useLocalStorage<Record<string, boolean>>('dirOpenStatus', { '': true })
+	const [loading, setLoading] = useState(false)
+
+	const [draft, setDraft] = useState<{ dirty: boolean; content: Project } | undefined>(undefined)
+	const [hasNewChanges, setHasNewChanges] = useState(false)
+
+	const timer = useRef<number | null>(null)
+
+	const selectedFile = useMemo(() => fs.filter(isFile).find((x) => x.path === selectedPath), [fs, selectedPath])
+	const root = useMemo(() => fs.filter(isDir).find((x) => x.path === ''), [fs])
+
+	// the current branch according to the .git/HEAD file
+	const head =
+		fs
+			.filter(isFile)
+			.find((x) => x.path === '.git/HEAD')
+			?.content.replace('ref: refs/heads/', '')
+			.trim() || ''
+
+	// all the branches in the .git/refs/heads directory
+	const branches = useMemo(
+		() =>
+			fs
+				.filter((x) => x.type === 'file' && x.path.startsWith('.git/refs/heads'))
+				.map((x) => x.path.replace('.git/refs/heads/', '').trim()),
+		[fs]
+	)
+
+	// load all the files in the root directory
+	const loadFiles = useCallback(
+		async (dirHandle: FileSystemDirectoryHandle) => {
+			const loadedFiles = await getHandleTreeFromHandle(dirHandle)
+
+			// sort files by directory first, and then alphabetically
+			const sortedFiles = loadedFiles.sort(sortFilesByPath)
+
+			if (checkFilesChanged(fs, sortedFiles)) {
+				setFs(sortedFiles)
+
+				const projectFile = sortedFiles.filter(isFile).find((x) => x.path === 'project.json')
+				if (!projectFile) return
+
+				const project = ProjectSchema.parse(JSON.parse(projectFile.content))
+				setDraft({ dirty: false, content: project })
+			}
+		},
+		[fs]
+	)
+
+	// load the root directory from the database if it exists
+	useEffect(() => {
+		const init = async () => {
+			const dbDir = await db.dirs.get(1)
+			if (dbDir) {
+				setRootHandle(dbDir.handle)
+				await loadFiles(dbDir.handle)
+			}
+		}
+
+		init()
+	}, [])
+
+	// open the directory picker and set the root handle
+	const getRootHandle = useCallback(async () => {
+		const handle = await window.showDirectoryPicker()
+
+		setRootHandle(handle)
+
+		const dbDir = await db.dirs.get(1)
+
+		if (!dbDir) {
+			await db.dirs.add({ handle })
+		} else {
+			await db.dirs.update(1, { handle })
+		}
+
+		setLoading(true)
+		await loadFiles(handle)
+		setLoading(false)
+	}, [loadFiles])
+
+	// refresh the files in the root directory
+	const refreshFiles = useCallback(async () => {
+		if (rootHandle) loadFiles(rootHandle)
+	}, [rootHandle, loadFiles])
+
+	// refresh files every 2 seconds
+	useEffect(() => {
+		if (timer.current) clearInterval(timer.current)
+
+		timer.current = window.setInterval(() => {
+			refreshFiles()
+		}, 1000 * 2)
+	}, [refreshFiles])
+
+	// save any file to the file system
+	const saveFile = useMemo(() => {
+		return async (x: FileDesc | string, content: string) => {
+			if (!rootHandle) return
+
+			const fileHandle = await getFileHandle(isFile(x) ? x.path : x, rootHandle)
+
+			if (fileHandle) {
+				const writable = await fileHandle.createWritable({ keepExistingData: false })
+				await writable.write(content)
+				await writable.close()
+				await loadFiles(rootHandle)
+			}
+		}
+	}, [rootHandle, fs, getFileHandle, loadFiles])
+
+	const project = useMemo(() => {
+		const file = fs.find((x) => x.path === 'project.json')
+		if (!file || isDir(file)) return undefined
+
+		return ProjectSchema.parse(JSON.parse(file.content))
+	}, [fs])
+
+	const generateProject = useCallback(
+		async (project?: Project) => {
+			if (!project || !rootHandle) return
+
+			const generated = await convertGeneratedFilesToDescs(await generate(project), rootHandle)
+
+			await syncFiles(
+				fs.filter((x) => x.path.startsWith('build')),
+				generated,
+				rootHandle
+			)
+		},
+		[getFileHandle, fs]
+	)
+
+	const saveProject = useCallback(
+		async (project: Project) => {
+			await saveFile('project.json', JSON.stringify(project, null, 4))
+			setDraft({ dirty: false, content: project })
+			await generateProject(project)
+		},
+		[saveFile]
+	)
+
+	// detect if the underlying project changes, and if so, just notify that there are new changes
+	useEffect(() => {
+		if (!project || !draft?.content) return
+
+		if (!deepEqual(project, draft?.content)) {
+			setHasNewChanges(true)
+		}
+	}, [project])
+
+	return (
+		<AppContext.Provider
+			value={{
+				fs,
+				setFs,
+				openPaths,
+				setOpenPaths,
+				dirOpenStatus,
+				setDirOpenStatus,
+				selectedPath,
+				setSelectedPath,
+				loading,
+				setLoading,
+				hasNewChanges,
+				setHasNewChanges,
+
+				head,
+				branches,
+				selectedFile,
+				root,
+
+				project,
+				saveProject,
+				generateProject,
+				draft,
+				setDraft,
+
+				getRootHandle,
+				refreshFiles,
+				saveFile,
+			}}
+		>
+			{children}
+		</AppContext.Provider>
+	)
+}
