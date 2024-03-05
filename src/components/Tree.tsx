@@ -9,17 +9,19 @@ type TreeProps = {
 }
 
 export const Tree = ({ path, level = 0 }: TreeProps) => {
-	const { fs, selectedPath, setSelectedPath, setOpenPaths, dirOpenStatus, setDirOpenStatus } = useApp()
+	const { files, selectedPath, setSelectedPath, setOpenPaths, dirOpenStatus, setDirOpenStatus } = useApp()
 
-	if (path === '.git') return null
+	// if (path === '.git') return null
 
 	const open = !!dirOpenStatus[path]
 	const toggleOpen = () => {
 		setDirOpenStatus((y) => ({ ...y, [path]: !y[path] }))
 	}
 
-	const file = fs.find((x) => x.path === path)
-	const children = fs.filter((x) => x.path !== path).filter((x) => x.path.split('/').slice(0, -1).join('/') === path)
+	const file = files.find((x) => x.path === path)
+	const children = files
+		.filter((x) => x.path !== path)
+		.filter((x) => x.path.split('/').slice(0, -1).join('/') === path)
 
 	if (!file) return null
 

@@ -1,15 +1,21 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { App } from './App.tsx'
-import { AppProvider } from './components/AppProvider.tsx'
+import { App } from './App'
+import { AppProvider } from './components/AppProvider'
+import { TooltipProvider } from '@/components/ui/tooltip'
+import { ModalProvider } from '@/components/Modal'
+import { AlertProvider } from '@/components/Alert'
 
 import './index.css'
 import 'reactflow/dist/style.css'
-import { TooltipProvider } from '@/components/ui/tooltip.tsx'
+import { CommandMenu } from '@/components/CommandMenu'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
 	<React.StrictMode>
 		<AppProvider>
+			<CommandMenu />
+			<ModalProvider />
+			<AlertProvider />
 			<TooltipProvider>
 				<App />
 			</TooltipProvider>

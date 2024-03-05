@@ -4,9 +4,9 @@ import { TreeFileIcon } from './TreeFileIcon'
 import { useApp } from '../lib/AppContext'
 
 export const EditorTabs = () => {
-	const { fs, setDirOpenStatus, openPaths, setOpenPaths, selectedPath, setSelectedPath } = useApp()
+	const { files, setDirOpenStatus, openPaths, setOpenPaths, selectedPath, setSelectedPath } = useApp()
 
-	const getFile = (path: string) => fs.find((x) => x.path === path)
+	const getFile = (path: string) => files.find((x) => x.path === path)
 
 	const openFile = (path: string) => {
 		setSelectedPath(path)

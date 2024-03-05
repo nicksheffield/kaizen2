@@ -18,9 +18,7 @@ const readable: Record<string, string> = {
 export const JSONEditor = () => {
 	const { selectedFile, saveFile } = useApp()
 
-	const [value, setValue] = useState<Record<string, string>>(
-		JSON.parse(selectedFile?.content || '')
-	)
+	const [value, setValue] = useState<Record<string, string>>(JSON.parse(selectedFile?.content || ''))
 
 	useEffect(() => {
 		if (!selectedFile) return
@@ -37,21 +35,15 @@ export const JSONEditor = () => {
 
 	return (
 		<div className="flex flex-1 flex-col relative min-h-0 overflow-hidden">
-			<div className="h-10 border-b shrink-0 flex items-center justify-center gap-2 shadow-lg">
-				<PipTabs
-					value={tab}
-					onValueChange={(val) => setTab(val)}
-					items={{ form: 'Form', code: 'Code' }}
-				/>
+			<div className="h-10 border-b shrink-0 flex items-center justify-center gap-2">
+				<PipTabs value={tab} onValueChange={(val) => setTab(val)} items={{ form: 'Form', code: 'Code' }} />
 			</div>
 
 			{tab === 'form' ? (
 				<div className="p-6 mt-10 flex-1 min-h-0 self-center overflow-auto flex flex-col gap-6 max-w-[600px] w-full">
 					{Object.keys(value).map((key) => (
 						<div key={key} className="flex flex-col gap-2">
-							<label className="text-sm font-medium">
-								{readable[key] || key}
-							</label>
+							<label className="text-sm font-medium">{readable[key] || key}</label>
 							<Input
 								type="text"
 								className="w-"
@@ -59,8 +51,8 @@ export const JSONEditor = () => {
 									typeof value[key] === 'string'
 										? value[key]
 										: typeof value[key] === 'object'
-										? JSON.stringify(value[key])
-										: ''
+											? JSON.stringify(value[key])
+											: ''
 								}
 								onChange={(e) => {
 									setValue((x) => ({
@@ -76,10 +68,7 @@ export const JSONEditor = () => {
 						<Button
 							variant="default"
 							onClick={() => {
-								saveFile(
-									selectedFile.path,
-									JSON.stringify(value, null, 4)
-								)
+								saveFile(selectedFile.path, JSON.stringify(value, null, 4))
 							}}
 						>
 							<SaveIcon className="w-4 h-4 mr-2" />

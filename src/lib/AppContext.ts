@@ -3,8 +3,8 @@ import { DirDesc, FileDesc, FSDesc } from './handle'
 import { Project } from '@/lib/schemas'
 
 export type AppContextType = {
-	fs: FSDesc[]
-	setFs: React.Dispatch<React.SetStateAction<FSDesc[]>>
+	files: FSDesc[]
+	setFiles: React.Dispatch<React.SetStateAction<FSDesc[]>>
 	loading: boolean
 	setLoading: React.Dispatch<React.SetStateAction<boolean>>
 	openPaths: string[]
@@ -16,8 +16,11 @@ export type AppContextType = {
 	hasNewChanges: boolean
 	setHasNewChanges: React.Dispatch<React.SetStateAction<boolean>>
 
+	gitConfig: Record<string, string> | null
+
 	head: string
-	branches: string[]
+	localBranches: string[]
+	remoteBranches: string[]
 	selectedFile: FileDesc | undefined
 	root: DirDesc | undefined
 
@@ -39,6 +42,7 @@ export type AppContextType = {
 	>
 
 	getRootHandle: () => Promise<void>
+	clearRootHandle: () => void
 	refreshFiles: () => Promise<void>
 	saveFile: (path: string, content: string) => Promise<void>
 }

@@ -8,7 +8,7 @@ export const ProjectView = () => {
 
 	return (
 		<div className="flex flex-1 flex-col relative min-h-0 overflow-hidden">
-			<div className="h-10 border-b shrink-0 flex items-center justify-center gap-2 shadow-lg">
+			<div className="h-10 border-b shrink-0 flex items-center justify-center gap-2">
 				<PipTabs
 					value={tab}
 					onValueChange={(val) => setTab(val)}

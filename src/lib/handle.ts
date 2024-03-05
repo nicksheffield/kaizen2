@@ -65,6 +65,7 @@ export const getHandleTreeFromHandle = async (
 			name: dirHandle.name,
 			path,
 			type: 'directory',
+			handle: dirHandle,
 		},
 		...entriesArray,
 	]

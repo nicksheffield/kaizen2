@@ -16,6 +16,7 @@ import { useLocalStorage } from 'usehooks-ts'
 import { Project, ProjectSchema } from '@/lib/schemas'
 import generate from '@/generators/express'
 import deepEqual from 'deep-equal'
+import ini from 'ini'
 
 const checkFilesChanged = (a: FSDesc[], b: FSDesc[]) => {
 	if (a.length !== b.length) return true
@@ -39,7 +40,7 @@ const checkFilesChanged = (a: FSDesc[], b: FSDesc[]) => {
 
 export const AppProvider = ({ children }: PropsWithChildren) => {
 	const [rootHandle, setRootHandle] = useState<FileSystemDirectoryHandle | null>(null)
-	const [fs, setFs] = useState<FSDesc[]>([])
+	const [files, setFiles] = useState<FSDesc[]>([])
 
 	const [openPaths, setOpenPaths] = useLocalStorage<string[]>('openPaths', [])
 	const [selectedPath, setSelectedPath] = useLocalStorage<string | undefined>('selectedPath', undefined)
@@ -51,24 +52,43 @@ export const AppProvider = ({ children }: PropsWithChildren) => {
 
 	const timer = useRef<number | null>(null)
 
-	const selectedFile = useMemo(() => fs.filter(isFile).find((x) => x.path === selectedPath), [fs, selectedPath])
-	const root = useMemo(() => fs.filter(isDir).find((x) => x.path === ''), [fs])
+	const selectedFile = useMemo(() => files.filter(isFile).find((x) => x.path === selectedPath), [files, selectedPath])
+	const root = useMemo(() => files.filter(isDir).find((x) => x.path === ''), [files])
+
+	const [gitConfig, setGitConfig] = useState<Record<string, string> | null>(null)
+
+	const clearRootHandle = useCallback(async () => {
+		await db.dirs.clear()
+		setRootHandle(null)
+		setFiles([])
+		setOpenPaths([])
+		setSelectedPath(undefined)
+		setDirOpenStatus({ '': true })
+	}, [])
 
 	// the current branch according to the .git/HEAD file
 	const head =
-		fs
+		files
 			.filter(isFile)
 			.find((x) => x.path === '.git/HEAD')
 			?.content.replace('ref: refs/heads/', '')
 			.trim() || ''
 
 	// all the branches in the .git/refs/heads directory
-	const branches = useMemo(
+	const localBranches = useMemo(() => {
+		const branches = files
+			.filter((x) => x.type === 'file' && x.path.startsWith('.git/refs/heads'))
+			.map((x) => x.path.replace('.git/refs/heads/', '').trim())
+
+		return branches
+	}, [files])
+
+	const remoteBranches = useMemo(
 		() =>
-			fs
-				.filter((x) => x.type === 'file' && x.path.startsWith('.git/refs/heads'))
-				.map((x) => x.path.replace('.git/refs/heads/', '').trim()),
-		[fs]
+			files
+				.filter((x) => x.type === 'file' && x.path.startsWith('.git/refs/remotes'))
+				.map((x) => x.path.replace('.git/refs/remotes/', '').trim()),
+		[files]
 	)
 
 	// load all the files in the root directory
@@ -79,20 +99,29 @@ export const AppProvider = ({ children }: PropsWithChildren) => {
 			// sort files by directory first, and then alphabetically
 			const sortedFiles = loadedFiles.sort(sortFilesByPath)
 
-			if (checkFilesChanged(fs, sortedFiles)) {
-				setFs(sortedFiles)
+			if (checkFilesChanged(files, sortedFiles)) {
+				setFiles(sortedFiles)
 
 				const projectFile = sortedFiles.filter(isFile).find((x) => x.path === 'project.json')
-				if (!projectFile) return
 
-				const project = ProjectSchema.parse(JSON.parse(projectFile.content))
-				setDraft({ dirty: false, content: project })
+				if (projectFile) {
+					const project = ProjectSchema.parse(JSON.parse(projectFile.content))
+					setDraft({ dirty: false, content: project })
+				}
+
+				const gitconf = sortedFiles.filter(isFile).find((x) => x.path === '.git/config')
+
+				if (gitconf) {
+					setGitConfig(ini.parse(gitconf.content || ''))
+				}
 			}
 		},
-		[fs]
+		[files]
 	)
 
-	// load the root directory from the database if it exists
+	/**
+	 * load the root directory from the database if it exists
+	 */
 	useEffect(() => {
 		const init = async () => {
 			const dbDir = await db.dirs.get(1)
@@ -105,9 +134,11 @@ export const AppProvider = ({ children }: PropsWithChildren) => {
 		init()
 	}, [])
 
-	// open the directory picker and set the root handle
+	/**
+	 * open the directory picker and set the root handle
+	 */
 	const getRootHandle = useCallback(async () => {
-		const handle = await window.showDirectoryPicker()
+		const handle = await window.showDirectoryPicker({ id: 'kaizen', mode: 'readwrite' })
 
 		setRootHandle(handle)
 
@@ -124,12 +155,16 @@ export const AppProvider = ({ children }: PropsWithChildren) => {
 		setLoading(false)
 	}, [loadFiles])
 
-	// refresh the files in the root directory
+	/**
+	 * refresh the files in the root directory
+	 */
 	const refreshFiles = useCallback(async () => {
 		if (rootHandle) loadFiles(rootHandle)
 	}, [rootHandle, loadFiles])
 
-	// refresh files every 2 seconds
+	/**
+	 * refresh files every 2 seconds
+	 */
 	useEffect(() => {
 		if (timer.current) clearInterval(timer.current)
 
@@ -138,7 +173,9 @@ export const AppProvider = ({ children }: PropsWithChildren) => {
 		}, 1000 * 2)
 	}, [refreshFiles])
 
-	// save any file to the file system
+	/**
+	 * save any file to the file system
+	 */
 	const saveFile = useMemo(() => {
 		return async (x: FileDesc | string, content: string) => {
 			if (!rootHandle) return
@@ -152,14 +189,14 @@ export const AppProvider = ({ children }: PropsWithChildren) => {
 				await loadFiles(rootHandle)
 			}
 		}
-	}, [rootHandle, fs, getFileHandle, loadFiles])
+	}, [rootHandle, files, getFileHandle, loadFiles])
 
 	const project = useMemo(() => {
-		const file = fs.find((x) => x.path === 'project.json')
+		const file = files.find((x) => x.path === 'project.json')
 		if (!file || isDir(file)) return undefined
 
 		return ProjectSchema.parse(JSON.parse(file.content))
-	}, [fs])
+	}, [files])
 
 	const generateProject = useCallback(
 		async (project?: Project) => {
@@ -168,12 +205,12 @@ export const AppProvider = ({ children }: PropsWithChildren) => {
 			const generated = await convertGeneratedFilesToDescs(await generate(project), rootHandle)
 
 			await syncFiles(
-				fs.filter((x) => x.path.startsWith('build')),
+				files.filter((x) => x.path.startsWith('build')),
 				generated,
 				rootHandle
 			)
 		},
-		[getFileHandle, fs]
+		[getFileHandle, files]
 	)
 
 	const saveProject = useCallback(
@@ -197,8 +234,8 @@ export const AppProvider = ({ children }: PropsWithChildren) => {
 	return (
 		<AppContext.Provider
 			value={{
-				fs,
-				setFs,
+				files,
+				setFiles,
 				openPaths,
 				setOpenPaths,
 				dirOpenStatus,
@@ -210,8 +247,11 @@ export const AppProvider = ({ children }: PropsWithChildren) => {
 				hasNewChanges,
 				setHasNewChanges,
 
+				gitConfig,
+
 				head,
-				branches,
+				localBranches,
+				remoteBranches,
 				selectedFile,
 				root,
 
@@ -222,6 +262,7 @@ export const AppProvider = ({ children }: PropsWithChildren) => {
 				setDraft,
 
 				getRootHandle,
+				clearRootHandle,
 				refreshFiles,
 				saveFile,
 			}}

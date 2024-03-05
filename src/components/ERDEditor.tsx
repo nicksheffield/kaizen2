@@ -18,7 +18,6 @@ import { ModelNode } from '@/components/ERD/ModelNode'
 import { SimpleFloatingEdge } from '@/components/ERD/SimpleFloatingEdge'
 import { useLocalStorage } from 'usehooks-ts'
 import deepEqual from 'deep-equal'
-import { Button } from '@/components/ui/button'
 import { ListCollapseIcon, MaximizeIcon, PlusIcon, SaveIcon, SearchIcon, ShrinkIcon, Undo2Icon } from 'lucide-react'
 import { RevealButton } from '@/components/RevealButton'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
@@ -161,69 +160,69 @@ export const Editor = () => {
 
 	const [detailed, setDetailed] = useLocalStorage(`project-${project?.project.id}-erd-detailed`, false)
 
-	const isDirty = useMemo(() => {
-		const models = nodes.map((x) => ({ ...x.data, posX: x.position.x, posY: x.position.y }))
-		const attributes = models.flatMap((x) => x.attributes)
-		const defaultAttributes = defaultModels.flatMap((x) => x.attributes)
+	// const isDirty = useMemo(() => {
+	// 	const models = nodes.map((x) => ({ ...x.data, posX: x.position.x, posY: x.position.y }))
+	// 	const attributes = models.flatMap((x) => x.attributes)
+	// 	const defaultAttributes = defaultModels.flatMap((x) => x.attributes)
 
-		for (const model of models) {
-			const original = defaultModels.find((x) => x.id === model.id)
-			if (!original) return true
+	// 	for (const model of models) {
+	// 		const original = defaultModels.find((x) => x.id === model.id)
+	// 		if (!original) return true
 
-			if (model.name !== original.name) return true
-			if (model.key !== original.key) return true
-			if (model.tableName !== original.tableName) return true
-			if (model.auditDates !== original.auditDates) return true
-			if (model.posX !== original.posX) return true
-			if (model.posY !== original.posY) return true
-			if (model.enabled !== original.enabled) return true
-		}
+	// 		if (model.name !== original.name) return true
+	// 		if (model.key !== original.key) return true
+	// 		if (model.tableName !== original.tableName) return true
+	// 		if (model.auditDates !== original.auditDates) return true
+	// 		if (model.posX !== original.posX) return true
+	// 		if (model.posY !== original.posY) return true
+	// 		if (model.enabled !== original.enabled) return true
+	// 	}
 
-		for (const originalModel of defaultModels) {
-			const model = models.find((x) => x.id === originalModel.id)
-			if (!model) return true
-		}
+	// 	for (const originalModel of defaultModels) {
+	// 		const model = models.find((x) => x.id === originalModel.id)
+	// 		if (!model) return true
+	// 	}
 
-		for (const relation of relations) {
-			const original = defaultRelations.find((x) => x.id === relation.id)
-			if (!original) return true
+	// 	for (const relation of relations) {
+	// 		const original = defaultRelations.find((x) => x.id === relation.id)
+	// 		if (!original) return true
 
-			if (relation.type !== original.type) return true
-			if (relation.sourceId !== original.sourceId) return true
-			if (relation.targetId !== original.targetId) return true
-			if (relation.sourceOrder !== original.sourceOrder) return true
-			if (relation.targetOrder !== original.targetOrder) return true
-			if (relation.sourceName !== original.sourceName) return true
-			if (relation.targetName !== original.targetName) return true
-			if (relation.optional !== original.optional) return true
-			if (relation.enabled !== original.enabled) return true
-		}
+	// 		if (relation.type !== original.type) return true
+	// 		if (relation.sourceId !== original.sourceId) return true
+	// 		if (relation.targetId !== original.targetId) return true
+	// 		if (relation.sourceOrder !== original.sourceOrder) return true
+	// 		if (relation.targetOrder !== original.targetOrder) return true
+	// 		if (relation.sourceName !== original.sourceName) return true
+	// 		if (relation.targetName !== original.targetName) return true
+	// 		if (relation.optional !== original.optional) return true
+	// 		if (relation.enabled !== original.enabled) return true
+	// 	}
 
-		for (const originalRelation of defaultRelations) {
-			const relation = relations.find((x) => x.id === originalRelation.id)
-			if (!relation) return true
-		}
+	// 	for (const originalRelation of defaultRelations) {
+	// 		const relation = relations.find((x) => x.id === originalRelation.id)
+	// 		if (!relation) return true
+	// 	}
 
-		for (const attr of attributes) {
-			const original = defaultAttributes.find((x) => x.id === attr.id)
-			if (!original) return true
+	// 	for (const attr of attributes) {
+	// 		const original = defaultAttributes.find((x) => x.id === attr.id)
+	// 		if (!original) return true
 
-			if (attr.name !== original.name) return true
-			if (attr.type !== original.type) return true
-			if (attr.order !== original.order) {
-				return true
-			}
-			if (attr.nullable !== original.nullable) return true
-			if (attr.selectable !== original.selectable) return true
-			if (attr.default !== original.default) return true
-			if (attr.enabled !== original.enabled) return true
-		}
+	// 		if (attr.name !== original.name) return true
+	// 		if (attr.type !== original.type) return true
+	// 		if (attr.order !== original.order) {
+	// 			return true
+	// 		}
+	// 		if (attr.nullable !== original.nullable) return true
+	// 		if (attr.selectable !== original.selectable) return true
+	// 		if (attr.default !== original.default) return true
+	// 		if (attr.enabled !== original.enabled) return true
+	// 	}
 
-		for (const originalAttr of defaultAttributes) {
-			const attr = attributes.find((x) => x.id === originalAttr.id)
-			if (!attr) return true
-		}
-	}, [defaultModels, defaultRelations, nodes, relations])
+	// 	for (const originalAttr of defaultAttributes) {
+	// 		const attr = attributes.find((x) => x.id === originalAttr.id)
+	// 		if (!attr) return true
+	// 	}
+	// }, [defaultModels, defaultRelations, nodes, relations])
 
 	const conflicts = useMemo(() => {
 		const messages: string[] = []
@@ -332,57 +331,78 @@ export const Editor = () => {
 					)}
 				</div>
 
-				<div className="pointer-events-none absolute top-0 left-0 w-full grid grid-cols-[auto,1fr,auto] z-10">
-					<Popover>
-						<PopoverTrigger asChild>
-							<Button
-								variant="outline"
-								size="icon"
-								className="rounded-full pointer-events-auto m-2 bg-background/50 backdrop-blur-sm shadow-md"
-							>
-								<SearchIcon className="w-4 h-4" />
-							</Button>
-						</PopoverTrigger>
-						<PopoverContent side="bottom" align="start" className="bg-background/50 backdrop-blur-sm">
-							<div className="flex flex-col gap-4">
-								<Input
-									placeholder="Search"
-									value={modelFilter}
-									onChange={(e) => setModelFilter(e.target.value)}
+				<div className="pointer-events-none absolute top-0 left-0 w-full grid grid-cols-[40px,1fr,40px] z-10">
+					<div>
+						<Popover>
+							<PopoverTrigger asChild>
+								<RevealButton
+									variant="outline"
+									icon={<SearchIcon className="w-4 h-4" />}
+									className="rounded-full pointer-events-auto m-2 px-3 bg-background/50 backdrop-blur-sm shadow-md"
+									label="Search Models"
 								/>
+							</PopoverTrigger>
+							<PopoverContent side="bottom" align="start" className="bg-background/50 backdrop-blur-sm">
+								<div className="flex flex-col gap-4">
+									<Input
+										placeholder="Search"
+										value={modelFilter}
+										onChange={(e) => setModelFilter(e.target.value)}
+									/>
 
-								<div className="flex flex-col gap-1">
-									{nodes
-										.filter((x) => x.data.name.toLowerCase().includes(modelFilter.toLowerCase()))
-										.map((x) => (
-											<div
-												key={x.id}
-												className="px-2 py-1 rounded-lg hover:bg-primary hover:text-primary-foreground text-sm font-medium cursor-pointer"
-												onClick={() => focusOn(x)}
-											>
-												{x.data.name}
-											</div>
-										))}
+									<div className="flex flex-col gap-1">
+										{nodes
+											.filter((x) =>
+												x.data.name.toLowerCase().includes(modelFilter.toLowerCase())
+											)
+											.map((x) => (
+												<div
+													key={x.id}
+													className="px-2 py-1 rounded-lg hover:bg-primary hover:text-primary-foreground text-sm font-medium cursor-pointer"
+													onClick={() => focusOn(x)}
+												>
+													{x.data.name}
+												</div>
+											))}
+									</div>
 								</div>
-							</div>
-						</PopoverContent>
-					</Popover>
+							</PopoverContent>
+						</Popover>
+					</div>
 
 					<div className="flex justify-center">
 						<div className="pointer-events-auto rounded-full h-10 bg-background/50 backdrop-blur-sm flex items-center justify-center shadow-md px-1.5 border mt-2 gap-1.5">
 							<RevealButton
+								variant="ghost"
+								size="pip"
 								onClick={() => addNode()}
 								icon={<PlusIcon className="w-4 h-4" />}
 								label="Add Model"
 							/>
-							<RevealButton onClick={center} icon={<ShrinkIcon className="w-4 h-4" />} label="Center" />
 							<RevealButton
+								variant="ghost"
+								size="pip"
+								onClick={center}
+								icon={<ShrinkIcon className="w-4 h-4" />}
+								label="Center"
+							/>
+							<RevealButton
+								variant="ghost"
+								size="pip"
 								onClick={() => setDetailed((x) => !x)}
 								icon={<ListCollapseIcon className="w-4 h-4" />}
 								label="Show Details"
 							/>
-							<RevealButton onClick={reset} icon={<Undo2Icon className="w-4 h-4" />} label="Reset" />
 							<RevealButton
+								variant="ghost"
+								size="pip"
+								onClick={reset}
+								icon={<Undo2Icon className="w-4 h-4" />}
+								label="Reset"
+							/>
+							<RevealButton
+								variant="ghost"
+								size="pip"
 								onClick={save}
 								icon={<SaveIcon className="w-4 h-4" />}
 								label="Save"
@@ -391,17 +411,19 @@ export const Editor = () => {
 						</div>
 					</div>
 
-					<Button
-						variant="outline"
-						size="icon"
-						className="rounded-full pointer-events-auto m-2 bg-background/50 backdrop-blur-sm shadow-md"
-						onClick={() => {
-							setMax((x) => !x)
-							setTimeout(() => center(), 1)
-						}}
-					>
-						<MaximizeIcon className="w-4 h-4" />
-					</Button>
+					<div className="flex justify-end">
+						<RevealButton
+							variant="outline"
+							icon={<MaximizeIcon className="w-4 h-4" />}
+							className="rounded-full pointer-events-auto m-2 px-3 bg-background/50 backdrop-blur-sm shadow-md"
+							label="Full Screen"
+							iconSide="right"
+							onClick={() => {
+								setMax((x) => !x)
+								setTimeout(() => center(), 1)
+							}}
+						/>
+					</div>
 				</div>
 
 				{hasNewChanges && (

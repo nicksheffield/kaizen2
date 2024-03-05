@@ -1,40 +1,46 @@
-import { Button } from '@/components/ui/button'
+import { Button, ButtonProps } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ReactNode, useState } from 'react'
+import { ReactNode, forwardRef, useState } from 'react'
 
-type RevealButton = {
-	onClick: () => void
+type RevealButtonProps = ButtonProps & {
+	onClick?: () => void
 	icon: ReactNode
+	iconSide?: 'left' | 'right'
 	label: string
 	revealLabel?: string
 }
 
-export const RevealButton = ({ onClick, icon, label, revealLabel }: RevealButton) => {
-	const [hovered, setHovered] = useState(false)
+export const RevealButton = forwardRef<HTMLButtonElement, RevealButtonProps>(
+	({ onClick, icon, iconSide = 'left', label, revealLabel, ...props }, ref) => {
+		const [hovered, setHovered] = useState(false)
 
-	return (
-		<Button
-			variant="ghost"
-			size="pip"
-			className={cn('rounded-full px-2', revealLabel && 'bg-green-500')}
-			onMouseOver={() => setHovered(true)}
-			onMouseOut={() => setHovered(false)}
-			onClick={onClick}
-		>
-			{icon}
-			<AnimatePresence>
-				{(hovered || revealLabel) && (
-					<motion.div
-						initial={{ width: 0 }}
-						exit={{ width: 0 }}
-						animate={{ width: 'auto' }}
-						className="overflow-hidden rounded-full"
-					>
-						<div className="pl-2">{revealLabel || label}</div>
-					</motion.div>
-				)}
-			</AnimatePresence>
-		</Button>
-	)
-}
+		return (
+			<Button
+				className={cn('rounded-full px-2', revealLabel && 'bg-green-500')}
+				onMouseOver={() => setHovered(true)}
+				onMouseOut={() => setHovered(false)}
+				onClick={onClick}
+				{...props}
+				ref={ref}
+			>
+				{iconSide === 'left' && icon}
+				<AnimatePresence>
+					{(hovered || revealLabel) && (
+						<motion.div
+							initial={{ width: 0 }}
+							exit={{ width: 0 }}
+							animate={{ width: 'auto' }}
+							className="overflow-hidden rounded-full"
+						>
+							<div className={cn(iconSide === 'left' ? 'ml-2' : 'mr-2')}>{revealLabel || label}</div>
+						</motion.div>
+					)}
+				</AnimatePresence>
+				{iconSide === 'right' && icon}
+			</Button>
+		)
+	}
+)
+
+RevealButton.displayName = 'RevealButton'

@@ -3,6 +3,7 @@ import { DarkModeToggle } from './components/DarkModeToggle'
 import { Logo } from './components/Logo'
 import { Sidebar } from './components/Sidebar'
 import { EditorFrame } from './components/EditorFrame'
+import { StatusBar } from '@/components/StatusBar'
 
 export const App = () => {
 	return (
@@ -22,6 +23,8 @@ export const App = () => {
 
 					<EditorFrame />
 				</div>
+
+				<StatusBar />
 			</div>
 		</ThemeProvider>
 	)

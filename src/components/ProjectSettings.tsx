@@ -1,34 +1,25 @@
+import { Form, FormInputRow, useForm } from '@/components/form'
 import { useApp } from '@/lib/AppContext'
 
 export const ProjectSettings = () => {
 	const { project } = useApp()
 
+	const form = useForm({
+		initialValues: project?.project || {},
+		onSubmit: (values) => {
+			console.log('submit', values)
+		},
+	})
+
 	return (
-		<div className="flex flex-col p-2 gap-2">
-			<div className="flex items-center gap-2">
-				<div className="font-bold">Name:</div>
-				<div>{project?.project.name}</div>
+		<Form context={form}>
+			<div className="flex flex-col gap-6 p-4">
+				<FormInputRow label="Name:" name="name" />
+				<FormInputRow label="Repo Url" name="repoUrl" />
+				<FormInputRow label="Domain Name" name="domainName" />
+				<FormInputRow label="Max Body Size" name="maxBodySize" />
+				<FormInputRow label="Connection Timeout" name="connectionTimeout" />
 			</div>
-			<div className="flex items-center gap-2">
-				<div className="font-bold">name</div>
-				<div>{project?.project.name}</div>
-			</div>
-			<div className="flex items-center gap-2">
-				<div className="font-bold">repoUrl</div>
-				<div>{project?.project.repoUrl}</div>
-			</div>
-			<div className="flex items-center gap-2">
-				<div className="font-bold">domainName</div>
-				<div>{project?.project.domainName}</div>
-			</div>
-			<div className="flex items-center gap-2">
-				<div className="font-bold">maxBodySize</div>
-				<div>{project?.project.maxBodySize}</div>
-			</div>
-			<div className="flex items-center gap-2">
-				<div className="font-bold">connectionTimeout</div>
-				<div>{project?.project.connectionTimeout}</div>
-			</div>
-		</div>
+		</Form>
 	)
 }
