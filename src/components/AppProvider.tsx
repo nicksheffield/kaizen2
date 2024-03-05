@@ -7,6 +7,7 @@ import {
 	getHandleTreeFromHandle,
 	isDir,
 	isFile,
+	rm,
 	sortFilesByPath,
 	syncFiles,
 } from '../lib/handle'
@@ -56,6 +57,8 @@ export const AppProvider = ({ children }: PropsWithChildren) => {
 	const root = useMemo(() => files.filter(isDir).find((x) => x.path === ''), [files])
 
 	const [gitConfig, setGitConfig] = useState<Record<string, string> | null>(null)
+
+	db.dirs.toArray().then((x) => console.log('db', x))
 
 	const clearRootHandle = useCallback(async () => {
 		await db.dirs.clear()
@@ -124,8 +127,9 @@ export const AppProvider = ({ children }: PropsWithChildren) => {
 	 */
 	useEffect(() => {
 		const init = async () => {
-			const dbDir = await db.dirs.get(1)
-			if (dbDir) {
+			const dbDirs = await db.dirs.toArray()
+			if (dbDirs.length) {
+				const dbDir = dbDirs.slice(-1)[0]
 				setRootHandle(dbDir.handle)
 				await loadFiles(dbDir.handle)
 			}
@@ -142,12 +146,12 @@ export const AppProvider = ({ children }: PropsWithChildren) => {
 
 		setRootHandle(handle)
 
-		const dbDir = await db.dirs.get(1)
+		const dbDirs = await db.dirs.toArray()
 
-		if (!dbDir) {
+		if (!dbDirs.length) {
 			await db.dirs.add({ handle })
 		} else {
-			await db.dirs.update(1, { handle })
+			await db.dirs.update(dbDirs.slice(-1)[0].id || 1, { handle })
 		}
 
 		setLoading(true)
@@ -222,6 +226,18 @@ export const AppProvider = ({ children }: PropsWithChildren) => {
 		[saveFile]
 	)
 
+	const deleteFile = useCallback(
+		async (file: string | FSDesc) => {
+			const path = typeof file === 'string' ? file : file.path
+			const parent = files.filter(isDir).find((x) => x.path === path.split('/').slice(0, -1).join('/'))
+
+			if (!parent || !parent.handle) return
+
+			await rm(parent.handle, path.split('/').pop() || '')
+		},
+		[files]
+	)
+
 	// detect if the underlying project changes, and if so, just notify that there are new changes
 	useEffect(() => {
 		if (!project || !draft?.content) return
@@ -265,6 +281,7 @@ export const AppProvider = ({ children }: PropsWithChildren) => {
 				clearRootHandle,
 				refreshFiles,
 				saveFile,
+				deleteFile,
 			}}
 		>
 			{children}

@@ -1,5 +1,4 @@
 import Dexie, { Table } from 'dexie'
-import { FileSystemDirectoryHandle } from './handle'
 
 export interface DbDir {
 	id?: number
@@ -10,7 +9,7 @@ export class MySubClassedDexie extends Dexie {
 	dirs!: Table<DbDir>
 
 	constructor() {
-		super('myDatabase')
+		super('kaizen')
 		this.version(1).stores({
 			dirs: '++id, handle', // Primary key and indexed props
 		})

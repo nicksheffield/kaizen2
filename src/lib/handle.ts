@@ -112,6 +112,10 @@ export const mkdir = async (dirHandle: FileSystemDirectoryHandle, name: string) 
 	await dirHandle.getDirectoryHandle(name, { create: true })
 }
 
+export const rm = async (dirHandle: FileSystemDirectoryHandle, name: string) => {
+	await dirHandle.removeEntry(name)
+}
+
 export const convertGeneratedFilesToDescs = async (
 	generated: Record<string, string>,
 	rootHandle: FileSystemDirectoryHandle

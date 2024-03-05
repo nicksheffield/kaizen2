@@ -107,6 +107,7 @@ export const EndpointGroupSchema = z.object({
 	name: z.string(),
 })
 
+export type ProjectSettings = z.infer<typeof ProjectSettingsSchema>
 export const ProjectSettingsSchema = z.object({
 	id: z.string(),
 	name: z.string(),

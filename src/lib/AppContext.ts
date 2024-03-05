@@ -45,6 +45,7 @@ export type AppContextType = {
 	clearRootHandle: () => void
 	refreshFiles: () => Promise<void>
 	saveFile: (path: string, content: string) => Promise<void>
+	deleteFile: (path: string | FSDesc) => Promise<void>
 }
 
 export const AppContext = createContext<AppContextType>({} as AppContextType)

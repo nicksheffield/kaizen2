@@ -1,3 +1,4 @@
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { useApp } from '../lib/AppContext'
 import { EditorTabs } from './EditorTabs'
 import { CodeEditor } from './FileViews/CodeEditor'
@@ -16,11 +17,14 @@ export const EditorFrame = () => {
 		<JSONEditor key={project?.project.id} />
 	) : (
 		<CodeEditor key={project?.project.id} />
+		// <div></div>
 	)
 
 	return (
-		<div className="flex flex-1 flex-col relative min-h-0 divide-y">
-			<EditorTabs />
+		<div className="flex flex-1 shrink flex-col relative min-h-0 min-w-0 divide-y">
+			<ScrollArea className="w-full shrink-0" orientation="horizontal">
+				<EditorTabs />
+			</ScrollArea>
 
 			{Editor}
 		</div>

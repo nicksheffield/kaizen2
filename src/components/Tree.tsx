@@ -1,7 +1,10 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useApp } from '../lib/AppContext'
 import { TreeFileIcon } from './TreeFileIcon'
-import { isDir, isFile } from '@/lib/handle'
+import { FSDesc, isDir, isFile } from '@/lib/handle'
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from '@/components/ui/context-menu'
+import { Trash2Icon } from 'lucide-react'
+import { openConfirm } from '@/components/Alert'
 
 type TreeProps = {
 	path: string
@@ -9,7 +12,7 @@ type TreeProps = {
 }
 
 export const Tree = ({ path, level = 0 }: TreeProps) => {
-	const { files, selectedPath, setSelectedPath, setOpenPaths, dirOpenStatus, setDirOpenStatus } = useApp()
+	const { files, selectedPath, setSelectedPath, setOpenPaths, dirOpenStatus, setDirOpenStatus, deleteFile } = useApp()
 
 	// if (path === '.git') return null
 
@@ -27,12 +30,10 @@ export const Tree = ({ path, level = 0 }: TreeProps) => {
 
 	return (
 		<div className="flex flex-col">
-			<div
-				className={`py-1 rounded-lg flex items-center gap-2 cursor-pointer ${
-					selectedPath === path ? 'bg-primary text-white hover:bg-primary/80' : 'hover:bg-foreground/10'
-				}`}
-				onClick={(e) => {
-					e.stopPropagation()
+			<DescRow
+				file={file}
+				isSelected={selectedPath === path}
+				onSelect={() => {
 					if (isFile(file)) {
 						setSelectedPath(file.path)
 						setOpenPaths((x) => {
@@ -43,12 +44,12 @@ export const Tree = ({ path, level = 0 }: TreeProps) => {
 						toggleOpen()
 					}
 				}}
-				style={{ paddingLeft: `${level * 1 + 0.5}rem` }}
-			>
-				<TreeFileIcon file={file} open={open} />
-
-				<div className="truncate text-sm select-none">{file.name}</div>
-			</div>
+				onDelete={async () => {
+					await deleteFile(file)
+				}}
+				level={level}
+				isOpen={open}
+			/>
 			{isDir(file) && (
 				<AnimatePresence initial={false}>
 					{open && (
@@ -68,5 +69,54 @@ export const Tree = ({ path, level = 0 }: TreeProps) => {
 				</AnimatePresence>
 			)}
 		</div>
+	)
+}
+
+type DescRowProps = {
+	file: FSDesc
+	isSelected: boolean
+	onSelect: () => Promise<void> | void
+	onDelete: () => Promise<void> | void
+	level?: number
+	isOpen: boolean
+}
+
+const DescRow = ({ file, isSelected, onSelect, onDelete, level = 1, isOpen }: DescRowProps) => {
+	return (
+		<ContextMenu>
+			<ContextMenuTrigger asChild>
+				<div
+					className={`py-1 rounded-lg flex items-center gap-2 cursor-pointer ${
+						isSelected ? 'bg-primary text-white hover:bg-primary/80' : 'hover:bg-foreground/10'
+					}`}
+					onClick={(e) => {
+						e.stopPropagation()
+						onSelect()
+					}}
+					style={{ paddingLeft: `${level * 1 + 0.5}rem` }}
+				>
+					<TreeFileIcon file={file} open={isOpen} />
+
+					<div className="truncate text-sm select-none">{file.name}</div>
+				</div>
+			</ContextMenuTrigger>
+			<ContextMenuContent>
+				<ContextMenuItem
+					className="focus:bg-destructive text-destructive focus:text-destructive-foreground"
+					onClick={() => {
+						openConfirm({
+							title: 'Delete file?',
+							variant: 'destructive',
+							onConfirm: async () => {
+								await onDelete()
+							},
+						})
+					}}
+				>
+					<Trash2Icon className="w-4 mr-2" />
+					Delete {isFile(file) ? 'File' : 'Directory'}
+				</ContextMenuItem>
+			</ContextMenuContent>
+		</ContextMenu>
 	)
 }

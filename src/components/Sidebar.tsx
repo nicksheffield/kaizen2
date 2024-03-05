@@ -1,8 +1,9 @@
-import { FilePlusIcon, FolderSearchIcon, Loader2Icon } from 'lucide-react'
+import { FolderSearchIcon, Loader2Icon } from 'lucide-react'
 import { Tree } from './Tree'
 import { Button } from './ui/button'
 import { useApp } from '../lib/AppContext'
 import { openConfirm } from '@/components/Alert'
+import { AddFileMenu } from '@/components/AddFileMenu'
 
 export const Sidebar = () => {
 	const { files, root, getRootHandle, clearRootHandle, loading } = useApp()
@@ -24,8 +25,8 @@ export const Sidebar = () => {
 				</div>
 			) : (
 				<>
-					<div className="flex flex-col flex-1">
-						<div className="flex flex-row items-center justify-between h-10 border-b pl-2 pr-1">
+					<div className="flex flex-col flex-1 divide-y">
+						<div className="flex flex-row shrink-0 items-center justify-between h-10 pl-2 pr-1">
 							<div>
 								<div className="flex items-center gap-2">
 									<Button
@@ -43,22 +44,10 @@ export const Sidebar = () => {
 									>
 										{root.name}
 									</Button>
-
-									{/* <Button
-										variant="ghost"
-										size="pip-icon"
-										onClick={() => {
-											clearRootHandle()
-										}}
-									>
-										<XIcon className="w-4 h-4" />
-									</Button> */}
 								</div>
 							</div>
 
-							<Button variant="ghost" size="pip-icon">
-								<FilePlusIcon className="w-4 h-4" />
-							</Button>
+							<AddFileMenu />
 						</div>
 						<div className="flex flex-col flex-1 p-4">
 							{firstLevelDescs.map((desc) => (

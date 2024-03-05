@@ -464,7 +464,7 @@ export const Editor = () => {
 					deleteKeyCode={null}
 					className="h-full w-full"
 				>
-					<Background color="rgba(128,128,128,0.1)" gap={24} size={3} variant={BackgroundVariant.Dots} />
+					<Background color="rgba(128,128,128,0.1)" gap={12} size={3} variant={BackgroundVariant.Dots} />
 				</ReactFlow>
 			</div>
 		</ERDProvider>

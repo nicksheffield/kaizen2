@@ -4,6 +4,7 @@ import { Logo } from './components/Logo'
 import { Sidebar } from './components/Sidebar'
 import { EditorFrame } from './components/EditorFrame'
 import { StatusBar } from '@/components/StatusBar'
+import { VersionControl } from '@/components/VersionControl'
 
 export const App = () => {
 	return (
@@ -18,10 +19,12 @@ export const App = () => {
 					</div>
 				</div>
 
-				<div className="flex-1 flex flex-row divide-x min-h-0">
+				<div className="flex-1 grid grid-cols-[300px,1fr,300px] divide-x min-h-0 max-w-full">
 					<Sidebar />
 
 					<EditorFrame />
+
+					<VersionControl />
 				</div>
 
 				<StatusBar />
