@@ -51,8 +51,9 @@ export const Editor = () => {
 	const flow = useReactFlow()
 
 	const center = () => {
+		console.log('center')
 		flow.fitView()
-		flow.zoomTo(1)
+		flow.zoomTo(1, { duration: 200 })
 	}
 
 	const [relations, setRelations] = useState<Relation[]>(draft?.content.relations || [])
@@ -292,7 +293,7 @@ export const Editor = () => {
 	const selectNodes = useStore((actions) => actions.addSelectedNodes)
 
 	const focusOn = (node: Node<Model>) => {
-		flow.fitView({ padding: 0.2, includeHiddenNodes: true, nodes: [node] })
+		flow.fitView({ padding: 0.2, includeHiddenNodes: true, nodes: [node], duration: 200 })
 		selectNodes([node.id])
 	}
 
@@ -318,7 +319,7 @@ export const Editor = () => {
 				attrTypeRecommends,
 			}}
 		>
-			<div className={cn('flex flex-col flex-1 relative bg-background', max && 'fixed inset-0')}>
+			<div className={cn('flex flex-col flex-1 relative bg-background', max && 'fixed inset-0 z-50')}>
 				<div className="pointer-events-none absolute right-0 top-0 z-20 mr-1 mt-1">
 					{conflicts.length > 0 && (
 						<ul className="flex flex-col gap-2 rounded bg-destructive px-2 py-1 pl-6 text-destructive-foreground">

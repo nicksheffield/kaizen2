@@ -11,7 +11,7 @@ export const Sidebar = () => {
 	const firstLevelDescs = files.filter((x) => x.path !== root?.path).filter((x) => !x.path.includes('/'))
 
 	return (
-		<div className="w-[300px] shrink-0 relative min-h-0 overflow-auto bg-muted/50 flex flex-col divide-y">
+		<div className="w-[300px] shrink-0 relative min-h-0 bg-muted/50 flex flex-col divide-y">
 			{!root ? (
 				<div className="p-4 flex flex-col">
 					<Button onClick={getRootHandle} variant="default">
@@ -25,7 +25,7 @@ export const Sidebar = () => {
 				</div>
 			) : (
 				<>
-					<div className="flex flex-col flex-1 divide-y">
+					<div className="flex flex-col flex-1 divide-y min-h-0">
 						<div className="flex flex-row shrink-0 items-center justify-between h-10 pl-2 pr-1">
 							<div>
 								<div className="flex items-center gap-2">
@@ -49,7 +49,7 @@ export const Sidebar = () => {
 
 							<AddFileMenu />
 						</div>
-						<div className="flex flex-col flex-1 p-4">
+						<div className="flex flex-col flex-1 p-4 overflow-auto">
 							{firstLevelDescs.map((desc) => (
 								<Tree key={desc.path} path={desc.path} />
 							))}

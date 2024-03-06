@@ -27,6 +27,14 @@ export const camelize = (str: string) => {
 		.replace(/\s+/g, '')
 }
 
+export const safeParse = <T>(str: string, fallback: T): T => {
+	try {
+		return JSON.parse(str)
+	} catch {
+		return fallback
+	}
+}
+
 export const getEmptyProject = () => {
 	const userModelId = uuid()
 

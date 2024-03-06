@@ -1,4 +1,5 @@
-import { FlaskConicalIcon } from 'lucide-react'
+// import { useApp } from '@/lib/AppContext'
+// import { FlaskConicalIcon } from 'lucide-react'
 
 export const Welcome = () => {
 	return (
@@ -10,7 +11,10 @@ export const Welcome = () => {
 				>
 					K
 				</div> */}
-				<FlaskConicalIcon className="w-32 h-32 text-border" />
+				{/* <div className="text-muted-foreground/25 font-bold text-xs select-none">
+					{root ? 'No file selected' : 'No project'}
+				</div> */}
+				{/* <FlaskConicalIcon className="w-32 h-32 text-border" /> */}
 			</div>
 		</div>
 	)

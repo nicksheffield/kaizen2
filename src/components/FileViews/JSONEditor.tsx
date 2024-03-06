@@ -6,6 +6,7 @@ import { Input } from '../ui/input'
 import { SaveIcon } from 'lucide-react'
 import { MonacoEditor } from '../MonacoEditor'
 import { PipTabs } from '../PipTabs'
+import { safeParse } from '@/lib/utils'
 
 const readable: Record<string, string> = {
 	name: 'Name',
@@ -18,12 +19,12 @@ const readable: Record<string, string> = {
 export const JSONEditor = () => {
 	const { selectedFile, saveFile } = useApp()
 
-	const [value, setValue] = useState<Record<string, string>>(JSON.parse(selectedFile?.content || ''))
+	const [value, setValue] = useState<Record<string, string>>(safeParse(selectedFile?.content || '', {}))
 
 	useEffect(() => {
 		if (!selectedFile) return
 		if (!deepEqual(selectedFile.content, value)) {
-			setValue(JSON.parse(selectedFile.content))
+			setValue(safeParse(selectedFile.content, {}))
 		}
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps

@@ -1,5 +1,6 @@
 import {
 	ActivityIcon,
+	FileDiffIcon,
 	FileIcon,
 	FileJson2Icon,
 	FolderCogIcon,
@@ -9,48 +10,57 @@ import {
 	FolderRootIcon,
 	HelpCircleIcon,
 } from 'lucide-react'
-import { FSDesc } from '../lib/handle'
 import { cn } from '@/lib/utils'
+import { useApp } from '@/lib/AppContext'
 
 type TreeFileIconProps = {
-	file?: FSDesc
+	path?: string
 	open?: boolean
+	className?: string
 }
 
-export const TreeFileIcon = ({ file, open = true }: TreeFileIconProps) => {
-	const className = cn('w-4 h-4 shrink-0', file?.type === 'directory' && 'text-primary')
+export const TreeFileIcon = ({ path, open = true, className }: TreeFileIconProps) => {
+	const { files } = useApp()
+
+	const file = files.find((x) => x.path === path)
+
+	const classNames = cn('w-4 h-4 shrink-0', file?.type === 'directory' && 'text-primary', className)
 
 	switch (file?.name) {
 		case '.git':
-			return <FolderGit2Icon className={className} />
+			return <FolderGit2Icon className={classNames} />
 		case '.vscode':
-			return <FolderCogIcon className={className} />
+			return <FolderCogIcon className={classNames} />
+	}
+
+	if (path?.includes('diff:')) {
+		return <FileDiffIcon className={classNames} />
 	}
 
 	if (file?.path === '') {
-		return <FolderRootIcon className={className} />
+		return <FolderRootIcon className={classNames} />
 	}
 
 	if (file?.type === 'directory') {
 		if (open) {
-			return <FolderOpenIcon className={className} />
+			return <FolderOpenIcon className={classNames} />
 		}
-		return <FolderIcon className={className} />
+		return <FolderIcon className={classNames} />
 	}
 
 	if (file?.type === 'file') {
 		if (file?.name === 'project.json') {
-			return <ActivityIcon className={className} />
+			return <ActivityIcon className={classNames} />
 		}
 
 		const fileType = file?.name.split('.').pop()
 
 		if (fileType === 'json') {
-			return <FileJson2Icon className={className} />
+			return <FileJson2Icon className={classNames} />
 		}
 
-		return <FileIcon className={className} />
+		return <FileIcon className={classNames} />
 	}
 
-	return <HelpCircleIcon className={className} />
+	return <HelpCircleIcon className={classNames} />
 }

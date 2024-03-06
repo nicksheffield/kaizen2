@@ -19,7 +19,7 @@ export const App = () => {
 					</div>
 				</div>
 
-				<div className="flex-1 grid grid-cols-[300px,1fr,300px] divide-x min-h-0 max-w-full">
+				<div className="flex-1 flex flex-row divide-x min-h-0 max-w-full">
 					<Sidebar />
 
 					<EditorFrame />

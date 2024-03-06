@@ -4,8 +4,10 @@ import { Editor, Monaco, OnMount } from '@monaco-editor/react'
 
 const monacoLang: Record<string, string> = {
 	json: 'json',
+	prettierrc: 'json',
 	js: 'javascript',
 	ts: 'typescript',
+	yml: 'yaml',
 	html: 'html',
 	css: 'css',
 	scss: 'scss',
@@ -17,13 +19,10 @@ type MonacoEditorProps = {
 	value: string
 	onValueChange: (val: string) => void
 	extension?: string
+	readonly?: boolean
 }
 
-export const MonacoEditor = ({
-	value,
-	onValueChange,
-	extension,
-}: MonacoEditorProps) => {
+export const MonacoEditor = ({ value, onValueChange, extension, readonly = false }: MonacoEditorProps) => {
 	const { theme } = useTheme()
 	const editorRef = useRef<Parameters<OnMount>[0] | null>(null)
 	const monacoRef = useRef<Monaco | null>(null)
@@ -52,8 +51,7 @@ export const MonacoEditor = ({
 			experimentalDecorators: true,
 			allowSyntheticDefaultImports: true,
 			jsx: monaco.languages.typescript.JsxEmit.React,
-			moduleResolution:
-				monaco.languages.typescript.ModuleResolutionKind.NodeJs,
+			moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
 			allowNonTsExtensions: true,
 			target: monaco.languages.typescript.ScriptTarget.ES2020,
 		})
@@ -67,18 +65,21 @@ export const MonacoEditor = ({
 		}
 	}, [theme])
 
+	const defaultLanguage = extension ? monacoLang[extension] || 'plaintext' : 'plaintext'
+
 	return (
 		<Editor
 			height="90vh"
-			defaultLanguage={
-				extension ? monacoLang[extension] || 'plaintext' : 'plaintext'
-			}
+			className="p-4"
+			defaultLanguage={defaultLanguage}
 			value={value}
 			onChange={(val) => {
 				onValueChange(val || '')
 			}}
-			className="p-4"
 			onMount={handleEditorDidMount}
+			options={{
+				readOnly: readonly,
+			}}
 		/>
 	)
 }

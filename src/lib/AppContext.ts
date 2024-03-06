@@ -1,6 +1,8 @@
 import { createContext, useContext } from 'react'
 import { DirDesc, FileDesc, FSDesc } from './handle'
 import { Project } from '@/lib/schemas'
+import { FsaNodeFs } from 'memfs/lib/fsa-to-node'
+import { GitInstance } from '@/lib/git'
 
 export type AppContextType = {
 	files: FSDesc[]
@@ -15,9 +17,12 @@ export type AppContextType = {
 	setSelectedPath: React.Dispatch<React.SetStateAction<string | undefined>>
 	hasNewChanges: boolean
 	setHasNewChanges: React.Dispatch<React.SetStateAction<boolean>>
+	openPath: (path: string) => void
 
 	gitConfig: Record<string, string> | null
 
+	fs: FsaNodeFs | null
+	git: GitInstance | null
 	head: string
 	localBranches: string[]
 	remoteBranches: string[]

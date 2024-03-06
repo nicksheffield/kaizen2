@@ -12,7 +12,7 @@ type TreeProps = {
 }
 
 export const Tree = ({ path, level = 0 }: TreeProps) => {
-	const { files, selectedPath, setSelectedPath, setOpenPaths, dirOpenStatus, setDirOpenStatus, deleteFile } = useApp()
+	const { files, selectedPath, openPath, dirOpenStatus, setDirOpenStatus, deleteFile } = useApp()
 
 	// if (path === '.git') return null
 
@@ -35,11 +35,7 @@ export const Tree = ({ path, level = 0 }: TreeProps) => {
 				isSelected={selectedPath === path}
 				onSelect={() => {
 					if (isFile(file)) {
-						setSelectedPath(file.path)
-						setOpenPaths((x) => {
-							if (x.includes(path)) return x
-							return [...x, path]
-						})
+						openPath(file.path)
 					} else {
 						toggleOpen()
 					}
@@ -95,7 +91,7 @@ const DescRow = ({ file, isSelected, onSelect, onDelete, level = 1, isOpen }: De
 					}}
 					style={{ paddingLeft: `${level * 1 + 0.5}rem` }}
 				>
-					<TreeFileIcon file={file} open={isOpen} />
+					<TreeFileIcon path={file.path} open={isOpen} />
 
 					<div className="truncate text-sm select-none">{file.name}</div>
 				</div>

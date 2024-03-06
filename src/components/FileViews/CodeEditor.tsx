@@ -53,6 +53,7 @@ export const CodeEditor = () => {
 					value={value}
 					onValueChange={(val) => setValue(val)}
 					extension={selectedFile?.extension}
+					readonly={selectedFile.path.startsWith('build')}
 				/>
 			</div>
 		</div>

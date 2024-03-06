@@ -1,16 +1,11 @@
 import { Moon, Sun } from 'lucide-react'
 
 import { Button } from './ui/button'
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from './ui/dropdown-menu'
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from './ui/dropdown-menu'
 import { useTheme } from '../lib/ThemeContext'
 
 export function DarkModeToggle() {
-	const { setTheme } = useTheme()
+	const { theme, setTheme } = useTheme()
 
 	return (
 		<DropdownMenu>
@@ -21,16 +16,16 @@ export function DarkModeToggle() {
 					<span className="sr-only">Toggle theme</span>
 				</Button>
 			</DropdownMenuTrigger>
-			<DropdownMenuContent align="end">
-				<DropdownMenuItem onClick={() => setTheme('light')}>
+			<DropdownMenuContent side="bottom" align="end">
+				<DropdownMenuCheckboxItem onClick={() => setTheme('light')} checked={theme === 'light'}>
 					Light
-				</DropdownMenuItem>
-				<DropdownMenuItem onClick={() => setTheme('dark')}>
+				</DropdownMenuCheckboxItem>
+				<DropdownMenuCheckboxItem onClick={() => setTheme('dark')} checked={theme === 'dark'}>
 					Dark
-				</DropdownMenuItem>
-				<DropdownMenuItem onClick={() => setTheme('system')}>
+				</DropdownMenuCheckboxItem>
+				<DropdownMenuCheckboxItem onClick={() => setTheme('system')} checked={theme === 'system'}>
 					System
-				</DropdownMenuItem>
+				</DropdownMenuCheckboxItem>
 			</DropdownMenuContent>
 		</DropdownMenu>
 	)

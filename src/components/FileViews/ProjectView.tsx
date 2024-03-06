@@ -1,10 +1,10 @@
-import { useState } from 'react'
 import { PipTabs } from '../PipTabs'
 import { ERDEditor } from '../ERDEditor'
 import { ProjectSettings } from '@/components/ProjectSettings'
+import { useLocalStorage } from 'usehooks-ts'
 
 export const ProjectView = () => {
-	const [tab, setTab] = useState<'settings' | 'env' | 'models'>('settings')
+	const [tab, setTab] = useLocalStorage<'settings' | 'env' | 'models'>('project-tab', 'settings')
 
 	return (
 		<div className="flex flex-1 flex-col relative min-h-0 overflow-hidden">

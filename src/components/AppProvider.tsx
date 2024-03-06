@@ -18,6 +18,9 @@ import { Project, ProjectSchema } from '@/lib/schemas'
 import generate from '@/generators/express'
 import deepEqual from 'deep-equal'
 import ini from 'ini'
+import { FsaNodeFs } from 'memfs/lib/fsa-to-node'
+import type * as fsa from 'memfs/lib/fsa/types'
+import { createGitInstance } from '@/lib/git'
 
 const checkFilesChanged = (a: FSDesc[], b: FSDesc[]) => {
 	if (a.length !== b.length) return true
@@ -58,7 +61,16 @@ export const AppProvider = ({ children }: PropsWithChildren) => {
 
 	const [gitConfig, setGitConfig] = useState<Record<string, string> | null>(null)
 
-	db.dirs.toArray().then((x) => console.log('db', x))
+	const openPath = useCallback(
+		(path: string) => {
+			setSelectedPath(path)
+			setOpenPaths((x) => {
+				if (x.includes(path)) return x
+				return [...x, path]
+			})
+		},
+		[openPaths]
+	)
 
 	const clearRootHandle = useCallback(async () => {
 		await db.dirs.clear()
@@ -93,6 +105,16 @@ export const AppProvider = ({ children }: PropsWithChildren) => {
 				.map((x) => x.path.replace('.git/refs/remotes/', '').trim()),
 		[files]
 	)
+
+	const fs = useMemo(() => {
+		if (!root) return null
+		return new FsaNodeFs(root.handle as unknown as fsa.IFileSystemDirectoryHandle)
+	}, [root])
+
+	const git = useMemo(() => {
+		if (!fs) return null
+		return createGitInstance(fs)
+	}, [fs])
 
 	// load all the files in the root directory
 	const loadFiles = useCallback(
@@ -219,7 +241,7 @@ export const AppProvider = ({ children }: PropsWithChildren) => {
 
 	const saveProject = useCallback(
 		async (project: Project) => {
-			await saveFile('project.json', JSON.stringify(project, null, 4))
+			await saveFile('project.json', JSON.stringify(project, null, 4).replace(/    /g, '\t'))
 			setDraft({ dirty: false, content: project })
 			await generateProject(project)
 		},
@@ -262,9 +284,12 @@ export const AppProvider = ({ children }: PropsWithChildren) => {
 				setLoading,
 				hasNewChanges,
 				setHasNewChanges,
+				openPath,
 
 				gitConfig,
 
+				fs,
+				git,
 				head,
 				localBranches,
 				remoteBranches,
