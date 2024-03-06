@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { Handle, Position } from 'reactflow'
 import { alphabetical, camelize, cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -133,8 +133,8 @@ export const RelationRow = ({ rel, model, mode }: RelationRowProps) => {
 				: plural(rel.sourceName || sourceModel?.name || 'Model').toLowerCase()
 		return `
 			Each ${name}  ${rel.optional && sourceCardinality === 'one' ? 'may have' : 'has'} ${
-			sourceCardinality === 'one' ? 'one' : 'many'
-		} ${sourceName || 'Model'}
+				sourceCardinality === 'one' ? 'one' : 'many'
+			} ${sourceName || 'Model'}
 		`
 	}, [targetModel?.name, sourceCardinality, rel.sourceName, rel.optional, sourceModel?.name])
 
@@ -146,8 +146,8 @@ export const RelationRow = ({ rel, model, mode }: RelationRowProps) => {
 				: plural(rel.targetName || targetModel?.name || 'Model').toLowerCase()
 		return `
 			Each ${name} ${rel.optional && targetCardinality === 'one' ? 'may have' : 'has'} ${
-			targetCardinality === 'one' ? 'one' : 'many'
-		} ${targetName || 'Model'}
+				targetCardinality === 'one' ? 'one' : 'many'
+			} ${targetName || 'Model'}
 		`
 	}, [sourceModel?.name, targetCardinality, rel.targetName, rel.optional, targetModel?.name])
 
@@ -177,11 +177,20 @@ export const RelationRow = ({ rel, model, mode }: RelationRowProps) => {
 			if (y.modelId === rel.targetId) return y.name === name
 		})
 
+	const [open, setOpen] = useState(false)
+
 	return (
 		<div key={rel.id} className="relative flex flex-col px-2" ref={setNodeRef} style={style}>
-			<Popover>
+			<Popover open={open} onOpenChange={setOpen}>
 				<PopoverTrigger asChild>
-					<Button variant="ghost" size="xs" className="flex h-[24px] items-center justify-between gap-3 py-0">
+					<Button
+						variant="ghost"
+						size="xs"
+						className={cn(
+							'flex h-[24px] items-center justify-between gap-3 py-0',
+							open && 'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground'
+						)}
+					>
 						<div className="flex items-center gap-2">
 							<LinkIcon
 								className="-ml-1 h-4 w-4 cursor-grab opacity-25 active:cursor-grabbing"

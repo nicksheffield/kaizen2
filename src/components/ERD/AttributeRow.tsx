@@ -1,6 +1,6 @@
 'use client'
 
-import { type ElementType, useMemo } from 'react'
+import { type ElementType, useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import {
 	CalendarIcon,
@@ -106,11 +106,20 @@ export const AttributeRow = ({ attr, model, remove, updateField }: AttributeRowP
 		transition,
 	}
 
+	const [open, setOpen] = useState(false)
+
 	return (
 		<div key={attr.id} className="relative flex flex-col px-2" ref={setNodeRef} style={style}>
-			<Popover>
+			<Popover open={open} onOpenChange={setOpen}>
 				<PopoverTrigger asChild>
-					<Button variant="ghost" size="xs" className="flex h-[24px] items-center justify-between gap-3 py-0">
+					<Button
+						variant="ghost"
+						size="xs"
+						className={cn(
+							'flex h-[24px] items-center justify-between gap-3 py-0',
+							open && 'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground'
+						)}
+					>
 						<div className="flex items-center gap-2">
 							<AttrIcon
 								className="-ml-1 h-4 w-4 cursor-grab opacity-25 active:cursor-grabbing"

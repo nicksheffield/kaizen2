@@ -1,29 +1,18 @@
-import ReactFlow, {
-	Background,
-	BackgroundVariant,
-	Node,
-	NodeChange,
-	ReactFlowProvider,
-	applyNodeChanges,
-	useReactFlow,
-	useStore,
-} from 'reactflow'
+import ReactFlow, { Node, NodeChange, ReactFlowProvider, applyNodeChanges, useReactFlow, useStore } from 'reactflow'
 import { ERDProvider } from './ERDProvider'
 import { getAttrTypeRecommends, getSourceName, getTargetName, isReservedKeyword } from '@/lib/ERDHelpers'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { AttributeType, Model, Relation } from '@/lib/schemas'
 import { ERDMarkers } from '@/components/ERDMakers'
 import { useApp } from '@/lib/AppContext'
 import { ModelNode } from '@/components/ERD/ModelNode'
 import { SimpleFloatingEdge } from '@/components/ERD/SimpleFloatingEdge'
 import { useLocalStorage } from 'usehooks-ts'
-import deepEqual from 'deep-equal'
 import { ListCollapseIcon, MaximizeIcon, PlusIcon, SaveIcon, SearchIcon, ShrinkIcon, Undo2Icon } from 'lucide-react'
 import { RevealButton } from '@/components/RevealButton'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
-import { CustomBackground } from '@/components/ERD/CustomBackground'
+import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
 
 export const Editor = () => {
 	const { project, draft, setDraft, hasNewChanges, setHasNewChanges, saveProject } = useApp()
@@ -51,10 +40,9 @@ export const Editor = () => {
 
 	const flow = useReactFlow()
 
-	const center = () => {
-		console.log('center')
+	const center = (zoom: number = 0.8) => {
 		flow.fitView()
-		flow.zoomTo(0.8)
+		flow.zoomTo(zoom)
 	}
 
 	const [relations, setRelations] = useState<Relation[]>(draft?.content.relations || [])
@@ -73,30 +61,6 @@ export const Editor = () => {
 			}
 		})
 	}, [relations])
-
-	// if the models/relations are changed here, then update the draft
-	useEffect(() => {
-		if (!project) return
-
-		const update = async () => {
-			setDraft({
-				dirty: true,
-				content: {
-					...project,
-					models,
-					relations,
-				},
-			})
-			setHasNewChanges(false)
-			setDefaultModels(models)
-			setDefaultRelations(relations)
-		}
-
-		const models: Model[] = nodes.map((x) => ({ ...x.data, posX: x.position.x, posY: x.position.y }))
-
-		if (!deepEqual(models, defaultModels)) update()
-		if (!deepEqual(relations, defaultRelations)) update()
-	}, [project, nodes])
 
 	const addNode = (data?: Partial<Model>) => {
 		const id = crypto.randomUUID()
@@ -162,69 +126,69 @@ export const Editor = () => {
 
 	const [detailed, setDetailed] = useLocalStorage(`project-${project?.project.id}-erd-detailed`, false)
 
-	// const isDirty = useMemo(() => {
-	// 	const models = nodes.map((x) => ({ ...x.data, posX: x.position.x, posY: x.position.y }))
-	// 	const attributes = models.flatMap((x) => x.attributes)
-	// 	const defaultAttributes = defaultModels.flatMap((x) => x.attributes)
+	const isDirty = useMemo(() => {
+		const models = nodes.map((x) => ({ ...x.data, posX: x.position.x, posY: x.position.y }))
+		const attributes = models.flatMap((x) => x.attributes)
+		const defaultAttributes = defaultModels.flatMap((x) => x.attributes)
 
-	// 	for (const model of models) {
-	// 		const original = defaultModels.find((x) => x.id === model.id)
-	// 		if (!original) return true
+		for (const model of models) {
+			const original = defaultModels.find((x) => x.id === model.id)
+			if (!original) return true
 
-	// 		if (model.name !== original.name) return true
-	// 		if (model.key !== original.key) return true
-	// 		if (model.tableName !== original.tableName) return true
-	// 		if (model.auditDates !== original.auditDates) return true
-	// 		if (model.posX !== original.posX) return true
-	// 		if (model.posY !== original.posY) return true
-	// 		if (model.enabled !== original.enabled) return true
-	// 	}
+			if (model.name !== original.name) return true
+			if (model.key !== original.key) return true
+			if (model.tableName !== original.tableName) return true
+			if (model.auditDates !== original.auditDates) return true
+			if (model.posX !== original.posX) return true
+			if (model.posY !== original.posY) return true
+			if (model.enabled !== original.enabled) return true
+		}
 
-	// 	for (const originalModel of defaultModels) {
-	// 		const model = models.find((x) => x.id === originalModel.id)
-	// 		if (!model) return true
-	// 	}
+		for (const originalModel of defaultModels) {
+			const model = models.find((x) => x.id === originalModel.id)
+			if (!model) return true
+		}
 
-	// 	for (const relation of relations) {
-	// 		const original = defaultRelations.find((x) => x.id === relation.id)
-	// 		if (!original) return true
+		for (const relation of relations) {
+			const original = defaultRelations.find((x) => x.id === relation.id)
+			if (!original) return true
 
-	// 		if (relation.type !== original.type) return true
-	// 		if (relation.sourceId !== original.sourceId) return true
-	// 		if (relation.targetId !== original.targetId) return true
-	// 		if (relation.sourceOrder !== original.sourceOrder) return true
-	// 		if (relation.targetOrder !== original.targetOrder) return true
-	// 		if (relation.sourceName !== original.sourceName) return true
-	// 		if (relation.targetName !== original.targetName) return true
-	// 		if (relation.optional !== original.optional) return true
-	// 		if (relation.enabled !== original.enabled) return true
-	// 	}
+			if (relation.type !== original.type) return true
+			if (relation.sourceId !== original.sourceId) return true
+			if (relation.targetId !== original.targetId) return true
+			if (relation.sourceOrder !== original.sourceOrder) return true
+			if (relation.targetOrder !== original.targetOrder) return true
+			if (relation.sourceName !== original.sourceName) return true
+			if (relation.targetName !== original.targetName) return true
+			if (relation.optional !== original.optional) return true
+			if (relation.enabled !== original.enabled) return true
+		}
 
-	// 	for (const originalRelation of defaultRelations) {
-	// 		const relation = relations.find((x) => x.id === originalRelation.id)
-	// 		if (!relation) return true
-	// 	}
+		for (const originalRelation of defaultRelations) {
+			const relation = relations.find((x) => x.id === originalRelation.id)
+			if (!relation) return true
+		}
 
-	// 	for (const attr of attributes) {
-	// 		const original = defaultAttributes.find((x) => x.id === attr.id)
-	// 		if (!original) return true
+		for (const attr of attributes) {
+			const original = defaultAttributes.find((x) => x.id === attr.id)
+			if (!original) return true
 
-	// 		if (attr.name !== original.name) return true
-	// 		if (attr.type !== original.type) return true
-	// 		if (attr.order !== original.order) {
-	// 			return true
-	// 		}
-	// 		if (attr.nullable !== original.nullable) return true
-	// 		if (attr.selectable !== original.selectable) return true
-	// 		if (attr.default !== original.default) return true
-	// 		if (attr.enabled !== original.enabled) return true
-	// 	}
+			if (attr.name !== original.name) return true
+			if (attr.type !== original.type) return true
+			if (attr.order !== original.order) {
+				return true
+			}
+			if (attr.nullable !== original.nullable) return true
+			if (attr.selectable !== original.selectable) return true
+			if (attr.default !== original.default) return true
+			if (attr.enabled !== original.enabled) return true
+		}
 
-	// 	for (const originalAttr of defaultAttributes) {
-	// 		const attr = attributes.find((x) => x.id === originalAttr.id)
-	// 		if (!attr) return true
-	// 	}
-	// }, [defaultModels, defaultRelations, nodes, relations])
+		for (const originalAttr of defaultAttributes) {
+			const attr = attributes.find((x) => x.id === originalAttr.id)
+			if (!attr) return true
+		}
+	}, [defaultModels, defaultRelations, nodes, relations])
 
 	const conflicts = useMemo(() => {
 		const messages: string[] = []
@@ -289,8 +253,6 @@ export const Editor = () => {
 
 	const attrTypeRecommends = useMemo(() => getAttrTypeRecommends(project), [project])
 
-	const [modelFilter, setModelFilter] = useState('')
-
 	const selectNodes = useStore((actions) => actions.addSelectedNodes)
 
 	const focusOn = (node: Node<Model>) => {
@@ -299,9 +261,16 @@ export const Editor = () => {
 	}
 
 	const save = () => {
-		if (!project || !draft) return
+		if (!project) return
 
-		saveProject(draft?.content)
+		saveProject({
+			...project,
+			models: nodes.map((x) => ({ ...x.data, posX: x.position.x, posY: x.position.y })),
+			relations,
+		})
+
+		setDefaultModels(nodes.map((x) => ({ ...x.data, posX: x.position.x, posY: x.position.y })))
+		setDefaultRelations(relations)
 	}
 
 	if (!project) return null
@@ -320,7 +289,7 @@ export const Editor = () => {
 				attrTypeRecommends,
 			}}
 		>
-			<div className={cn('flex flex-col flex-1 relative bg-muted', max && 'fixed inset-0 z-50')}>
+			<div className={cn('flex flex-col flex-1 relative bg-background', max && 'fixed inset-0 z-50')}>
 				<div className="pointer-events-none absolute right-0 top-0 z-20 mr-1 mt-1">
 					{conflicts.length > 0 && (
 						<ul className="flex flex-col gap-2 rounded bg-destructive px-2 py-1 pl-6 text-destructive-foreground">
@@ -344,8 +313,24 @@ export const Editor = () => {
 									label="Search Models"
 								/>
 							</PopoverTrigger>
-							<PopoverContent side="bottom" align="start" className="bg-background/50 backdrop-blur-sm">
-								<div className="flex flex-col gap-4">
+							<PopoverContent
+								side="bottom"
+								align="start"
+								className="bg-background/50 backdrop-blur-sm p-0"
+							>
+								<Command>
+									<CommandInput placeholder="Search for models..." />
+									<CommandList>
+										<CommandEmpty>No results found.</CommandEmpty>
+
+										{nodes.map((x) => (
+											<CommandItem key={x.id} onSelect={() => focusOn(x)} className="px-3 py-2">
+												{x.data.name}
+											</CommandItem>
+										))}
+									</CommandList>
+								</Command>
+								{/* <div className="flex flex-col gap-4">
 									<Input
 										placeholder="Search"
 										value={modelFilter}
@@ -367,7 +352,7 @@ export const Editor = () => {
 												</div>
 											))}
 									</div>
-								</div>
+								</div> */}
 							</PopoverContent>
 						</Popover>
 					</div>
@@ -384,7 +369,7 @@ export const Editor = () => {
 							<RevealButton
 								variant="ghost"
 								size="pip"
-								onClick={center}
+								onClick={() => center()}
 								icon={<ShrinkIcon className="w-4 h-4" />}
 								label="Center"
 							/>
@@ -408,7 +393,7 @@ export const Editor = () => {
 								onClick={save}
 								icon={<SaveIcon className="w-4 h-4" />}
 								label="Save"
-								revealLabel={draft?.dirty ? 'Save Changes' : ''}
+								revealLabel={isDirty ? 'Save Changes' : ''}
 							/>
 						</div>
 					</div>
@@ -422,7 +407,7 @@ export const Editor = () => {
 							iconSide="right"
 							onClick={() => {
 								setMax((x) => !x)
-								setTimeout(() => center(), 1)
+								setTimeout(() => center(max ? 0.8 : 1), 1)
 							}}
 						/>
 					</div>
@@ -466,7 +451,7 @@ export const Editor = () => {
 					deleteKeyCode={null}
 					className="h-full w-full"
 				>
-					<CustomBackground gap={12} size={3} />
+					{/* <CustomBackground gap={12} size={3} /> */}
 				</ReactFlow>
 			</div>
 		</ERDProvider>

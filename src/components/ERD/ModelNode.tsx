@@ -175,16 +175,16 @@ export const ModelNode = ({ data, selected }: NodeProps<Model>) => {
 	return (
 		<div
 			className={cn(
-				'flex min-w-[216px] cursor-default flex-col rounded-xl bg-background shadow-lg transition-shadow dark:border',
+				'flex min-w-[216px] cursor-default flex-col bg-background border transition-shadow dark:border rounded-md overflow-hidden',
 				selected && 'ring-2 ring-ring ring-offset-2 ring-offset-muted dark:ring-offset-background',
 				!data.enabled && 'opacity-50'
 			)}
 		>
-			<div className="p-2">
+			<div className="p-0 mb-[12px]">
 				<div
 					className={cn(
-						'drag-handle flex h-[36px] cursor-grab items-center justify-between bg-foreground pl-4 pr-2 text-background hover:bg-foreground/90 active:cursor-grabbing dark:bg-accent dark:text-foreground dark:hover:bg-accent/90 rounded-lg shadow-lg',
-						selected && 'bg-primary dark:bg-primary/80 dark:hover:bg-primary/90 hover:bg-primary/90'
+						'drag-handle flex h-[36px] cursor-grab items-center justify-between pl-4 pr-2 active:cursor-grabbing bg-muted/50 border-b',
+						selected && 'bg-blue-100 text-blue-600 dark:bg-blue-600/20 dark:text-blue-300'
 					)}
 					// style={{ background: getTitleBG(titleHSL), color: 'black' }}
 				>

@@ -53,7 +53,7 @@ function BackgroundComponent({ gap = 20, size, offset = 2, style, className }: B
 				patternUnits="userSpaceOnUse"
 				patternTransform={`translate(-${patternOffset[0]},-${patternOffset[1]})`}
 			>
-				<DotPattern radius={scaledSize / offset} className={'fill-foreground/5'} />
+				<DotPattern radius={scaledSize / offset} className={'fill-primary/10'} />
 			</pattern>
 			<rect x="0" y="0" width="100%" height="100%" fill={`url(#${patternId})`} />
 		</svg>
