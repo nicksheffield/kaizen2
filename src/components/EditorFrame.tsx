@@ -26,6 +26,7 @@ export const EditorFrame = () => {
 	return (
 		<div className="flex flex-1 shrink flex-col relative min-h-0 min-w-0 divide-y">
 			<EditorTabs />
+
 			{Editor}
 		</div>
 	)

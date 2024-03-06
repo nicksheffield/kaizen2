@@ -20,11 +20,15 @@ export const App = () => {
 				</div>
 
 				<div className="flex-1 flex flex-row divide-x min-h-0 max-w-full">
-					<Sidebar />
+					<div className="w-[300px] shrink-0 flex flex-col">
+						<Sidebar />
+					</div>
 
 					<EditorFrame />
 
-					<VersionControl />
+					<div className="w-[300px] shrink-0 flex flex-col">
+						<VersionControl />
+					</div>
 				</div>
 
 				<StatusBar />

@@ -5,20 +5,8 @@ type RipplesProps = {
 	hover?: boolean
 }
 
-export const Ripples = ({
-	rings = 4,
-	size = 200,
-	gap = 150,
-	hover = true,
-}: RipplesProps) => {
-	return (
-		<Ripple
-			ripplesRemaining={rings - 1}
-			size={size}
-			gap={gap}
-			hover={hover}
-		/>
-	)
+export const Ripples = ({ rings = 4, size = 200, gap = 150, hover = true }: RipplesProps) => {
+	return <Ripple ripplesRemaining={rings - 1} size={size} gap={gap} hover={hover} />
 }
 
 type RippleProps = {
@@ -31,7 +19,7 @@ type RippleProps = {
 const Ripple = ({ ripplesRemaining, size, gap, hover }: RippleProps) => {
 	return (
 		<div
-			className="rounded-full border flex items-center justify-center border-border/40 group-hover:bg-foreground/10 bg-background"
+			className="rounded-full border flex items-center justify-center border-border/40 group-hover:bg-primary/10 bg-background"
 			style={{
 				width: `${size + ripplesRemaining * gap}px`,
 				height: `${size + ripplesRemaining * gap}px`,
@@ -40,12 +28,7 @@ const Ripple = ({ ripplesRemaining, size, gap, hover }: RippleProps) => {
 			}}
 		>
 			{ripplesRemaining > 0 ? (
-				<Ripple
-					ripplesRemaining={ripplesRemaining - 1}
-					size={size}
-					gap={gap}
-					hover={hover}
-				/>
+				<Ripple ripplesRemaining={ripplesRemaining - 1} size={size} gap={gap} hover={hover} />
 			) : (
 				<span className="text-red-500">&middot;</span>
 			)}

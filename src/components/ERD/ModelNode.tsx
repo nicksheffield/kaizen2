@@ -4,7 +4,7 @@ import { Dispatch, SetStateAction } from 'react'
 import { useUpdateNodeInternals, type NodeProps } from 'reactflow'
 import { camelize, cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import { CalendarIcon, EditIcon, LinkIcon, LockIcon, PlusIcon, SparklesIcon, Trash2Icon } from 'lucide-react'
+import { CalendarIcon, LinkIcon, LockIcon, PlusIcon, Settings2Icon, SparklesIcon, Trash2Icon } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Switch } from '@/components/ui/switch'
 import { Input } from '@/components/ui/input'
@@ -175,105 +175,113 @@ export const ModelNode = ({ data, selected }: NodeProps<Model>) => {
 	return (
 		<div
 			className={cn(
-				'flex min-w-[216px] cursor-default flex-col gap-[12px] rounded-xl bg-background shadow-md transition-shadow dark:border',
+				'flex min-w-[216px] cursor-default flex-col rounded-xl bg-background shadow-lg transition-shadow dark:border',
 				selected && 'ring-2 ring-ring ring-offset-2 ring-offset-muted dark:ring-offset-background',
 				!data.enabled && 'opacity-50'
 			)}
 		>
-			<div
-				className={cn(
-					'drag-handle flex h-[36px] cursor-grab items-center justify-between bg-foreground pl-4 pr-2 text-background hover:bg-foreground/90 active:cursor-grabbing dark:bg-accent dark:text-foreground dark:hover:bg-accent/90 rounded-xl shadow-lg',
-					selected && 'bg-primary hover:bg-primary/90'
-				)}
-				// style={{ background: getTitleBG(titleHSL), color: 'black' }}
-			>
-				{data.name ? (
-					<div className={cn('text-sm font-medium', nameConflicted && 'text-destructive')}>{data.name}</div>
-				) : (
-					<div className="text-sm font-medium italic text-destructive">New Model</div>
-				)}
+			<div className="p-2">
+				<div
+					className={cn(
+						'drag-handle flex h-[36px] cursor-grab items-center justify-between bg-foreground pl-4 pr-2 text-background hover:bg-foreground/90 active:cursor-grabbing dark:bg-accent dark:text-foreground dark:hover:bg-accent/90 rounded-lg shadow-lg',
+						selected && 'bg-primary dark:bg-primary/80 dark:hover:bg-primary/90 hover:bg-primary/90'
+					)}
+					// style={{ background: getTitleBG(titleHSL), color: 'black' }}
+				>
+					{data.name ? (
+						<div className={cn('text-sm font-medium', nameConflicted && 'text-destructive')}>
+							{data.name}
+						</div>
+					) : (
+						<div className="text-sm font-medium italic text-destructive">New Model</div>
+					)}
 
-				<div>
-					<Popover>
-						<PopoverTrigger asChild>
-							<Button variant="ghost" size="xs" className="h-6 w-6 rounded-full px-0">
-								<EditIcon className="h-3 w-3" />
-							</Button>
-						</PopoverTrigger>
-
-						<PopoverContent align="center" side="right">
-							<div className="grid auto-rows-fr grid-cols-1 gap-3">
-								<div className="flex items-center justify-between pb-3">
-									<div>Model Settings</div>
-
-									<div className="flex items-center gap-2">
-										{isModelLocked(data) ? (
-											<Button variant="ghost" size="xs">
-												<LockIcon className="h-4 w-4" />
-											</Button>
-										) : (
-											<Button
-												variant="ghost"
-												size="xs"
-												onClick={() => {
-													removeSelf()
-												}}
-											>
-												<Trash2Icon className="h-4 w-4" />
-											</Button>
-										)}
-									</div>
-								</div>
-
-								<PanelRow label="Name" hint="The name of the model used for...">
-									<Input
-										value={name}
-										onChange={(e) => {
-											setName(e.currentTarget.value.replace(/\s/g, ''))
-										}}
-										autoFocus
-									/>
-								</PanelRow>
-
-								<PanelRow label="Key" hint="The name of the model used in code">
-									<Input
-										value={key}
-										onChange={(e) => {
-											setKey(e.currentTarget.value)
-										}}
-										disabled={isModelLocked(data)}
-										placeholder={keyPlaceholder}
-									/>
-								</PanelRow>
-
-								<PanelRow label="Table" hint="The name of the database table">
-									<Input
-										value={tableName}
-										onChange={(e) => setTableName(e.currentTarget.value)}
-										placeholder={tablePlaceholder}
-									/>
-								</PanelRow>
-
-								<PanelRow label="Audit Dates" hint="Whether to include createdAt, etc">
-									<Switch
-										checked={data.auditDates}
-										onCheckedChange={(val) => updateModelField('auditDates', val)}
-									/>
-								</PanelRow>
-
-								<PanelRow
-									label="Enabled"
-									hint="If set to false, this model will be omitted from the generated app and db schema"
+					<div>
+						<Popover>
+							<PopoverTrigger asChild>
+								<Button
+									variant="ghost"
+									size="xs"
+									className="h-6 w-6 rounded-full px-0 dark:hover:bg-foreground/10"
 								>
-									<Switch
-										checked={data.enabled}
-										onCheckedChange={(val) => updateModelField('enabled', val)}
-										disabled={isUserModel}
-									/>
-								</PanelRow>
-							</div>
-						</PopoverContent>
-					</Popover>
+									<Settings2Icon className="h-4 w-4" />
+								</Button>
+							</PopoverTrigger>
+
+							<PopoverContent align="center" side="right">
+								<div className="grid auto-rows-fr grid-cols-1 gap-3">
+									<div className="flex items-center justify-between pb-3">
+										<div>Model Settings</div>
+
+										<div className="flex items-center gap-2">
+											{isModelLocked(data) ? (
+												<Button variant="ghost" size="xs">
+													<LockIcon className="h-4 w-4" />
+												</Button>
+											) : (
+												<Button
+													variant="ghost"
+													size="xs"
+													onClick={() => {
+														removeSelf()
+													}}
+												>
+													<Trash2Icon className="h-4 w-4" />
+												</Button>
+											)}
+										</div>
+									</div>
+
+									<PanelRow label="Name" hint="The name of the model used for...">
+										<Input
+											value={name}
+											onChange={(e) => {
+												setName(e.currentTarget.value.replace(/\s/g, ''))
+											}}
+											autoFocus
+										/>
+									</PanelRow>
+
+									<PanelRow label="Key" hint="The name of the model used in code">
+										<Input
+											value={key}
+											onChange={(e) => {
+												setKey(e.currentTarget.value)
+											}}
+											disabled={isModelLocked(data)}
+											placeholder={keyPlaceholder}
+										/>
+									</PanelRow>
+
+									<PanelRow label="Table" hint="The name of the database table">
+										<Input
+											value={tableName}
+											onChange={(e) => setTableName(e.currentTarget.value)}
+											placeholder={tablePlaceholder}
+										/>
+									</PanelRow>
+
+									<PanelRow label="Audit Dates" hint="Whether to include createdAt, etc">
+										<Switch
+											checked={data.auditDates}
+											onCheckedChange={(val) => updateModelField('auditDates', val)}
+										/>
+									</PanelRow>
+
+									<PanelRow
+										label="Enabled"
+										hint="If set to false, this model will be omitted from the generated app and db schema"
+									>
+										<Switch
+											checked={data.enabled}
+											onCheckedChange={(val) => updateModelField('enabled', val)}
+											disabled={isUserModel}
+										/>
+									</PanelRow>
+								</div>
+							</PopoverContent>
+						</Popover>
+					</div>
 				</div>
 			</div>
 
@@ -327,7 +335,7 @@ export const ModelNode = ({ data, selected }: NodeProps<Model>) => {
 				)}
 			</div>
 
-			<div className="flex h-[34px] items-center justify-between gap-2 border-t px-2">
+			<div className="flex h-[34px] mt-[10px] items-center justify-between gap-2 border-t px-2">
 				<div className="flex gap-2">
 					<Tooltip content="Add Attribute" delayDuration={0} side="bottom">
 						<Button

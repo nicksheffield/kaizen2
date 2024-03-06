@@ -1,3 +1,4 @@
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { useApp } from '@/lib/AppContext'
 import { useTheme } from '@/lib/ThemeContext'
 import { isFile } from '@/lib/handle'
@@ -29,8 +30,8 @@ export const DiffView = () => {
 	}, [root, selectedFile])
 
 	return (
-		<div style={{ zoom: 0.8 }} className="min-h-0 overflow-auto">
-			{original ? (
+		<ScrollArea style={{ zoom: 0.8 }} className="min-h-0 overflow-auto">
+			{original !== undefined ? (
 				<ReactDiffViewer
 					oldValue={original}
 					newValue={selectedFile?.content}
@@ -71,6 +72,6 @@ export const DiffView = () => {
 			// 	<Loader2Icon className="w-8 h-8 animate-spin" />
 			// </div>
 			null}
-		</div>
+		</ScrollArea>
 	)
 }

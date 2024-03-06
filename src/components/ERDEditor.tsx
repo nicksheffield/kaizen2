@@ -23,6 +23,7 @@ import { RevealButton } from '@/components/RevealButton'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
+import { CustomBackground } from '@/components/ERD/CustomBackground'
 
 export const Editor = () => {
 	const { project, draft, setDraft, hasNewChanges, setHasNewChanges, saveProject } = useApp()
@@ -53,7 +54,7 @@ export const Editor = () => {
 	const center = () => {
 		console.log('center')
 		flow.fitView()
-		flow.zoomTo(1, { duration: 200 })
+		flow.zoomTo(0.8)
 	}
 
 	const [relations, setRelations] = useState<Relation[]>(draft?.content.relations || [])
@@ -73,7 +74,7 @@ export const Editor = () => {
 		})
 	}, [relations])
 
-	// if the models/relations are changed here, then save the project file
+	// if the models/relations are changed here, then update the draft
 	useEffect(() => {
 		if (!project) return
 
@@ -146,7 +147,7 @@ export const Editor = () => {
 		setDraft({ dirty: false, content: project })
 
 		setNodes(
-			defaultModels.map((model) => ({
+			project.models.map((model) => ({
 				id: model.id,
 				type: 'model',
 				position: { x: model.posX, y: model.posY },
@@ -319,7 +320,7 @@ export const Editor = () => {
 				attrTypeRecommends,
 			}}
 		>
-			<div className={cn('flex flex-col flex-1 relative bg-background', max && 'fixed inset-0 z-50')}>
+			<div className={cn('flex flex-col flex-1 relative bg-muted', max && 'fixed inset-0 z-50')}>
 				<div className="pointer-events-none absolute right-0 top-0 z-20 mr-1 mt-1">
 					{conflicts.length > 0 && (
 						<ul className="flex flex-col gap-2 rounded bg-destructive px-2 py-1 pl-6 text-destructive-foreground">
@@ -465,7 +466,7 @@ export const Editor = () => {
 					deleteKeyCode={null}
 					className="h-full w-full"
 				>
-					<Background color="rgba(128,128,128,0.1)" gap={12} size={3} variant={BackgroundVariant.Dots} />
+					<CustomBackground gap={12} size={3} />
 				</ReactFlow>
 			</div>
 		</ERDProvider>

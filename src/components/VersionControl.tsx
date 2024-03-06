@@ -1,26 +1,35 @@
 import Textarea from '@/components/Textarea'
 import { TreeFileIcon } from '@/components/TreeFileIcon'
 import { Button } from '@/components/ui/button'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { useApp } from '@/lib/AppContext'
 import { isFile } from '@/lib/handle'
 import { cn } from '@/lib/utils'
 import { CheckIcon, PlusIcon, Undo2Icon } from 'lucide-react'
-import { ReactNode, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
-const statusSymbol: Record<string, ReactNode> = {
-	modified: <div className="text-indigo-500">M</div>,
-	ignored: 'ignored',
-	unmodified: 'unmodified',
-	'*modified': <div className="text-indigo-500">M</div>,
-	'*deleted': <div className="text-destructive">D</div>,
-	'*added': <div className="text-green-500">A</div>,
-	absent: <div className="text-indigo-500">M</div>,
-	deleted: <div className="text-destructive">D</div>,
-	added: <div className="text-green-500">A</div>,
-	'*unmodified': '*unmodified',
-	'*absent': '*absent',
-	'*undeleted': '*undeleted',
-	'*undeletemodified': '*undeletemodified',
+const StatusSymbol = ({ status, className }: { status: string; className: string }) => {
+	const symbol = statusSymbol[status]
+
+	if (!symbol) return <span className={cn(className)}>?</span>
+
+	return <span className={cn(symbol[0], className)}>{symbol[1]}</span>
+}
+
+const statusSymbol: Record<string, [string, string]> = {
+	modified: ['text-indigo-500', 'M'],
+	ignored: ['text-grey-500', '?'],
+	unmodified: ['text-grey-500', '?'],
+	'*modified': ['text-indigo-500', 'M'],
+	'*deleted': ['text-red-500', 'D'],
+	'*added': ['text-orange-500', 'A'],
+	absent: ['text-grey-500', '?'],
+	deleted: ['text-red-500', 'D'],
+	added: ['text-orange-500', 'A'],
+	'*unmodified': ['text-grey-500', '?'],
+	'*absent': ['text-grey-500', '?'],
+	'*undeleted': ['text-grey-500', '?'],
+	'*undeletemodified': ['text-grey-500', '?'],
 } as const
 
 export const VersionControl = () => {
@@ -76,7 +85,7 @@ export const VersionControl = () => {
 	if (!root) return <div></div>
 
 	return (
-		<div className="w-[300px] shrink-0 flex flex-col divide-y min-h-0 bg-muted/50">
+		<div className="flex-1 shrink-0 flex flex-col divide-y min-h-0 min-w-0 bg-muted/50">
 			{/* <div className="px-2 h-10 shrink-0 flex items-center">
 				<div className="text-sm font-medium opacity-50">Version Control</div>
 			</div> */}
@@ -89,46 +98,67 @@ export const VersionControl = () => {
 				</Button>
 			</div>
 
-			<div className="flex-1 overflow-y overflow-auto py-2 px-3">
-				{changes.length > 0 && (
-					<>
-						<div className="px-3 py-1 text-xs font-medium opacity-50">Changes</div>
-						{changes.map(([path, status]) => (
-							<div
-								key={path}
-								className={cn(
-									'px-2 group py-1 rounded-lg relative flex items-center justify-start gap-2 cursor-pointer w-full max-w-full hover:bg-foreground/10',
-									selectedPath === `diff:${path}` &&
-										'bg-primary text-primary-foreground hover:bg-primary/90'
-								)}
-								onClick={() => {
-									openPath(`diff:${path}`)
-								}}
-							>
-								<TreeFileIcon path={path} />
+			<ScrollArea className="flex-1 overflow-auto flex flex-col min-w-0">
+				<div className="p-2 flex flex-col min-w-0 flex-1">
+					{changes.length > 0 && (
+						<>
+							<div className="px-3 py-1 text-xs font-medium opacity-50">Changes</div>
+							{changes.map(([path, status]) => (
+								<div
+									key={path}
+									className={cn(
+										'px-2 group h-7 rounded-lg relative gap-2 cursor-pointer min-w-0 hover:bg-foreground/10 flex items-center w-[calc(300px-(4*0.25rem))]',
+										selectedPath === `diff:${path}` &&
+											'bg-primary text-primary-foreground hover:bg-primary/90'
+									)}
+									onClick={() => {
+										openPath(`diff:${path}`)
+									}}
+								>
+									<TreeFileIcon path={path} />
 
-								<div className="text-sm truncate flex-1">
-									{path.split('/').pop()}{' '}
-									<span className="opacity-50">{path.split('/').slice(0, -1).join('/')}</span>
-								</div>
+									<div className="truncate flex-1 align-baseline">
+										<span className="text-sm">{path.split('/').pop()} </span>
+										<span className="opacity-50 text-xs">
+											{path.split('/').slice(0, -1).join('/')}
+										</span>
+									</div>
 
-								<div className="absolute right-0 flex flex-row mr-6 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto">
-									<Button variant="secondary" size="pip-icon" className="hover:bg-muted w-5 h-5">
-										<Undo2Icon className="w-3 h-3" />
-									</Button>
-									<Button variant="secondary" size="pip-icon" className="hover:bg-muted w-5 h-5">
-										<PlusIcon className="w-3 h-3" />
-									</Button>
-								</div>
+									<div className="flex-row opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto hidden group-hover:flex">
+										<Button
+											variant="secondary"
+											size="pip-icon"
+											className={cn(
+												'bg-transparent hover:bg-foreground/10 w-5 h-5',
+												selectedPath === `diff:${path}` && 'text-light'
+											)}
+										>
+											<Undo2Icon className="w-4 h-4" />
+										</Button>
+										<Button
+											variant="secondary"
+											size="pip-icon"
+											className={cn(
+												'bg-transparent hover:bg-foreground/10 w-5 h-5',
+												selectedPath === `diff:${path}` && 'text-light'
+											)}
+										>
+											<PlusIcon className="w-4 h-4" />
+										</Button>
+									</div>
 
-								<div className="text-xs text-gray-500 ml-1 justify-self-end">
-									{statusSymbol[status]}
+									<span className="text-xs text-gray-500 w-4 text-center justify-self-end">
+										<StatusSymbol
+											status={status}
+											className={cn(selectedPath === `diff:${path}` && 'text-light')}
+										/>
+									</span>
 								</div>
-							</div>
-						))}
-					</>
-				)}
-			</div>
+							))}
+						</>
+					)}
+				</div>
+			</ScrollArea>
 		</div>
 	)
 }
