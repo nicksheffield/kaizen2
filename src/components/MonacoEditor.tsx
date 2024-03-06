@@ -41,10 +41,6 @@ export const MonacoEditor = ({ value, onValueChange, extension, readonly = false
 			},
 		})
 
-		// monaco.editor.defineTheme('light', {
-
-		// })
-
 		monaco.editor.setTheme(theme === 'dark' ? 'dark' : 'vs')
 
 		monaco.languages.typescript.typescriptDefaults.setCompilerOptions({

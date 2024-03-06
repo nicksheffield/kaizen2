@@ -78,11 +78,23 @@ export const JSONEditor = () => {
 					</div>
 				</div>
 			) : (
-				<MonacoEditor
-					value={JSON.stringify(value, null, 4)}
-					onValueChange={(val) => setValue(JSON.parse(val))}
-					extension="json"
-				/>
+				<div
+					className="flex-1 min-h-0 overflow-auto flex flex-col"
+					onKeyDown={(e) => {
+						if (e.key === 's' && e.metaKey) {
+							e.stopPropagation()
+							e.preventDefault()
+
+							saveFile(selectedFile.path, JSON.stringify(value, null, 4))
+						}
+					}}
+				>
+					<MonacoEditor
+						value={JSON.stringify(value, null, 4)}
+						onValueChange={(val) => setValue(JSON.parse(val))}
+						extension="json"
+					/>
+				</div>
 			)}
 		</div>
 	)
