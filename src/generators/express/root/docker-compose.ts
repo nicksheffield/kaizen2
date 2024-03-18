@@ -1,11 +1,9 @@
-import { getSettingsOfType } from '@/generators/express/utils'
 import { ProjectCtx } from '@/generators/types'
-import { SettingType } from '@/lib/schemas'
 import { stringify } from 'yaml'
 
 const tmpl = ({ project }: { project: ProjectCtx }) => {
-	const settings = getSettingsOfType(SettingType.setting, project)
-	const secrets = getSettingsOfType(SettingType.secret, project)
+	const settings = project.project
+	const secrets = project.env
 
 	const node = {
 		image: 'node:18',
@@ -13,7 +11,7 @@ const tmpl = ({ project }: { project: ProjectCtx }) => {
 		volumes: ['./:/home/node/app'],
 		expose: [8000],
 		environment: {
-			VIRTUAL_HOST: `www.${settings.domain},${settings.domain}`,
+			VIRTUAL_HOST: `www.${settings.domainName},${settings.domainName}`,
 			VIRTUAL_PORT: 8000,
 		},
 		command: `sh -c "npm install && npm run dev"`,
@@ -32,10 +30,10 @@ const tmpl = ({ project }: { project: ProjectCtx }) => {
 		image: 'mariadb',
 		restart: 'always',
 		environment: {
-			MYSQL_USER: secrets.MYSQL_USER,
-			MYSQL_PASSWORD: secrets.MYSQL_PASSWORD,
+			MYSQL_USER: secrets?.MYSQL_USER || '',
+			MYSQL_PASSWORD: secrets?.MYSQL_PASSWORD || '',
 			MYSQL_DATABASE: 'db',
-			MARIADB_ROOT_PASSWORD: secrets.MARIADB_ROOT_PASSWORD,
+			MARIADB_ROOT_PASSWORD: secrets?.MARIADB_ROOT_PASSWORD || '',
 		},
 		volumes: ['database:/var/lib/mysql'],
 		ports: ['3307:3306'],

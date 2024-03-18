@@ -1,10 +1,10 @@
 import { ProjectCtx } from '@/generators/types'
 
 const tmpl = ({ project }: { project: ProjectCtx }) => {
-	const useTabs = project.settings.find((x) => x.key === 'prettierTabs')?.value ?? 'true'
-	const tabWidth = parseInt(project.settings.find((x) => x.key === 'prettierTabWidth')?.value ?? '4')
-	const semi = project.settings.find((x) => x.key === 'prettierSemicolons')?.value ?? 'false'
-	const printWidth = parseInt(project.settings.find((x) => x.key === 'prettierPrintWidth')?.value ?? '120')
+	const useTabs = project.formatSettings?.prettierTabs ?? true
+	const tabWidth = project.formatSettings?.prettierTabWidth ?? 4
+	const semi = project.formatSettings?.prettierSemicolons ?? false
+	const printWidth = project.formatSettings?.prettierPrintWidth ?? 120
 
 	const prettierRc = {
 		tabWidth,

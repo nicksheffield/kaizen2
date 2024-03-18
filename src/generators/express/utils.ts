@@ -1,8 +1,8 @@
 import { ProjectCtx, RelationWithModels } from '@/generators/types'
-import { RelationType, type AttributeType, Model, Attribute, Relation, SettingType } from '@/lib/schemas'
+import { RelationType, type AttributeType, Model, Attribute, Relation } from '@/lib/schemas'
 import pluralize, { plural, singular } from 'pluralize'
 import prettier from 'prettier'
-import typescriptParser from 'prettier/parser-typescript'
+// import typescriptParser from 'prettier/parser-typescript'
 import typescriptPlugin from 'prettier/plugins/typescript'
 import estreePlugin from 'prettier/plugins/estree'
 import { z } from 'zod'
@@ -29,19 +29,10 @@ export const format = async (content: string, settings: Partial<prettier.Options
 
 export const getProjectFormatter = (project: ProjectCtx) => {
 	const formatSettings = {
-		useTabs:
-			(project.settings.find((x) => x.type === SettingType.generator && x.key === 'prettierTabs')?.value ??
-				'true') === 'true',
-		tabWidth: parseInt(
-			project.settings.find((x) => x.type === SettingType.generator && x.key === 'prettierTabWidth')?.value ?? '4'
-		),
-		semi:
-			(project.settings.find((x) => x.type === SettingType.generator && x.key === 'prettierSemicolons')?.value ??
-				'false') === 'true',
-		printWidth: parseInt(
-			project.settings.find((x) => x.type === SettingType.generator && x.key === 'prettierPrintWidth')?.value ??
-				'120'
-		),
+		useTabs: project.formatSettings?.prettierTabs,
+		tabWidth: project.formatSettings?.prettierTabWidth,
+		semi: project.formatSettings?.prettierSemicolons,
+		printWidth: project.formatSettings?.prettierPrintWidth,
 	}
 
 	return async (content: string) => {
@@ -357,7 +348,7 @@ export const PrimitiveBodyDef = z.object({
 
 export const BodyDef = z.union([ModelBodyDef, ArrayBodyDef, ObjectBodyDef, PrimitiveBodyDef])
 
-const bodyDefToTypeString = (
+export const bodyDefToTypeString = (
 	def: z.infer<typeof BodyDef>,
 	ctx: { models: (Model & { attributes: Attribute[] })[] }
 ): string => {
@@ -475,15 +466,3 @@ export const bodyDefToZodSchema = (
 
 	return ``
 }
-
-export const getSettingsOfType = (type: SettingType, project: ProjectCtx) => {
-	return project.settings
-		.filter((x) => x.type === type)
-		.reduce<Record<string, any>>((acc, curr) => {
-			return { ...acc, [curr.key]: curr.value }
-		}, {})
-}
-
-export const getSettings = (project: ProjectCtx) => getSettingsOfType(SettingType.setting, project)
-export const getSecrets = (project: ProjectCtx) => getSettingsOfType(SettingType.secret, project)
-export const getGenSettings = (project: ProjectCtx) => getSettingsOfType(SettingType.generator, project)

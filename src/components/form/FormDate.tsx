@@ -22,7 +22,7 @@ export const FormDate = forwardRef<HTMLButtonElement, FormDateProps>(
 
 		return (
 			<>
-				<DatePicker value={value} onValueChange={setValue} ref={ref} />
+				<DatePicker value={value} onValueChange={setValue} ref={ref} {...props} />
 				{error && touched && <div className="text-sm text-red-500">{error}</div>}
 			</>
 		)

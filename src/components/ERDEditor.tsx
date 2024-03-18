@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils'
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
 
 export const Editor = () => {
-	const { project, draft, setDraft, hasNewChanges, setHasNewChanges, saveProject } = useApp()
+	const { project, draft, setDraft, /*hasNewChanges, setHasNewChanges,*/ saveProject } = useApp()
 
 	const [max, setMax] = useState(false)
 
@@ -86,6 +86,7 @@ export const Editor = () => {
 					selectable: true,
 					enabled: true,
 					default: null,
+					foreignKey: false,
 				},
 			],
 		}
@@ -413,7 +414,7 @@ export const Editor = () => {
 					</div>
 				</div>
 
-				{hasNewChanges && (
+				{/* {hasNewChanges && (
 					<div
 						className="absolute top-0 right-0 bg-yellow-100 text-yellow-800 p-2"
 						onClick={() => {
@@ -434,7 +435,7 @@ export const Editor = () => {
 					>
 						You have unsaved changes
 					</div>
-				)}
+				)} */}
 
 				<ERDMarkers />
 

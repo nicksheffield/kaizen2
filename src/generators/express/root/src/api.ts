@@ -1,8 +1,7 @@
-import { getSettings } from '@/generators/express/utils'
 import { ProjectCtx } from '@/generators/types'
 
 const tmpl = ({ project }: { project: ProjectCtx }) => {
-	const settings = getSettings(project)
+	const settings = project.project
 
 	return `
 import express, { NextFunction, Request, Response } from 'express'
@@ -15,7 +14,7 @@ const app = express()
 app.disable('x-powered-by')
 app.use(cors())
 app.use((req, res, next) => {
-	express.json({ limit: '${settings.maxBody}' })(req, res, (err) => {
+	express.json({ limit: '${settings.maxBodySize}' })(req, res, (err) => {
 		if (err) {
 			return res.sendStatus(400) // Bad request
 		}
@@ -27,7 +26,7 @@ app.use(express.urlencoded({ extended: false }))
 
 app.use('/auth', require('./rest/auth').default)
 
-${project.restEnabled ? `app.use(require('./rest').default)` : ''}
+${true ? `app.use(require('./rest').default)` : ''}
 
 app.use(
 	(error: any, request: Request, response: Response, next: NextFunction) => {
@@ -37,7 +36,7 @@ app.use(
 	}
 )
 
-${project.gqlEnabled ? `bootstrapGQL(app).then(() => {` : ''}
+${true ? `bootstrapGQL(app).then(() => {` : ''}
 	app.use('*', (_, res) => {
 		res.status(404).json({
 			success: 'false',
@@ -48,7 +47,7 @@ ${project.gqlEnabled ? `bootstrapGQL(app).then(() => {` : ''}
 			},
 		})
 	})
-${project.gqlEnabled ? `})` : ''}
+${true ? `})` : ''}
 
 const run = () => {
 	app.listen(port, () => {

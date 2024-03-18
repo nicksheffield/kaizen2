@@ -113,7 +113,7 @@ export const mkdir = async (dirHandle: FileSystemDirectoryHandle, name: string) 
 }
 
 export const rm = async (dirHandle: FileSystemDirectoryHandle, name: string) => {
-	await dirHandle.removeEntry(name)
+	await dirHandle.removeEntry(name, { recursive: true })
 }
 
 export const convertGeneratedFilesToDescs = async (

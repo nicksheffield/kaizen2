@@ -42,6 +42,23 @@ const checkFilesChanged = (a: FSDesc[], b: FSDesc[]) => {
 	return false
 }
 
+const parseProject = (content: string) => {
+	const proj = ProjectSchema.parse(JSON.parse(content))
+
+	return {
+		project: proj.project,
+		formatSettings: proj.formatSettings,
+		env: proj.env,
+		models: proj.models.map((x) => {
+			return {
+				...x,
+				attributes: x.attributes.filter((attr) => !attr.foreignKey),
+			}
+		}),
+		relations: proj.relations,
+	}
+}
+
 export const AppProvider = ({ children }: PropsWithChildren) => {
 	const [rootHandle, setRootHandle] = useState<FileSystemDirectoryHandle | null>(null)
 	const [files, setFiles] = useState<FSDesc[]>([])
@@ -130,7 +147,7 @@ export const AppProvider = ({ children }: PropsWithChildren) => {
 				const projectFile = sortedFiles.filter(isFile).find((x) => x.path === 'project.json')
 
 				if (projectFile) {
-					const project = ProjectSchema.parse(JSON.parse(projectFile.content))
+					const project = parseProject(projectFile.content)
 					setDraft({ dirty: false, content: project })
 				}
 
@@ -221,7 +238,7 @@ export const AppProvider = ({ children }: PropsWithChildren) => {
 		const file = files.find((x) => x.path === 'project.json')
 		if (!file || isDir(file)) return undefined
 
-		return ProjectSchema.parse(JSON.parse(file.content))
+		return parseProject(file.content)
 	}, [files])
 
 	const generateProject = useCallback(

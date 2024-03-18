@@ -30,31 +30,6 @@ const monacoLang: Record<string, string> = {
 	md: 'markdown',
 }
 
-// const AttrSchema = z.object({
-// 	id: z.string(),
-// 	name: z.string(),
-// 	type: z.string(),
-// 	default: z.string().nullable(),
-// 	nullable: z.boolean(),
-// 	selectable: z.boolean(),
-// 	order: z.number(),
-// 	modelId: z.string(),
-// })
-
-// const ModelSchema = z.object({
-// 	id: z.string(),
-// 	name: z.string(),
-// 	tableName: z.string(),
-// 	auditDates: z.boolean(),
-// 	posX: z.number(),
-// 	posY: z.number(),
-// 	attributes: z.array(AttrSchema),
-// })
-
-// const Schema = z.object({
-// 	models: z.array(ModelSchema),
-// })
-
 type FileRenderProps = {
 	file: FileDesc
 	onContentChange: (content: string) => Promise<void> | void
@@ -67,9 +42,7 @@ type FileRenderProps = {
 export const FileRender = (props: FileRenderProps) => {
 	const { file, openPaths, setOpenPaths, selectedPath, setSelectedPath } = props
 
-	const { files, setDirOpenStatus } = useApp()
-
-	const getFile = (path: string) => files.find((x) => x.path === path)
+	const { setDirOpenStatus } = useApp()
 
 	const openFile = (path: string) => {
 		setSelectedPath(path)
@@ -99,7 +72,7 @@ export const FileRender = (props: FileRenderProps) => {
 						)}
 						onClick={() => openFile(x)}
 					>
-						<TreeFileIcon file={getFile(x)} />
+						<TreeFileIcon path={x} />
 						{x.split('/').slice(-1)}
 						<div
 							onClick={(e) => {

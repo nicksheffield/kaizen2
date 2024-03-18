@@ -1,15 +1,15 @@
-import { SettingType } from '@/lib/schemas'
-import { getSettingsOfType } from '@/generators/express/utils'
 import { ProjectCtx } from '@/generators/types'
 
 const tmpl = ({ project }: { project: ProjectCtx }) => {
-	const settings = getSettingsOfType(SettingType.setting, project)
-	const secrets = getSettingsOfType(SettingType.secret, project)
+	const settings = project.project
+	const secrets = project.env
 
-	return `DOMAINS=www.${settings.domain},${settings.domain}
+	if (!secrets) return ''
 
-DATABASE_URL=db
-DATABASE_PORT=3306
+	return `DOMAINS=www.${settings.domainName},${settings.domainName}
+
+DATABASE_URL=localhost
+DATABASE_PORT=3307
 DATABASE_USERNAME=${secrets.MYSQL_USER}
 DATABASE_PASSWORD=${secrets.MYSQL_PASSWORD}
 DATABASE_NAME=db

@@ -24,7 +24,7 @@ import { default as src_gql_auth } from './root/src/gql/auth'
 import { default as src_gql_index } from './root/src/gql/index'
 import { default as src_gql_resolvers_misc } from './root/src/gql/resolvers/_misc'
 import { default as src_gql_resolvers_resolver } from './root/src/gql/resolvers/resolver'
-// import { default as src_rest_index } from './root/src/rest/index'
+import { default as src_rest_index } from './root/src/rest/index'
 import { default as src_rest_auth } from './root/src/rest/auth'
 // import { default as src_rest_customEndpoints } from './root/src/rest/customEndpoints'
 // import { default as src_rest_api_group_index } from './root/src/rest/api/group/index'
@@ -41,7 +41,7 @@ const generate: GeneratorFn = async (project) => {
 	// 	project.endpointGroups.flatMap((x) => x.endpoints).length > 0
 
 	const gqlEnabled = true
-	const restEnabled = false
+	const restEnabled = true
 
 	const format = getProjectFormatter(project)
 
@@ -65,7 +65,7 @@ const generate: GeneratorFn = async (project) => {
 	dir['/src/index.ts'] = await format(src_index({ apiEnabled: restEnabled || gqlEnabled }))
 	dir['/src/api.ts'] = await format(src_api({ project }))
 	dir['/src/env.ts'] = await format(src_env())
-	dir['/src/migrate.ts'] = await format(src_migrate({ project }))
+	dir['/src/migrate.ts'] = await format(src_migrate())
 	dir['/src/seed.ts'] = await format(src_seed())
 
 	// handle orm dir
@@ -91,23 +91,23 @@ const generate: GeneratorFn = async (project) => {
 	dir['/src/rest/auth.ts'] = await format(src_rest_auth())
 
 	// handle rest dir
-	// if (restEnabled) {
-	// 	dir['/src/rest/index.ts'] = await format(src_rest_index())
-	// 	dir['/src/rest/customEndpoints.ts'] = await format(src_rest_customEndpoints())
+	if (restEnabled) {
+		dir['/src/rest/index.ts'] = await format(src_rest_index())
+		// dir['/src/rest/customEndpoints.ts'] = await format(src_rest_customEndpoints())
 
-	// 	for (const group of project.endpointGroups) {
-	// 		if (group.endpoints.length === 0) continue
-	// 		dir[`/src/rest/api/${group.name}/index.ts`] = await format(
-	// 			src_rest_api_group_index({ group, models: project.models, relations: project.relations }) // update me
-	// 		)
+		// for (const group of project.endpointGroups) {
+		// 	if (group.endpoints.length === 0) continue
+		// 	dir[`/src/rest/api/${group.name}/index.ts`] = await format(
+		// 		src_rest_api_group_index({ group, models: project.models, relations: project.relations }) // update me
+		// 	)
 
-	// 		for (const endpoint of group.endpoints) {
-	// 			dir[`/src/rest/api/${group.name}/${endpoint.name.toLowerCase().replace(/\s/, '-')}.ts`] = await format(
-	// 				src_rest_api_group_endpoint({ endpoint, models: project.models, relations: project.relations }) // update me
-	// 			)
-	// 		}
-	// 	}
-	// }
+		// 	for (const endpoint of group.endpoints) {
+		// 		dir[`/src/rest/api/${group.name}/${endpoint.name.toLowerCase().replace(/\s/, '-')}.ts`] = await format(
+		// 			src_rest_api_group_endpoint({ endpoint, models: project.models, relations: project.relations }) // update me
+		// 		)
+		// 	}
+		// }
+	}
 
 	return dir
 }

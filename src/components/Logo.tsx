@@ -3,7 +3,7 @@
 import { Ripples } from './Ripples'
 
 export const Logo = () => (
-	<div className="relative group ml-12">
+	<div className="relative group">
 		<div className="flex h-8 w-8 select-none items-center rounded-md bg-muted px-2 text-2xl font-bold text-foreground transition-colors hover:bg-primary hover:text-light">
 			K
 		</div>

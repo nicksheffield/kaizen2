@@ -14,19 +14,7 @@ export const AttributeType = {
 	date: 'date',
 	time: 'time',
 } as const
-export const AttributeTypeSchema = z.union([
-	z.literal('uuid'),
-	z.literal('a_i'),
-	z.literal('text'),
-	z.literal('base64'),
-	z.literal('password'),
-	z.literal('int'),
-	z.literal('float'),
-	z.literal('boolean'),
-	z.literal('datetime'),
-	z.literal('date'),
-	z.literal('time'),
-])
+export const AttributeTypeSchema = z.nativeEnum(AttributeType)
 
 export type Attribute = z.infer<typeof AttributeSchema>
 export const AttributeSchema = z.object({
@@ -39,6 +27,7 @@ export const AttributeSchema = z.object({
 	order: z.number(),
 	enabled: z.boolean().optional(),
 	modelId: z.string(),
+	foreignKey: z.boolean(),
 })
 
 export type Model = z.infer<typeof ModelSchema>
@@ -117,25 +106,26 @@ export const ProjectSettingsSchema = z.object({
 	connectionTimeout: z.number().optional(),
 })
 
-export type SettingType = keyof typeof SettingType
-export const SettingType = {
-	setting: 'setting',
-	generator: 'generator',
-	secret: 'secret',
-} as const
-export const SettingTypeUnion = z.union([z.literal('setting'), z.literal('generator'), z.literal('secret')])
-
 export type Project = z.infer<typeof ProjectSchema>
 export const ProjectSchema = z.object({
 	project: ProjectSettingsSchema,
-	settings: z.array(
-		z.object({
-			id: z.string(),
-			key: z.string(),
-			value: z.string(),
-			type: SettingTypeUnion,
+	formatSettings: z
+		.object({
+			prettierTabs: z.boolean().optional(),
+			prettierTabWidth: z.number().optional(),
+			prettierSemicolons: z.boolean().optional(),
+			prettierPrintWidth: z.number().optional(),
 		})
-	),
+		.optional(),
+	env: z
+		.object({
+			ACCESS_TOKEN_SECRET: z.string().optional(),
+			REFRESH_TOKEN_SECRET: z.string().optional(),
+			MARIADB_ROOT_PASSWORD: z.string().optional(),
+			MYSQL_USER: z.string().optional(),
+			MYSQL_PASSWORD: z.string().optional(),
+		})
+		.optional(),
 	models: z.array(ModelSchema),
 	relations: z.array(RelationSchema),
 })

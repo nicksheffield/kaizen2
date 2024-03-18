@@ -1,4 +1,4 @@
-import { FolderSearchIcon, Loader2Icon } from 'lucide-react'
+import { FolderSearchIcon, Loader2Icon, RefreshCcwDotIcon } from 'lucide-react'
 import { Tree } from './Tree'
 import { Button } from './ui/button'
 import { useApp } from '../lib/AppContext'
@@ -7,7 +7,7 @@ import { AddFileMenu } from '@/components/AddFileMenu'
 import { ScrollArea } from '@/components/ui/scroll-area'
 
 export const Sidebar = () => {
-	const { files, root, getRootHandle, clearRootHandle, loading } = useApp()
+	const { files, root, getRootHandle, clearRootHandle, loading, generateProject, project } = useApp()
 
 	const firstLevelDescs = files.filter((x) => x.path !== root?.path).filter((x) => !x.path.includes('/'))
 
@@ -48,7 +48,12 @@ export const Sidebar = () => {
 								</div>
 							</div>
 
-							<AddFileMenu />
+							<div className="flex items-center gap-2">
+								<Button variant="ghost" size="pip-icon" onClick={() => generateProject(project)}>
+									<RefreshCcwDotIcon className="w-4 h-4" />
+								</Button>
+								<AddFileMenu />
+							</div>
 						</div>
 						<ScrollArea className="flex flex-col flex-1 overflow-auto" orientation="vertical">
 							<div className="flex flex-col p-2 flex-1">

@@ -171,7 +171,7 @@ const FileTab = ({ filePath, index, onSelect }: FileTabProps) => {
 						setNodeRef(node)
 						nodeRef.current = node
 					}}
-					className={cn('relative h-full', isDragging && 'z-20 cursor-grabbing')}
+					className={cn('relative h-full border-r', isDragging && 'z-20 cursor-grabbing')}
 					onClick={() => {
 						openFile(filePath)
 						if (nodeRef.current) onSelect(nodeRef.current)

@@ -146,6 +146,17 @@ export const git = {
 	diff: (fs: FsaNodeFs) => (commitHash: string) => {
 		return getFileStateChanges(fs)(commitHash, dir)
 	},
+	getFileHead: (fs: FsaNodeFs) => async (filepath: string) => {
+		const head = await isoGit.resolveRef({ fs, dir, ref: 'HEAD' })
+		const obj = await isoGit.readObject({ fs, dir, oid: head, filepath })
+
+		return new TextDecoder().decode(obj.object as Uint8Array)
+	},
+	thing: (fs: FsaNodeFs) => async () => {
+		const files = await isoGit.listFiles({ fs, dir, ref: 'HEAD' })
+
+		return files
+	},
 }
 
 export type GitInstance = ReturnType<typeof createGitInstance>
@@ -161,5 +172,7 @@ export const createGitInstance = (fs: FsaNodeFs) => {
 		log: git.log(fs),
 		diff: git.diff(fs),
 		readCommit: git.readCommit(fs),
+		getFileHead: git.getFileHead(fs),
+		thing: git.thing(fs),
 	}
 }

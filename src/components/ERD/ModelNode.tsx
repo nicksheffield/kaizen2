@@ -104,6 +104,7 @@ export const ModelNode = ({ data, selected }: NodeProps<Model>) => {
 					selectable: true,
 					default: '',
 					enabled: true,
+					foreignKey: false,
 				},
 			],
 		})

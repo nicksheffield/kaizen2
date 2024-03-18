@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { useApp } from '@/lib/AppContext'
 import { isFile } from '@/lib/handle'
-import { cn } from '@/lib/utils'
+import { ProjectSchema } from '@/lib/schemas'
+import { cn, safeParse } from '@/lib/utils'
 import { CheckIcon, PlusIcon, Undo2Icon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
@@ -33,7 +34,7 @@ const statusSymbol: Record<string, [string, string]> = {
 } as const
 
 export const VersionControl = () => {
-	const { git, files, root, openPath, selectedPath } = useApp()
+	const { git, files, root, openPath, selectedPath, saveFile, generateProject } = useApp()
 	const [diff, setDiff] = useState<Record<string, string>>({})
 	const [commitMsg, setCommitMsg] = useState('')
 
@@ -92,7 +93,13 @@ export const VersionControl = () => {
 			<div className="px-2 py-2 shrink-0 flex flex-col gap-2">
 				<Textarea value={commitMsg} onValueChange={setCommitMsg} placeholder="Commit Message..." />
 
-				<Button variant="secondary" size="sm">
+				<Button
+					variant="secondary"
+					size="sm"
+					onClick={async () => {
+						console.log(await git?.thing())
+					}}
+				>
 					<CheckIcon className="w-4 h-4 mr-2" />
 					Commit
 				</Button>
@@ -132,6 +139,16 @@ export const VersionControl = () => {
 												'bg-transparent hover:bg-foreground/10 w-5 h-5',
 												selectedPath === `diff:${path}` && 'text-light'
 											)}
+											onClick={async () => {
+												if (!git) return
+												const content = await git.getFileHead(path)
+
+												saveFile(path, content)
+
+												if (path === 'project.json') {
+													generateProject(ProjectSchema.parse(safeParse(content, {})))
+												}
+											}}
 										>
 											<Undo2Icon className="w-4 h-4" />
 										</Button>

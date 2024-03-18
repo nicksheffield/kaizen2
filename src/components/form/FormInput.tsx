@@ -31,17 +31,18 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(({ name, v
 
 FormInput.displayName = 'FormInput'
 
-type FormInputRowProps = FormInputProps & {
+export type FormInputRowProps = FormInputProps & {
 	label?: ReactNode
 	description?: ReactNode
+	inputClassName?: string
 }
 
-export const FormInputRow = ({ label, description,  className, ...props }: FormInputRowProps) => {
+export const FormInputRow = ({ label, description, className, inputClassName, ...props }: FormInputRowProps) => {
 	const ref = useRef<HTMLInputElement>(null)
 
 	return (
 		<div className={cn('flex flex-col gap-2', className)}>
-			{(label) && (
+			{label && (
 				<div className="flex items-center gap-2">
 					{label && <Label onClick={() => ref.current?.focus()}>{label}</Label>}
 				</div>
@@ -49,7 +50,7 @@ export const FormInputRow = ({ label, description,  className, ...props }: FormI
 
 			{description && <div className="text-sm text-muted-foreground">{description}</div>}
 
-			<FormInput {...props} ref={ref} autoComplete="off" />
+			<FormInput {...props} className={inputClassName} ref={ref} autoComplete="off" />
 		</div>
 	)
 }
@@ -65,7 +66,7 @@ export const InputRow = ({ label, description, className, ...props }: InputRowPr
 
 	return (
 		<div className={cn('flex flex-col gap-2', className)}>
-			{(label) && (
+			{label && (
 				<div className="flex items-center gap-2">
 					{label && <Label onClick={() => ref.current?.focus()}>{label}</Label>}
 				</div>

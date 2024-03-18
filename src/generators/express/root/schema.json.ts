@@ -3,8 +3,8 @@ import { ModelCtx } from '../contexts'
 import { ProjectCtx } from '@/generators/types'
 import pluralize from 'pluralize'
 import { z } from 'zod'
-import { RelationType } from '@/lib/schemas'
 import { isNotNone } from '@/lib/utils'
+import { RelationType } from '@/lib/schemas'
 
 const AttributeSchema = z.object({
 	id: z.string(),
@@ -14,7 +14,9 @@ const AttributeSchema = z.object({
 	nullable: z.boolean(),
 	selectable: z.boolean(),
 	order: z.number(),
+	enabled: z.boolean(),
 	modelId: z.string(),
+	foreignKey: z.boolean(),
 })
 
 const ModelSchema = z.object({
@@ -24,27 +26,24 @@ const ModelSchema = z.object({
 	auditDates: z.boolean(),
 	posX: z.number(),
 	posY: z.number(),
+	enabled: z.boolean(),
 	attributes: z.array(AttributeSchema),
 })
 
-// const RelationSchema = z.object({
-// 	id: z.string(),
-// 	type: z.string(),
-// 	sourceId: z.string(),
-// 	sourceName: z.string(),
-// 	sourceOrder: z.number(),
-// 	targetId: z.string(),
-// 	targetName: z.string(),
-// 	targetOrder: z.number(),
-// 	optional: z.boolean(),
-// })
+const RelationSchema = z.object({
+	id: z.string(),
+	type: z.string(),
+	sourceId: z.string(),
+	sourceName: z.string(),
+	sourceOrder: z.number(),
+	targetId: z.string(),
+	targetName: z.string(),
+	targetOrder: z.number(),
+	optional: z.boolean(),
+	enabled: z.boolean(),
+})
 
 const tmpl = ({ models, project }: { models: ModelCtx[]; project: ProjectCtx }) => {
-	// const idDefault = project.database === 'postgres' ? 'uuid_generate_v4()' : null
-	// const idDefault = null
-
-	return JSON.stringify(project, null, 4)
-
 	return JSON.stringify(
 		{
 			models: models.map((model) => {
@@ -55,6 +54,7 @@ const tmpl = ({ models, project }: { models: ModelCtx[]; project: ProjectCtx }) 
 					auditDates: model.auditDates,
 					posX: model.posX,
 					posY: model.posY,
+					enabled: true,
 					attributes: [
 						...model.attributes.map((attr) => ({
 							id: attr.id,
@@ -64,7 +64,9 @@ const tmpl = ({ models, project }: { models: ModelCtx[]; project: ProjectCtx }) 
 							nullable: attr.optional,
 							selectable: attr.selectable,
 							order: attr.order,
+							enabled: true,
 							modelId: model.id,
+							foreignKey: false,
 						})),
 						...model.foreignKeys.map((fk) => ({
 							id: fk.id,
@@ -74,7 +76,9 @@ const tmpl = ({ models, project }: { models: ModelCtx[]; project: ProjectCtx }) 
 							nullable: fk.optional,
 							selectable: true,
 							order: fk.order,
+							enabled: true,
 							modelId: model.id,
+							foreignKey: true,
 						})),
 					],
 				})
@@ -110,6 +114,7 @@ const tmpl = ({ models, project }: { models: ModelCtx[]; project: ProjectCtx }) 
 						targetName,
 						targetOrder: rel.targetOrder,
 						optional: rel.optional,
+						enabled: true,
 					}
 				})
 				.filter(isNotNone),

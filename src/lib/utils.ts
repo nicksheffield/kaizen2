@@ -1,4 +1,6 @@
+import { secrets } from '@/lib/settings'
 import { type ClassValue, clsx } from 'clsx'
+import { singular } from 'pluralize'
 import { twMerge } from 'tailwind-merge'
 
 import { v4 } from 'uuid'
@@ -27,6 +29,21 @@ export const camelize = (str: string) => {
 		.replace(/\s+/g, '')
 }
 
+export const uc = (str: string) => {
+	const firstLetter = str[0]
+	if (!firstLetter) throw new Error('No first letter in string')
+	return `${firstLetter.toUpperCase()}${str.slice(1)}`
+}
+
+export const lc = (str: string) => {
+	const firstLetter = str[0]
+	if (!firstLetter) throw new Error('No first letter in string')
+	return `${firstLetter.toLowerCase()}${str.slice(1)}`
+}
+
+export const getSmallName = (model: { key: string; name: string }) => singular(model.key || camelize(model.name))
+export const getBigName = (model: { key: string; name: string }) => uc(getSmallName(model))
+
 export const safeParse = <T>(str: string, fallback: T): T => {
 	try {
 		return JSON.parse(str)
@@ -47,7 +64,19 @@ export const getEmptyProject = () => {
 			maxBodySize: '2mb',
 			connectionTimeout: 10000,
 		},
-		settings: [],
+		formatSettings: {
+			prettierTabs: true,
+			prettierTabWidth: 4,
+			prettierSemicolons: false,
+			prettierPrintWidth: 120,
+		},
+		env: {
+			ACCESS_TOKEN_SECRET: secrets.ACCESS_TOKEN_SECRET(),
+			REFRESH_TOKEN_SECRET: secrets.REFRESH_TOKEN_SECRET(),
+			MARIADB_ROOT_PASSWORD: secrets.MARIADB_ROOT_PASSWORD(),
+			MYSQL_USER: secrets.MYSQL_USER(),
+			MYSQL_PASSWORD: secrets.MYSQL_PASSWORD(),
+		},
 		models: [
 			{
 				id: userModelId,
@@ -68,6 +97,7 @@ export const getEmptyProject = () => {
 						order: 0,
 						enabled: true,
 						modelId: userModelId,
+						foreignKey: false,
 					},
 					{
 						id: uuid(),
@@ -76,20 +106,10 @@ export const getEmptyProject = () => {
 						default: null,
 						nullable: false,
 						selectable: true,
-						order: 0,
+						order: 1,
 						enabled: true,
 						modelId: userModelId,
-					},
-					{
-						id: uuid(),
-						name: 'password',
-						type: 'password',
-						default: null,
-						nullable: false,
-						selectable: false,
-						order: 0,
-						enabled: true,
-						modelId: userModelId,
+						foreignKey: false,
 					},
 					{
 						id: uuid(),
@@ -98,9 +118,22 @@ export const getEmptyProject = () => {
 						default: null,
 						nullable: false,
 						selectable: true,
-						order: 0,
+						order: 2,
 						enabled: true,
 						modelId: userModelId,
+						foreignKey: false,
+					},
+					{
+						id: uuid(),
+						name: 'password',
+						type: 'password',
+						default: null,
+						nullable: false,
+						selectable: false,
+						order: 3,
+						enabled: true,
+						modelId: userModelId,
+						foreignKey: false,
 					},
 				],
 			},

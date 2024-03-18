@@ -1,38 +1,27 @@
-import { ThemeProvider } from './components/ThemeProvider'
-import { DarkModeToggle } from './components/DarkModeToggle'
-import { Logo } from './components/Logo'
-import { Sidebar } from './components/Sidebar'
-import { EditorFrame } from './components/EditorFrame'
-import { StatusBar } from '@/components/StatusBar'
-import { VersionControl } from '@/components/VersionControl'
+import { useApp } from '@/lib/AppContext'
+import { Project } from '@/Project'
+import { FolderSearchIcon, Loader2Icon } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Logo } from '@/components/Logo'
 
 export const App = () => {
+	const { root, getRootHandle, loading } = useApp()
+
+	return <Project />
+
+	if (root) return <Project />
+
 	return (
-		<ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-			<div className="flex flex-col divide-y h-screen overflow-hidden">
-				<div className="flex items-center justify-between p-4 overflow-hidden">
-					<div className="pl-[4.5rem]">
-						<Logo />
-					</div>
-					<div className="flex items-center gap-4">
-						<DarkModeToggle />
-					</div>
-				</div>
-
-				<div className="flex-1 flex flex-row divide-x min-h-0 max-w-full">
-					<div className="w-[300px] shrink-0 flex flex-col">
-						<Sidebar />
-					</div>
-
-					<EditorFrame />
-
-					<div className="w-[300px] shrink-0 flex flex-col">
-						<VersionControl />
-					</div>
-				</div>
-
-				<StatusBar />
-			</div>
-		</ThemeProvider>
+		<div className="w-screen h-screen flex items-center justify-center gap-2 flex-col">
+			<Logo />
+			<Button onClick={getRootHandle} variant="default">
+				{loading ? (
+					<Loader2Icon className="w-4 h-4 animate-spin mr-2" />
+				) : (
+					<FolderSearchIcon className="w-4 h-4 mr-2" />
+				)}
+				Open Project
+			</Button>
+		</div>
 	)
 }

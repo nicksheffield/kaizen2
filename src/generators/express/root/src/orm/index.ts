@@ -1,9 +1,8 @@
-import { getSettings } from '@/generators/express/utils'
 import { ModelCtx } from '../../../contexts'
 import { ProjectCtx } from '@/generators/types'
 
 const tmpl = ({ models, project }: { models: ModelCtx[]; project: ProjectCtx }) => {
-	const settings = getSettings(project)
+	const settings = project.project
 
 	return `
 import { DataSource } from 'typeorm'
@@ -11,7 +10,7 @@ import { envData } from '~/env'
 ${models.map((model) => `import { ${model.entityName} } from './entities/${model.entityName}'`).join('\n')}
 
 export const orm = new DataSource({
-	type: '${project.database}',
+	type: 'mysql',
 	host: envData.DATABASE_URL,
 	port: +envData.DATABASE_PORT,
 	username: envData.DATABASE_USERNAME,
