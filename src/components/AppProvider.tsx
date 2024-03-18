@@ -248,7 +248,7 @@ export const AppProvider = ({ children }: PropsWithChildren) => {
 			const generated = await convertGeneratedFilesToDescs(await generate(project), rootHandle)
 
 			await syncFiles(
-				files.filter((x) => x.path.startsWith('build')),
+				files.filter(isFile).filter((x) => x.path.startsWith('build')),
 				generated,
 				rootHandle
 			)

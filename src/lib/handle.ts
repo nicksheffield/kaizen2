@@ -120,23 +120,11 @@ export const convertGeneratedFilesToDescs = async (
 	generated: Record<string, string>,
 	rootHandle: FileSystemDirectoryHandle
 ) => {
-	const items: FSDesc[] = []
+	const items: FileDesc[] = []
 
 	const entries = Object.entries(generated)
 
 	for (const [path, content] of entries) {
-		const parentDirPath = `build${path.split('/').slice(0, -1).join('/')}`
-		const parentDir = items.find((x) => x.path === parentDirPath)
-
-		if (!parentDir) {
-			items.push({
-				type: 'directory',
-				name: parentDirPath.split('/').pop() || '',
-				path: parentDirPath,
-				handle: await getDirHandle(parentDirPath, rootHandle),
-			})
-		}
-
 		items.push({
 			type: 'file',
 			name: path.split('/').pop() || '',
@@ -150,7 +138,7 @@ export const convertGeneratedFilesToDescs = async (
 	return items
 }
 
-export const syncFiles = async (files: FSDesc[], newFiles: FSDesc[], rootHandle: FileSystemDirectoryHandle) => {
+export const syncFiles = async (files: FileDesc[], newFiles: FileDesc[], rootHandle: FileSystemDirectoryHandle) => {
 	const sortedFiles = files.sort(sortFilesByPath)
 	const sortedNewFiles = newFiles.sort(sortFilesByPath)
 
@@ -170,8 +158,9 @@ export const syncFiles = async (files: FSDesc[], newFiles: FSDesc[], rootHandle:
 			if (!newFile.handle) continue
 
 			if (isDir(newFile)) {
-				console.log('adding dir', newFile.path)
-				mkdir(newFile.handle, newFile.name)
+				// don't add new folders
+				// console.log('adding dir', newFile.handle, newFile.name)
+				// mkdir(newFile.handle, newFile.name)
 			} else {
 				console.log('adding file', newFile.path)
 				write(newFile.handle, newFile.content)
