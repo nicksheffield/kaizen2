@@ -30,9 +30,9 @@ const tmpl = ({ model }: { model: ModelCtx }) => {
 		.join('\n')}
 	import { removeDuplicates } from '@/lib/utils.js'
 	import { OrderDir, DateType } from './_utils.js'
-	import { BooleanFilter, handleFilters, StringFilter } from './_filters.js'
+	import { handleFilters, BooleanFilter, StringFilter, NumberFilter } from './_filters.js'
 	
-	const OrderBys = g.enumType('PostOrderBy', [
+	const OrderBys = g.enumType('${model.name}OrderBy', [
 		${model.attributes.map((x) => `'${x.name}'`).join(',')}
 		${model.auditDates ? `,'createdAt', 'updatedAt', 'deletedAt'` : ''}
 	] as const)
@@ -357,7 +357,7 @@ const tmpl = ({ model }: { model: ModelCtx }) => {
 					},`
 						: ''
 				}
-				where: inArray(tables.posts.id, args.id),
+				where: inArray(tables.${model.tableName}.id, args.id),
 			})
 	
 			for (const id of args.id) {

@@ -17,8 +17,8 @@ export const writeIntrospection = async (schema: GraphQLSchema) => {
  *
  * @remarks
  * This is an introspection of your schema saved as a file by GraphQLSP.
- * It will automatically be used by \`gql.tada\` to infer the types of your GraphQL documents.
- * If you need to reuse this data or update your \`scalars\`, update \`tadaOutputLocation\` to
+ * It will automatically be used by \\\`gql.tada\\\` to infer the types of your GraphQL documents.
+ * If you need to reuse this data or update your \\\`scalars\\\`, update \\\`tadaOutputLocation\\\` to
  * instead save to a .ts instead of a .d.ts file.
  */
 export type introspection = \${JSON.stringify(intro, null, 2)};
