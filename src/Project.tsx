@@ -2,9 +2,7 @@ import { DarkModeToggle } from './components/DarkModeToggle'
 import { Logo } from './components/Logo'
 import { Sidebar } from './components/Sidebar'
 import { EditorFrame } from './components/EditorFrame'
-import { StatusBar } from '@/components/StatusBar'
 import { useApp } from '@/lib/AppContext'
-// import { VersionControl } from '@/components/VersionControl'
 
 export const Project = () => {
 	const { selectedPath } = useApp()
@@ -32,7 +30,7 @@ export const Project = () => {
 				</div> */}
 			</div>
 
-			<StatusBar />
+			{/* <StatusBar /> */}
 		</div>
 	)
 }

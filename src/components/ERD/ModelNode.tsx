@@ -184,7 +184,7 @@ export const ModelNode = ({ data, selected }: NodeProps<Model>) => {
 			<div className="p-0 mb-[12px]">
 				<div
 					className={cn(
-						'drag-handle flex h-[36px] cursor-grab items-center justify-between pl-4 pr-2 active:cursor-grabbing bg-muted/50 border-b',
+						'drag-handle flex h-[36px] cursor-grab items-center justify-between pl-4 pr-2 active:cursor-grabbing bg-primary text-primary-foreground border-b',
 						selected && 'bg-blue-100 text-blue-600 dark:bg-blue-600/20 dark:text-blue-300'
 					)}
 					// style={{ background: getTitleBG(titleHSL), color: 'black' }}

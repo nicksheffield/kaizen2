@@ -2,8 +2,11 @@ import { secrets } from '@/lib/settings'
 import { type ClassValue, clsx } from 'clsx'
 import { singular } from 'pluralize'
 import { twMerge } from 'tailwind-merge'
+import { alphabet, generateRandomString } from 'oslo/crypto'
 
 import { v4 } from 'uuid'
+
+export const generateId = (length: number) => generateRandomString(length, alphabet('0-9', 'a-z'))
 
 export const uuid = v4
 
@@ -53,11 +56,11 @@ export const safeParse = <T>(str: string, fallback: T): T => {
 }
 
 export const getEmptyProject = () => {
-	const userModelId = uuid()
+	const userModelId = generateId(5)
 
 	return {
 		project: {
-			id: uuid(),
+			id: generateId(5),
 			name: 'New Project',
 			repoUrl: '',
 			domainName: '',
@@ -83,12 +86,12 @@ export const getEmptyProject = () => {
 				name: 'User',
 				tableName: 'users',
 				auditDates: true,
-				posX: -552,
-				posY: 48,
+				posX: 0,
+				posY: 0,
 				enabled: true,
 				attributes: [
 					{
-						id: uuid(),
+						id: generateId(5),
 						name: 'id',
 						type: 'uuid',
 						default: null,
@@ -100,7 +103,7 @@ export const getEmptyProject = () => {
 						foreignKey: false,
 					},
 					{
-						id: uuid(),
+						id: generateId(5),
 						name: 'name',
 						type: 'text',
 						default: null,
@@ -112,7 +115,7 @@ export const getEmptyProject = () => {
 						foreignKey: false,
 					},
 					{
-						id: uuid(),
+						id: generateId(5),
 						name: 'email',
 						type: 'text',
 						default: null,
@@ -124,13 +127,61 @@ export const getEmptyProject = () => {
 						foreignKey: false,
 					},
 					{
-						id: uuid(),
+						id: generateId(5),
 						name: 'password',
 						type: 'password',
 						default: null,
 						nullable: false,
 						selectable: false,
 						order: 3,
+						enabled: true,
+						modelId: userModelId,
+						foreignKey: false,
+					},
+					{
+						id: generateId(5),
+						name: 'twoFactorSecret',
+						type: 'text',
+						default: '',
+						nullable: true,
+						selectable: false,
+						order: 4,
+						enabled: true,
+						modelId: userModelId,
+						foreignKey: false,
+					},
+					{
+						id: generateId(5),
+						name: 'twoFactorEnabled',
+						type: 'boolean',
+						default: 'false',
+						nullable: false,
+						selectable: true,
+						order: 5,
+						enabled: true,
+						modelId: userModelId,
+						foreignKey: false,
+					},
+					{
+						id: generateId(5),
+						name: 'emailVerified',
+						type: 'boolean',
+						default: 'false',
+						nullable: false,
+						selectable: true,
+						order: 6,
+						enabled: true,
+						modelId: userModelId,
+						foreignKey: false,
+					},
+					{
+						id: generateId(5),
+						name: 'roles',
+						type: 'text',
+						default: 'default',
+						nullable: false,
+						selectable: true,
+						order: 7,
 						enabled: true,
 						modelId: userModelId,
 						foreignKey: false,

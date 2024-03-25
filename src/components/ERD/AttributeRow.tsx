@@ -50,6 +50,8 @@ type AttributeRowProps = {
 	updateField: (field: keyof Attribute, value: Attribute[typeof field]) => void
 }
 
+// const zoomSelector = (s: ReactFlowState) => s.transform[2]
+
 export const AttributeRow = ({ attr, model, remove, updateField }: AttributeRowProps) => {
 	const { relations, nodes, attrTypeRecommends } = useERDContext()
 
@@ -59,6 +61,7 @@ export const AttributeRow = ({ attr, model, remove, updateField }: AttributeRowP
 				return FingerprintIcon
 			case AttributeType.a_i:
 				return PlusIcon
+			case AttributeType.varchar:
 			case AttributeType.text:
 				return TextIcon
 			case AttributeType.base64:
@@ -108,6 +111,17 @@ export const AttributeRow = ({ attr, model, remove, updateField }: AttributeRowP
 
 	const [open, setOpen] = useState(false)
 
+	// const zoom = useStore(zoomSelector)
+	// const showContent = zoom > 0.5
+	const showContent = true
+	if (!showContent) {
+		return (
+			<div className="h-[24px] p-1">
+				<div className="bg-gray-100 rounded-md h-full"></div>
+			</div>
+		)
+	}
+
 	return (
 		<div key={attr.id} className="relative flex flex-col px-2" ref={setNodeRef} style={style}>
 			<Popover open={open} onOpenChange={setOpen}>
@@ -142,7 +156,7 @@ export const AttributeRow = ({ attr, model, remove, updateField }: AttributeRowP
 				</PopoverTrigger>
 
 				<PopoverContent align="center" side="right">
-					<div className="grid auto-rows-fr grid-cols-1 gap-3">
+					<div className="grid auto-rows-fr grid-cols-1">
 						<div className="flex items-center justify-between pb-3">
 							<div>Attribute Settings</div>
 							{isAttributeLocked(model, attr) ? (
@@ -160,7 +174,7 @@ export const AttributeRow = ({ attr, model, remove, updateField }: AttributeRowP
 							<>
 								<PanelRow label="Type">
 									<Select value={attr.type} onValueChange={(val) => updateField('type', val)}>
-										<SelectTrigger>
+										<SelectTrigger className="h-8 px-2 py-1 text-sm">
 											<SelectValue placeholder="Type" />
 										</SelectTrigger>
 
@@ -176,6 +190,7 @@ export const AttributeRow = ({ attr, model, remove, updateField }: AttributeRowP
 								<PanelRow label="Name">
 									<Input
 										value={name}
+										size="sm"
 										onChange={(e) => {
 											const val = e.currentTarget.value.replace(/\s/g, '')
 											setName(val)
@@ -202,7 +217,7 @@ export const AttributeRow = ({ attr, model, remove, updateField }: AttributeRowP
 										onValueChange={(val) => setType(val)}
 										disabled={isAttributeLocked(model, attr)}
 									>
-										<SelectTrigger>
+										<SelectTrigger className="h-8 px-2 py-1 text-sm">
 											<SelectValue placeholder="Type" />
 										</SelectTrigger>
 
@@ -226,7 +241,7 @@ export const AttributeRow = ({ attr, model, remove, updateField }: AttributeRowP
 											onValueChange={(val) => setDef(val === null ? 'null' : val)}
 											disabled={isAttributeLocked(model, attr)}
 										>
-											<SelectTrigger>
+											<SelectTrigger className="h-8 px-2 py-1 text-sm">
 												<SelectValue placeholder="Default" />
 											</SelectTrigger>
 
@@ -253,6 +268,7 @@ export const AttributeRow = ({ attr, model, remove, updateField }: AttributeRowP
 											value={attr.default || ''}
 											onChange={(e) => updateField('default', e.currentTarget.value)}
 											disabled={isAttributeLocked(model, attr)}
+											size="sm"
 										/>
 									)}
 								</PanelRow>

@@ -63,3 +63,13 @@
 .react-flow__attribution {
 	display: none;
 }
+
+/* match this with the erd markers */
+.react-flow .react-flow__edge-path {
+	/* @apply stroke-ring dark:stroke-foreground; */
+	@apply stroke-gray-500 dark:stroke-foreground;
+}
+
+.react-flow .react-flow__edge-path.relation-disabled {
+	@apply opacity-25;
+}

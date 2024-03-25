@@ -30,18 +30,18 @@ const ModelSchema = z.object({
 	attributes: z.array(AttributeSchema),
 })
 
-const RelationSchema = z.object({
-	id: z.string(),
-	type: z.string(),
-	sourceId: z.string(),
-	sourceName: z.string(),
-	sourceOrder: z.number(),
-	targetId: z.string(),
-	targetName: z.string(),
-	targetOrder: z.number(),
-	optional: z.boolean(),
-	enabled: z.boolean(),
-})
+// const RelationSchema = z.object({
+// 	id: z.string(),
+// 	type: z.string(),
+// 	sourceId: z.string(),
+// 	sourceName: z.string(),
+// 	sourceOrder: z.number(),
+// 	targetId: z.string(),
+// 	targetName: z.string(),
+// 	targetOrder: z.number(),
+// 	optional: z.boolean(),
+// 	enabled: z.boolean(),
+// })
 
 const tmpl = ({ models, project }: { models: ModelCtx[]; project: ProjectCtx }) => {
 	return JSON.stringify(

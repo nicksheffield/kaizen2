@@ -3,7 +3,7 @@ import { ERDProvider } from './ERDProvider'
 import { getAttrTypeRecommends, getSourceName, getTargetName, isReservedKeyword } from '@/lib/ERDHelpers'
 import { useCallback, useMemo, useState } from 'react'
 import { AttributeType, Model, Relation } from '@/lib/schemas'
-import { ERDMarkers } from '@/components/ERDMakers'
+import { ERDMarkers } from '@/components/ERDMarkers'
 import { useApp } from '@/lib/AppContext'
 import { ModelNode } from '@/components/ERD/ModelNode'
 import { SimpleFloatingEdge } from '@/components/ERD/SimpleFloatingEdge'
@@ -48,6 +48,26 @@ export const Editor = () => {
 	const [relations, setRelations] = useState<Relation[]>(draft?.content.relations || [])
 	const edges = useMemo(() => {
 		return [...relations].map((rel) => {
+			const markerStart = (() => {
+				if (rel.type === 'oneToOne' || rel.type === 'oneToMany') {
+					return rel.optional ? 'hasOne' : 'hasOneRequired'
+				}
+				if (rel.type === 'manyToMany' || rel.type === 'manyToOne') {
+					return 'hasMany'
+					// return rel.optional ? 'hasMany' : 'hasManyRequired' // when is hasManyRequired realistic?
+				}
+			})()
+
+			const markerEnd = (() => {
+				if (rel.type === 'oneToOne' || rel.type === 'manyToOne') {
+					return rel.optional ? 'hasOne' : 'hasOneRequired'
+				}
+				if (rel.type === 'oneToMany' || rel.type === 'manyToMany') {
+					return 'hasMany'
+					// return rel.optional ? 'hasMany' : 'hasManyRequired' // when is hasManyRequired realistic?
+				}
+			})()
+
 			return {
 				id: rel.id,
 				source: rel.sourceId,
@@ -55,8 +75,8 @@ export const Editor = () => {
 				target: rel.targetId,
 				targetHandle: `${rel.id}-target-r`,
 				type: 'floating',
-				markerStart: rel.type === 'oneToOne' || rel.type === 'oneToMany' ? 'hasOne' : 'hasMany',
-				markerEnd: rel.type === 'oneToMany' || rel.type === 'manyToMany' ? 'hasMany' : 'hasOne',
+				markerStart,
+				markerEnd,
 				data: rel,
 			}
 		})
@@ -257,7 +277,7 @@ export const Editor = () => {
 	const selectNodes = useStore((actions) => actions.addSelectedNodes)
 
 	const focusOn = (node: Node<Model>) => {
-		flow.fitView({ padding: 0.2, includeHiddenNodes: true, nodes: [node], duration: 200 })
+		flow.fitView({ padding: 0.2, includeHiddenNodes: true, nodes: [node], duration: 400 })
 		selectNodes([node.id])
 	}
 
@@ -288,6 +308,7 @@ export const Editor = () => {
 				detailed,
 				setDetailed,
 				attrTypeRecommends,
+				focusOn,
 			}}
 		>
 			<div className={cn('flex flex-col flex-1 relative bg-background', max && 'fixed inset-0 z-50')}>
@@ -309,8 +330,8 @@ export const Editor = () => {
 							<PopoverTrigger asChild>
 								<RevealButton
 									variant="outline"
-									icon={<SearchIcon className="w-4 h-4" />}
-									className="rounded-full pointer-events-auto m-2 px-3 bg-background/50 backdrop-blur-sm shadow-md"
+									icon={<SearchIcon className="w-4 h-4 shrink-0" />}
+									className="rounded-full pointer-events-auto m-2 min-w-10 h-10 py-0 px-[11px] bg-background/50 backdrop-blur-sm shadow-md"
 									label="Search Models"
 								/>
 							</PopoverTrigger>
@@ -321,7 +342,7 @@ export const Editor = () => {
 							>
 								<Command>
 									<CommandInput placeholder="Search for models..." />
-									<CommandList>
+									<CommandList className="p-2">
 										<CommandEmpty>No results found.</CommandEmpty>
 
 										{nodes.map((x) => (

@@ -1,11 +1,13 @@
-import { Form, FormInputRow, FormInputRowProps, useForm } from '@/components/form'
+import { Form, FormInputRow, FormInputRowProps, FormSelectRow, FormSwitchRow, useForm } from '@/components/form'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { generatorNames } from '@/generators'
 import { useApp } from '@/lib/AppContext'
 import { EyeIcon, EyeOffIcon } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { useLocalStorage } from 'usehooks-ts'
 
 export const ProjectSettings = () => {
 	const { project, saveProject } = useApp()
@@ -22,8 +24,17 @@ export const ProjectSettings = () => {
 			const newProj = {
 				...project,
 				project: {
-					...project?.project,
-					...values,
+					...project.project,
+					...values.project,
+				},
+				formatSettings: {
+					...project.formatSettings,
+					...values.formatSettings,
+					prettierPrintWidth: parseInt(String(values.formatSettings?.prettierPrintWidth) || '120'),
+				},
+				env: {
+					...project.env,
+					...values.env,
 				},
 			}
 
@@ -33,17 +44,23 @@ export const ProjectSettings = () => {
 		},
 	})
 
-	const [accordion, setAccordion] = useState(['project'])
+	const [accordion, setAccordion] = useLocalStorage('project-settings-accordion', 'project')
 
 	return (
-		<Form context={form} className="flex-1 flex flex-col min-h-0">
+		<Form context={form} className="flex min-h-0 flex-1 flex-col">
 			<ScrollArea className="flex-1">
-				<Accordion type="multiple" value={accordion} onValueChange={setAccordion}>
+				<Accordion type="single" value={accordion} onValueChange={setAccordion}>
 					<AccordionItem value="project">
 						<AccordionTrigger className="px-4">Project</AccordionTrigger>
 						<AccordionContent>
-							<div className="flex flex-col gap-6 p-4 max-w-[600px] w-full mx-auto">
+							<div className="mx-auto flex w-full max-w-[600px] flex-col gap-6 p-4">
 								<FormInputRow name="project.name" label="Name" description="The name of the project." />
+								<FormSelectRow
+									name="project.generator"
+									label="Generator"
+									description="The generator to use."
+									options={generatorNames.map((x) => ({ label: x, value: x }))}
+								/>
 								<FormInputRow
 									name="project.domainName"
 									label="Domain Name"
@@ -66,8 +83,8 @@ export const ProjectSettings = () => {
 					<AccordionItem value="format">
 						<AccordionTrigger className="px-4">Formatting</AccordionTrigger>
 						<AccordionContent>
-							<div className="flex flex-col gap-6 p-4 max-w-[600px] w-full mx-auto">
-								<FormInputRow
+							<div className="mx-auto flex w-full max-w-[600px] flex-col gap-6 p-4">
+								<FormSwitchRow
 									name="formatSettings.prettierTabs"
 									label="Tabs"
 									description="Indent lines with tabs instead of spaces."
@@ -77,7 +94,7 @@ export const ProjectSettings = () => {
 									label="Tab Width"
 									description="Specify the number of spaces per indentation-level."
 								/>
-								<FormInputRow
+								<FormSwitchRow
 									name="formatSettings.prettierSemicolons"
 									label="Semicolons"
 									description="Print semicolons at the ends of statements."
@@ -94,7 +111,7 @@ export const ProjectSettings = () => {
 					<AccordionItem value="env">
 						<AccordionTrigger className="px-4">Environment</AccordionTrigger>
 						<AccordionContent>
-							<div className="flex flex-col gap-6 p-4 max-w-[600px] w-full mx-auto">
+							<div className="mx-auto flex w-full max-w-[600px] flex-col gap-6 p-4">
 								<TogglePasswordInputRow
 									name="env.ACCESS_TOKEN_SECRET"
 									label="ACCESS_TOKEN_SECRET"
@@ -127,7 +144,7 @@ export const ProjectSettings = () => {
 					</AccordionItem>
 				</Accordion>
 			</ScrollArea>
-			<div className="flex justify-end bg-muted/50 border-t -mt-px p-4">
+			<div className="-mt-px flex justify-end border-t bg-muted/50 p-4">
 				<Button type="submit">Save</Button>
 			</div>
 		</Form>

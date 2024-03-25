@@ -1,10 +1,10 @@
 import { useApp } from '../lib/AppContext'
 import { EditorTabs } from './EditorTabs'
 import { CodeEditor } from './FileViews/CodeEditor'
-// import { JSONEditor } from './FileViews/JSONEditor'
+import { ReadonlyCodeView } from './FileViews/ReadonlyView'
 import { ProjectView } from './FileViews/ProjectView'
+import { DiffView } from './FileViews/DiffView'
 import { Welcome } from './Welcome'
-import { DiffView } from '@/components/FileViews/DiffView'
 
 export const EditorFrame = () => {
 	const { project, selectedPath } = useApp()
@@ -15,6 +15,8 @@ export const EditorFrame = () => {
 		<DiffView key={selectedPath} />
 	) : selectedPath === 'project.json' ? (
 		<ProjectView key={project?.project.id} />
+	) : selectedPath.startsWith('build') ? (
+		<ReadonlyCodeView key={`${project?.project.id}-${selectedPath}`} />
 	) : (
 		<CodeEditor key={project?.project.id} />
 	)

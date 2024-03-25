@@ -15,12 +15,13 @@ import { AppContext } from '../lib/AppContext'
 import { db } from '../lib/db'
 import { useLocalStorage } from 'usehooks-ts'
 import { Project, ProjectSchema } from '@/lib/schemas'
-import generate from '@/generators/express'
+import { generators } from '@/generators'
 import deepEqual from 'deep-equal'
 import ini from 'ini'
 import { FsaNodeFs } from 'memfs/lib/fsa-to-node'
 import type * as fsa from 'memfs/lib/fsa/types'
 import { createGitInstance } from '@/lib/git'
+import { GeneratorFn } from '@/generators/types'
 
 const checkFilesChanged = (a: FSDesc[], b: FSDesc[]) => {
 	if (a.length !== b.length) return true
@@ -241,9 +242,15 @@ export const AppProvider = ({ children }: PropsWithChildren) => {
 		return parseProject(file.content)
 	}, [files])
 
+	const [isGenerating, setIsGenerating] = useState(false)
 	const generateProject = useCallback(
 		async (project?: Project) => {
-			if (!project || !rootHandle) return
+			if (!project || !rootHandle || !project.project.generator) return
+			setIsGenerating(true)
+
+			const generate: GeneratorFn | undefined = generators[project.project.generator as keyof typeof generators]
+
+			if (!generate) return
 
 			const generated = await convertGeneratedFilesToDescs(await generate(project), rootHandle)
 
@@ -252,6 +259,8 @@ export const AppProvider = ({ children }: PropsWithChildren) => {
 				generated,
 				rootHandle
 			)
+
+			setIsGenerating(false)
 		},
 		[getFileHandle, files]
 	)
@@ -316,6 +325,7 @@ export const AppProvider = ({ children }: PropsWithChildren) => {
 				project,
 				saveProject,
 				generateProject,
+				isGenerating,
 				draft,
 				setDraft,
 

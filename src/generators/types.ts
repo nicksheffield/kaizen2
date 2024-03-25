@@ -50,12 +50,3 @@ export type GeneratorFn = (
 	// 	generatorSettings: GeneratorSetting[]
 	// }
 ) => Promise<Record<string, string>>
-
-export type Setting = {
-	key: string
-	name: string
-	description: string
-	defaultValue: string
-	type: 'boolean' | 'option' | 'string' | 'number'
-	options?: string[]
-}

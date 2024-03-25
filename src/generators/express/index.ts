@@ -1,4 +1,4 @@
-import { GeneratorFn, Setting } from '@/generators/types'
+import { GeneratorFn } from '@/generators/types'
 import { getProjectFormatter } from './utils'
 import { createModelCtx } from './contexts'
 
@@ -30,7 +30,7 @@ import { default as src_rest_auth } from './root/src/rest/auth'
 // import { default as src_rest_api_group_index } from './root/src/rest/api/group/index'
 // import { default as src_rest_api_group_endpoint } from './root/src/rest/api/group/endpoint'
 
-const generate: GeneratorFn = async (project) => {
+export const generate: GeneratorFn = async (project) => {
 	const models = project.models.map((model) => createModelCtx(model, project))
 
 	// const gqlEnabled = project.gqlEnabled
@@ -111,76 +111,3 @@ const generate: GeneratorFn = async (project) => {
 
 	return dir
 }
-
-export default generate
-
-export const settings: Setting[] = [
-	{
-		key: 'domain',
-		name: 'Domain Name',
-		description: 'Domain name of the hosted app.',
-		type: 'string',
-		defaultValue: '',
-	},
-	{
-		key: 'maxBody',
-		name: 'Max Body Size',
-		description: 'Maximum size of request body.',
-		type: 'string',
-		defaultValue: '2mb',
-	},
-	{
-		key: 'connectionTimeout',
-		name: 'Connection Timeout',
-		description: 'How long wait before giving up on db connections in ms.',
-		type: 'number',
-		defaultValue: '100000',
-	},
-]
-
-export const generatorSettings: Setting[] = [
-	{
-		key: 'prettierTabs',
-		name: 'Tabs',
-		description: 'Indent lines with tabs instead of spaces.',
-		type: 'boolean',
-		defaultValue: 'true',
-	},
-	{
-		key: 'prettierTabWidth',
-		name: 'Tab Width',
-		description: 'Specify the number of spaces per indentation-level.',
-		type: 'option',
-		defaultValue: '4',
-		options: ['2', '4', '8'],
-	},
-	{
-		key: 'prettierSemicolons',
-		name: 'Semicolons',
-		description: 'Print semicolons at the ends of statements.',
-		type: 'boolean',
-		defaultValue: 'false',
-	},
-	{
-		key: 'prettierPrintWidth',
-		name: 'Print Width',
-		description: 'Specify the line length that the printer will wrap on.',
-		type: 'option',
-		defaultValue: '120',
-		options: ['80', '100', '120', '140', '160'],
-	},
-	{
-		key: 'jsORM',
-		name: 'Object Relational Mapper',
-		description: 'Choose the javascript ORM that will be used.',
-		type: 'option',
-		defaultValue: 'typeorm',
-		options: [
-			'typeorm',
-			// 'drizzle',
-			// 'prisma',
-			// 'sequelize',
-			// 'keysely',
-		],
-	},
-]

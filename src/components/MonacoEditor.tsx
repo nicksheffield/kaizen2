@@ -23,7 +23,7 @@ type MonacoEditorProps = {
 }
 
 export const MonacoEditor = ({ value, onValueChange, extension, readonly = false }: MonacoEditorProps) => {
-	const { theme } = useTheme()
+	const { resolvedTheme } = useTheme()
 	const editorRef = useRef<Parameters<OnMount>[0] | null>(null)
 	const monacoRef = useRef<Monaco | null>(null)
 
@@ -41,7 +41,7 @@ export const MonacoEditor = ({ value, onValueChange, extension, readonly = false
 			},
 		})
 
-		monaco.editor.setTheme(theme === 'dark' ? 'dark' : 'vs')
+		monaco.editor.setTheme(resolvedTheme === 'dark' ? 'dark' : 'vs')
 
 		monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
 			experimentalDecorators: true,
@@ -53,20 +53,19 @@ export const MonacoEditor = ({ value, onValueChange, extension, readonly = false
 		})
 	}
 
-	const prevTheme = useRef<string | undefined>(theme)
+	const prevTheme = useRef<string | undefined>(resolvedTheme)
 	useEffect(() => {
-		if (prevTheme.current !== theme) {
-			monacoRef.current?.editor.setTheme(theme === 'dark' ? 'dark' : 'vs')
-			prevTheme.current = theme
+		if (prevTheme.current !== resolvedTheme) {
+			monacoRef.current?.editor.setTheme(resolvedTheme === 'dark' ? 'dark' : 'vs')
+			prevTheme.current = resolvedTheme
 		}
-	}, [theme])
+	}, [resolvedTheme])
 
 	const defaultLanguage = extension ? monacoLang[extension] || 'plaintext' : 'plaintext'
 
 	return (
 		<Editor
 			height="90vh"
-			className="p-4"
 			defaultLanguage={defaultLanguage}
 			value={value}
 			onChange={(val) => {

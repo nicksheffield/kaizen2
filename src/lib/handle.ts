@@ -142,12 +142,7 @@ export const syncFiles = async (files: FileDesc[], newFiles: FileDesc[], rootHan
 	const sortedFiles = files.sort(sortFilesByPath)
 	const sortedNewFiles = newFiles.sort(sortFilesByPath)
 
-	// console.log({
-	// 	sortedFiles,
-	// 	sortedNewFiles,
-	// })
-
-	// return
+	console.group('syncing files')
 
 	// look through all the new files
 	for (const newFile of sortedNewFiles) {
@@ -157,11 +152,7 @@ export const syncFiles = async (files: FileDesc[], newFiles: FileDesc[], rootHan
 		if (!found) {
 			if (!newFile.handle) continue
 
-			if (isDir(newFile)) {
-				// don't add new folders
-				// console.log('adding dir', newFile.handle, newFile.name)
-				// mkdir(newFile.handle, newFile.name)
-			} else {
+			if (!isDir(newFile)) {
 				console.log('adding file', newFile.path)
 				write(newFile.handle, newFile.content)
 			}
@@ -191,4 +182,30 @@ export const syncFiles = async (files: FileDesc[], newFiles: FileDesc[], rootHan
 			parentDir?.removeEntry(file.name)
 		}
 	}
+
+	// go through every folder and delete it if it's empty
+	const dirs = files
+		.map((x) => x.path.split('/').slice(0, -1).join('/'))
+		.filter((x, i, a) => a.indexOf(x) === i)
+		.sort((a, b) => {
+			if (a.split('/').length > b.split('/').length) return -1
+			if (a.split('/').length < b.split('/').length) return 1
+			return 0
+		})
+
+	for (const dir of dirs) {
+		const handle = await getDirHandle(dir, rootHandle)
+
+		let len = 0
+		for await (const _ of handle?.values() || []) {
+			len++
+		}
+
+		if (len === 0) {
+			console.log('deleting dir', dir)
+			const parent = await getDirHandle(dir.split('/').slice(0, -1).join('/'), rootHandle)
+			parent?.removeEntry(dir.split('/').pop() || '')
+		}
+	}
+	console.groupEnd()
 }

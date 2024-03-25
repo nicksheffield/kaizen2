@@ -4,6 +4,7 @@ export type AttributeType = keyof typeof AttributeType
 export const AttributeType = {
 	uuid: 'uuid',
 	a_i: 'a_i',
+	varchar: 'varchar',
 	text: 'text',
 	base64: 'base64',
 	password: 'password',
@@ -96,19 +97,17 @@ export const EndpointGroupSchema = z.object({
 	name: z.string(),
 })
 
-export type ProjectSettings = z.infer<typeof ProjectSettingsSchema>
-export const ProjectSettingsSchema = z.object({
-	id: z.string(),
-	name: z.string(),
-	repoUrl: z.string().nullable(),
-	domainName: z.string().optional(),
-	maxBodySize: z.string().optional(),
-	connectionTimeout: z.number().optional(),
-})
-
 export type Project = z.infer<typeof ProjectSchema>
 export const ProjectSchema = z.object({
-	project: ProjectSettingsSchema,
+	project: z.object({
+		id: z.string(),
+		name: z.string(),
+		repoUrl: z.string().nullable(),
+		generator: z.string().optional(),
+		domainName: z.string().optional(),
+		maxBodySize: z.string().optional(),
+		connectionTimeout: z.number().optional(),
+	}),
 	formatSettings: z
 		.object({
 			prettierTabs: z.boolean().optional(),
