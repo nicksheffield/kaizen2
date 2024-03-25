@@ -79,29 +79,29 @@ export const vetDefault = (def: any): string | boolean | number | null => {
 export const mapAttrToGarph = (type: string) => {
 	switch (type) {
 		case 'uuid':
-			return 'id'
+			return 'id()'
 		case 'a_i':
-			return 'id'
+			return 'id()'
 		case 'varchar':
-			return 'string'
+			return 'string()'
 		case 'text':
-			return 'string'
+			return 'string()'
 		case 'base64':
-			return 'string'
+			return 'string()'
 		case 'password':
-			return 'string'
+			return 'string()'
 		case 'int':
-			return 'int'
+			return 'int()'
 		case 'float':
-			return 'float'
+			return 'float()'
 		case 'boolean':
-			return 'boolean'
+			return 'boolean()'
 		case 'datetime':
-			return 'string'
+			return 'ref(DateType)'
 		case 'date':
-			return 'string'
+			return 'ref(DateType)'
 		case 'time':
-			return 'string'
+			return 'string()'
 	}
 }
 

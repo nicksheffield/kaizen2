@@ -44,7 +44,7 @@ const tmpl = ({ model }: { model: ModelCtx }) => {
 				.map((x) => {
 					if (!x.selectable) return null
 
-					return `${x.name}: g.${mapAttrToGarph(x.type)}()${x.optional ? '.optional()' : ''},`
+					return `${x.name}: g.${mapAttrToGarph(x.type)}${x.optional ? '.optional()' : ''},`
 				})
 				.filter(isNotNone)
 				.join('\n')}
