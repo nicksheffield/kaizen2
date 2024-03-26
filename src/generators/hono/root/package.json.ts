@@ -16,6 +16,7 @@ const tmpl = ({ project }: { project: ProjectCtx }) => {
 			typescript: '^5.0.0',
 		},
 		dependencies: {
+			'@envelop/graphql-middleware': '^6.0.0',
 			'@graphql-yoga/plugin-disable-introspection': '^2.2.0',
 			'@hono/node-server': '^1.8.2',
 			'@hono/zod-validator': '^0.2.0',
@@ -28,6 +29,7 @@ const tmpl = ({ project }: { project: ProjectCtx }) => {
 			'drizzle-zod': '^0.5.1',
 			garph: '^0.6.8',
 			graphql: '^16.8.1',
+			'graphql-shield': '^7.6.5',
 			'graphql-yoga': '^5.1.1',
 			hono: '^4.0.10',
 			lucia: '^3.1.1',

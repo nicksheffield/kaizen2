@@ -69,6 +69,8 @@ export const AppProvider = ({ children }: PropsWithChildren) => {
 	const [dirOpenStatus, setDirOpenStatus] = useLocalStorage<Record<string, boolean>>('dirOpenStatus', { '': true })
 	const [loading, setLoading] = useState(false)
 
+	const [buildErrorPaths, setBuildErrorPaths] = useState<string[]>([])
+
 	const [draft, setDraft] = useState<{ dirty: boolean; content: Project } | undefined>(undefined)
 	const [hasNewChanges, setHasNewChanges] = useState(false)
 
@@ -254,6 +256,10 @@ export const AppProvider = ({ children }: PropsWithChildren) => {
 
 			const generated = await convertGeneratedFilesToDescs(await generate(project), rootHandle)
 
+			const unformatted = generated.filter(isFile).filter((x) => x.content.startsWith('/* unformatted */'))
+
+			setBuildErrorPaths(unformatted.map((x) => x.path))
+
 			await syncFiles(
 				files.filter(isFile).filter((x) => x.path.startsWith('build')),
 				generated,
@@ -326,6 +332,7 @@ export const AppProvider = ({ children }: PropsWithChildren) => {
 				saveProject,
 				generateProject,
 				isGenerating,
+				buildErrorPaths,
 				draft,
 				setDraft,
 

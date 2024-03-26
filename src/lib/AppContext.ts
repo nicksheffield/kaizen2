@@ -33,6 +33,7 @@ export type AppContextType = {
 	saveProject: (project: Project) => Promise<void>
 	generateProject: (project?: Project) => void
 	isGenerating: boolean
+	buildErrorPaths: string[]
 	draft?: {
 		dirty: boolean
 		content: Project

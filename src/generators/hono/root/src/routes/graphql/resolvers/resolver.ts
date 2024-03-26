@@ -17,7 +17,6 @@ const tmpl = ({ model }: { model: ModelCtx }) => {
 		inArray,
 		Column,
 		and,
-		not,
 		isNull,
 	} from 'drizzle-orm'
 	import { g, Infer } from 'garph'
@@ -189,7 +188,7 @@ const tmpl = ({ model }: { model: ModelCtx }) => {
 				}
 				where: and(
 					eq(tables.${model.tableName}.id, args.id),
-					not(isNull(tables.${model.tableName}.deletedAt))
+					isNull(tables.${model.tableName}.deletedAt)
 				),
 			})
 	
@@ -202,7 +201,7 @@ const tmpl = ({ model }: { model: ModelCtx }) => {
 	
 			const where = and(
 				...handleFilters(tables.${model.tableName}, args.where),
-				not(isNull(tables.${model.tableName}.deletedAt))
+				isNull(tables.${model.tableName}.deletedAt)
 			)
 	
 			const items = await db.query.${model.tableName}.findMany({
@@ -362,7 +361,7 @@ const tmpl = ({ model }: { model: ModelCtx }) => {
 	
 			for (const id of args.id) {
 				if (args.softDelete) {
-					await db.update(tables.${model.tableName}).set({ deletedAt: new Date() })
+					await db.update(tables.${model.tableName}).set({ deletedAt: new Date() }).where(eq(tables.${model.tableName}.id, id))
 				} else {
 					await db.delete(tables.${model.tableName}).where(eq(tables.${model.tableName}.id, id))
 				}

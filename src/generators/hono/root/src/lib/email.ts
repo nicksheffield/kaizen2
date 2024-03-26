@@ -31,7 +31,7 @@ export const sendVerificationEmail = async (
 	await send(
 		email,
 		'Verify your email',
-		\`Your verification code is: \${code}. Enter it <a href="http://localhost:5175/confirm?userId=\${userId}">here</a>.\`
+		\`Your verification code is: \${code}. Enter it <a href="http://localhost:5175/confirm-account?userId=\${userId}">here</a>.\`
 	)
 }
 

@@ -3,8 +3,9 @@ import { useApp } from '../lib/AppContext'
 import { TreeFileIcon } from './TreeFileIcon'
 import { FSDesc, isDir, isFile } from '@/lib/handle'
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from '@/components/ui/context-menu'
-import { Trash2Icon } from 'lucide-react'
+import { AlertOctagonIcon, Trash2Icon } from 'lucide-react'
 import { openConfirm } from '@/components/Alert'
+import { cn } from '@/lib/utils'
 
 type TreeProps = {
 	path: string
@@ -78,27 +79,36 @@ type DescRowProps = {
 }
 
 const DescRow = ({ file, isSelected, onSelect, onDelete, level = 1, isOpen }: DescRowProps) => {
+	const { buildErrorPaths } = useApp()
+
+	const hasError = buildErrorPaths.indexOf(file.path) !== -1
+
 	return (
 		<ContextMenu>
 			<ContextMenuTrigger asChild>
 				<div
-					className={`py-1 rounded-lg flex items-center gap-2 cursor-pointer ${
-						isSelected ? 'bg-primary text-white hover:bg-primary/80' : 'hover:bg-foreground/10'
-					}`}
+					className={cn(
+						'flex cursor-pointer items-center gap-2 rounded-lg py-1',
+						isSelected ? 'bg-primary text-white hover:bg-primary/80' : 'hover:bg-foreground/10',
+						hasError && 'text-red-400',
+						isSelected && hasError
+							? 'bg-destructive text-white hover:bg-destructive/80'
+							: 'hover:bg-foreground/10'
+					)}
 					onClick={(e) => {
 						e.stopPropagation()
 						onSelect()
 					}}
 					style={{ paddingLeft: `${level * 1 + 0.5}rem` }}
 				>
-					<TreeFileIcon path={file.path} open={isOpen} />
+					{hasError ? <AlertOctagonIcon className="w-4" /> : <TreeFileIcon path={file.path} open={isOpen} />}
 
-					<div className="truncate text-sm select-none">{file.name}</div>
+					<div className="select-none truncate text-sm">{file.name}</div>
 				</div>
 			</ContextMenuTrigger>
 			<ContextMenuContent>
 				<ContextMenuItem
-					className="focus:bg-destructive text-destructive focus:text-destructive-foreground"
+					className="text-destructive focus:bg-destructive focus:text-destructive-foreground"
 					onClick={() => {
 						openConfirm({
 							title: 'Delete file?',
@@ -109,7 +119,7 @@ const DescRow = ({ file, isSelected, onSelect, onDelete, level = 1, isOpen }: De
 						})
 					}}
 				>
-					<Trash2Icon className="w-4 mr-2" />
+					<Trash2Icon className="mr-2 w-4" />
 					Delete {isFile(file) ? 'File' : 'Directory'}
 				</ContextMenuItem>
 			</ContextMenuContent>
