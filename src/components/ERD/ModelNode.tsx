@@ -31,7 +31,6 @@ import { restrictToVerticalAxis, restrictToParentElement } from '@dnd-kit/modifi
 import { useModelField } from '@/lib/useModelField'
 import { isReservedKeyword } from '@/lib/ERDHelpers'
 import { plural } from 'pluralize'
-import { useApp } from '@/lib/AppContext'
 
 type Model = BasicModel & {
 	attributes: Attribute[]
@@ -55,7 +54,6 @@ export const ModelNode = ({ data, selected }: NodeProps<Model>) => {
 	const { project, userModelId, setUserModelId, nodes, setNodes, detailed, relations, setRelations } = useERDContext()
 
 	const hasUserModel = nodes.some((x) => x.data.id === userModelId)
-	const isUser = data.id === userModelId
 
 	// const titleHSL = hexToCssHsl(data.color || stringToColor(data.name))
 	// const getTitleBG = (hsl: ReturnType<typeof hexToCssHsl>) => `hsl(${hsl.h},90%, ${hsl.l}%, 50%)`

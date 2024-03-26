@@ -1,5 +1,5 @@
 import { Dialog } from '@/components/ui/dialog'
-import { generateId, uuid } from '@/lib/utils'
+import { generateId } from '@/lib/utils'
 import { ReactNode, Suspense, useState } from 'react'
 
 type ModalDef = {

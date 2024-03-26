@@ -7,7 +7,7 @@ import {
 	AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
-import { generateId, uuid } from '@/lib/utils'
+import { generateId } from '@/lib/utils'
 import { ReactNode, useState } from 'react'
 
 type AlertDef = {
