@@ -24,20 +24,10 @@ import { Attribute, Model as BasicModel, AttributeType } from '@/lib/schemas'
 import { PanelRow } from './PanelRow'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { cn } from '@/lib/utils'
+import { cn, getIsUserAttr } from '@/lib/utils'
 import { useERDContext } from '@/lib/ERDContext'
 import { getLogicalRecommend, getSourceName, getTargetName, isReservedKeyword } from '@/lib/ERDHelpers'
 import { useAttrField } from '@/lib/useAttrField'
-
-const isAttributeLocked = (model: Model, attr: Attribute) => {
-	if (attr.name === 'id') return true
-	if (model.key === 'user') {
-		if (attr.name === 'name') return true
-		if (attr.name === 'email') return true
-		if (attr.name === 'password') return true
-	}
-	return false
-}
 
 type Model = BasicModel & {
 	attributes: Attribute[]
@@ -54,6 +44,9 @@ type AttributeRowProps = {
 
 export const AttributeRow = ({ attr, model, remove, updateField }: AttributeRowProps) => {
 	const { relations, nodes, attrTypeRecommends } = useERDContext()
+
+	const isUserAttr = getIsUserAttr(attr.id)
+	const isLocked = isUserAttr || attr.name === 'id'
 
 	const AttrIcon: ElementType = useMemo(() => {
 		switch (attr.type) {
@@ -117,7 +110,7 @@ export const AttributeRow = ({ attr, model, remove, updateField }: AttributeRowP
 	if (!showContent) {
 		return (
 			<div className="h-[24px] p-1">
-				<div className="bg-gray-100 rounded-md h-full"></div>
+				<div className="h-full rounded-md bg-gray-100"></div>
 			</div>
 		)
 	}
@@ -159,7 +152,7 @@ export const AttributeRow = ({ attr, model, remove, updateField }: AttributeRowP
 					<div className="grid auto-rows-fr grid-cols-1">
 						<div className="flex items-center justify-between pb-3">
 							<div>Attribute Settings</div>
-							{isAttributeLocked(model, attr) ? (
+							{isLocked ? (
 								<Button variant="ghost" size="xs">
 									<LockIcon className="h-4 w-4" />
 								</Button>
@@ -169,6 +162,12 @@ export const AttributeRow = ({ attr, model, remove, updateField }: AttributeRowP
 								</Button>
 							)}
 						</div>
+
+						{isUserAttr && (
+							<div className="mb-1 flex items-center justify-center rounded-md bg-muted p-2 text-sm text-muted-foreground">
+								This is an Auth attribute.
+							</div>
+						)}
 
 						{attr.name === 'id' ? (
 							<>
@@ -207,16 +206,12 @@ export const AttributeRow = ({ attr, model, remove, updateField }: AttributeRowP
 											}
 										}}
 										autoFocus
-										disabled={isAttributeLocked(model, attr)}
+										disabled={isLocked}
 									/>
 								</PanelRow>
 
 								<PanelRow label="Type">
-									<Select
-										value={attr.type}
-										onValueChange={(val) => setType(val)}
-										disabled={isAttributeLocked(model, attr)}
-									>
+									<Select value={attr.type} onValueChange={(val) => setType(val)} disabled={isLocked}>
 										<SelectTrigger className="h-8 px-2 py-1 text-sm">
 											<SelectValue placeholder="Type" />
 										</SelectTrigger>
@@ -239,7 +234,7 @@ export const AttributeRow = ({ attr, model, remove, updateField }: AttributeRowP
 										<Select
 											value={def === null ? 'null' : def || ''}
 											onValueChange={(val) => setDef(val === null ? 'null' : val)}
-											disabled={isAttributeLocked(model, attr)}
+											disabled={isLocked}
 										>
 											<SelectTrigger className="h-8 px-2 py-1 text-sm">
 												<SelectValue placeholder="Default" />
@@ -267,7 +262,7 @@ export const AttributeRow = ({ attr, model, remove, updateField }: AttributeRowP
 										<Input
 											value={attr.default || ''}
 											onChange={(e) => updateField('default', e.currentTarget.value)}
-											disabled={isAttributeLocked(model, attr)}
+											disabled={isLocked}
 											size="sm"
 										/>
 									)}
@@ -277,7 +272,7 @@ export const AttributeRow = ({ attr, model, remove, updateField }: AttributeRowP
 									<Switch
 										checked={attr.nullable}
 										onCheckedChange={(val) => updateField('nullable', val)}
-										disabled={isAttributeLocked(model, attr)}
+										disabled={isLocked}
 									/>
 								</PanelRow>
 
@@ -285,7 +280,15 @@ export const AttributeRow = ({ attr, model, remove, updateField }: AttributeRowP
 									<Switch
 										checked={attr.selectable}
 										onCheckedChange={(val) => updateField('selectable', val)}
-										disabled={isAttributeLocked(model, attr)}
+										disabled={isLocked}
+									/>
+								</PanelRow>
+
+								<PanelRow label="Insertable">
+									<Switch
+										checked={attr.insertable}
+										onCheckedChange={(val) => updateField('insertable', val)}
+										disabled={isLocked}
 									/>
 								</PanelRow>
 
@@ -296,7 +299,7 @@ export const AttributeRow = ({ attr, model, remove, updateField }: AttributeRowP
 									<Switch
 										checked={attr.enabled}
 										onCheckedChange={(val) => updateField('enabled', val)}
-										disabled={isAttributeLocked(model, attr)}
+										disabled={isLocked}
 									/>
 								</PanelRow>
 							</>

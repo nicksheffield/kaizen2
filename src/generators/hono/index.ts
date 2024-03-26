@@ -66,18 +66,18 @@ export const generate: GeneratorFn = async (project) => {
 	dir['/src/lib/db.ts'] = await format(src_lib_db())
 	dir['/src/lib/email.ts'] = await format(src_lib_email())
 	dir['/src/lib/env.ts'] = await format(src_lib_env())
-	dir['/src/lib/lucia.ts'] = await format(src_lib_lucia())
-	dir['/src/lib/manageUser.ts'] = await format(src_lib_manageUser())
+	dir['/src/lib/lucia.ts'] = await format(src_lib_lucia({ project }))
+	dir['/src/lib/manageUser.ts'] = await format(src_lib_manageUser({ project }))
 	dir['/src/lib/mountRoutes.ts'] = await format(src_lib_mountRoutes())
 	dir['/src/lib/password.ts'] = await format(src_lib_password())
 	dir['/src/lib/utils.ts'] = await format(src_lib_utils())
 
-	dir['/src/middleware/authenticate.ts'] = await format(src_middleware_authenticate())
+	dir['/src/middleware/authenticate.ts'] = await format(src_middleware_authenticate({ project }))
 	dir['/src/middleware/rateLimit.ts'] = await format(src_middleware_rateLimit())
 
 	dir['/src/routes/auth/login.ts'] = await format(src_routes_auth_login())
-	dir['/src/routes/auth/logout.ts'] = await format(src_routes_auth_logout())
-	dir['/src/routes/auth/profile.ts'] = await format(src_routes_auth_profile())
+	dir['/src/routes/auth/logout.ts'] = await format(src_routes_auth_logout({ project }))
+	dir['/src/routes/auth/profile.ts'] = await format(src_routes_auth_profile({ project }))
 	dir['/src/routes/auth/confirm-account.ts'] = await format(src_routes_auth_confirmAccount())
 	dir['/src/routes/auth/reset-password.ts'] = await format(src_routes_auth_resetPassword())
 	dir['/src/routes/auth/two-factor.ts'] = await format(src_routes_auth_twoFactor({ project }))
@@ -88,7 +88,7 @@ export const generate: GeneratorFn = async (project) => {
 
 	for (const model of models) {
 		dir[`/src/routes/graphql/resolvers/${model.tableName}.ts`] = await format(
-			src_routes_graphql_resolvers_resolver({ model })
+			src_routes_graphql_resolvers_resolver({ model, project })
 		)
 	}
 

@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from 'react'
 import { Handle, Position } from 'reactflow'
-import { alphabetical, camelize, cn } from '@/lib/utils'
+import { alphabetical, camelize, cn, generateId } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { LinkIcon, Trash2Icon } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
@@ -70,7 +70,7 @@ export const RelationRow = ({ rel, model, mode }: RelationRowProps) => {
 		const jtModel = addNode({ name: `${sourceModel.name}_${targetModel.name}` })
 
 		const newRelSource = {
-			id: crypto.randomUUID(),
+			id: generateId(),
 			type: RelationType.oneToMany,
 			sourceName: '',
 			targetName: camelize(targetModel.name),
@@ -88,7 +88,7 @@ export const RelationRow = ({ rel, model, mode }: RelationRowProps) => {
 		}
 
 		const newRelTarget = {
-			id: crypto.randomUUID(),
+			id: generateId(),
 			type: RelationType.oneToMany,
 			sourceName: '',
 			targetName: camelize(sourceModel.name),
@@ -437,7 +437,7 @@ export const RelationRow = ({ rel, model, mode }: RelationRowProps) => {
 				</Popover>
 			) : (
 				<div className="h-[24px] p-1">
-					<div className="bg-gray-100 rounded-md h-full"></div>
+					<div className="h-full rounded-md bg-gray-100"></div>
 				</div>
 			)}
 

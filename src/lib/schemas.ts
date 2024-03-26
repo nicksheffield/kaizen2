@@ -25,6 +25,7 @@ export const AttributeSchema = z.object({
 	default: z.string().nullable(),
 	nullable: z.boolean(),
 	selectable: z.boolean(),
+	insertable: z.boolean().default(true),
 	order: z.number(),
 	enabled: z.boolean().optional(),
 	modelId: z.string(),
@@ -107,7 +108,15 @@ export const ProjectSchema = z.object({
 		domainName: z.string().optional(),
 		maxBodySize: z.string().optional(),
 		connectionTimeout: z.number().optional(),
+		userModelId: z.string().optional(),
 	}),
+	auth: z
+		.object({
+			cookies: z.boolean().optional().default(true),
+			bearer: z.boolean().optional().default(true),
+			expiresIn: z.string().optional().default('60'),
+		})
+		.optional(),
 	formatSettings: z
 		.object({
 			prettierTabs: z.boolean().optional(),
@@ -123,6 +132,11 @@ export const ProjectSchema = z.object({
 			MARIADB_ROOT_PASSWORD: z.string().optional(),
 			MYSQL_USER: z.string().optional(),
 			MYSQL_PASSWORD: z.string().optional(),
+			EMAIL_HOST: z.string().optional(),
+			EMAIL_PORT: z.string().optional(),
+			EMAIL_USER: z.string().optional(),
+			EMAIL_PASS: z.string().optional(),
+			EMAIL_FROM: z.string().optional(),
 		})
 		.optional(),
 	models: z.array(ModelSchema),

@@ -1,5 +1,5 @@
 import { Dialog } from '@/components/ui/dialog'
-import { uuid } from '@/lib/utils'
+import { generateId, uuid } from '@/lib/utils'
 import { ReactNode, Suspense, useState } from 'react'
 
 type ModalDef = {
@@ -18,7 +18,7 @@ const container: {
 export type ModalCloseFn = () => void
 
 export const openModal = (x: { render: (close: ModalCloseFn) => ReactNode }) => {
-	const id = uuid()
+	const id = generateId()
 	const close = () => container.removeModal(id)
 
 	container.addModal({

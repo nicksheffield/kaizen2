@@ -50,6 +50,7 @@ export const createModelCtx = (model: ProjectCtx['models'][number], ctx: Project
 				gqlType: mapAttributeTypeToGQL(x.type),
 				gqlFilter: mapAttrToGQLFilter(x.type),
 				selectable: x.selectable,
+				insertable: x.insertable,
 				optional: x.nullable,
 				optionalOp: x.nullable ? '?' : '!',
 				default: x.name === 'id' ? idDefault : defaultValue,

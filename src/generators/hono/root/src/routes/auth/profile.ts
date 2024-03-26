@@ -1,25 +1,34 @@
-const tmpl = () => `import { db } from '@/lib/db.js'
-import { users } from '@/schema.js'
-import { eq } from 'drizzle-orm'
-import { Hono } from 'hono'
-import { authenticate } from '@/middleware/authenticate.js'
+import { ProjectCtx } from '@/generators/types'
 
-export const router = new Hono()
+const tmpl = ({ project }: { project: ProjectCtx }) => {
+	const userModel = project.models.find((x) => project.project.userModelId === x.id)
+	const nonSelectAttrs = userModel?.attributes.filter((x) => !x.selectable) || []
 
-router.get('/profile', authenticate, async (c) => {
-	const user = c.get('user')
-
-	const dbUser = await db.query.users.findFirst({
-		columns: {
-			password: false,
-			twoFactorSecret: false,
-			emailVerified: false,
-		},
-		where: eq(users.id, user.id),
+	return `import { db } from '@/lib/db.js'
+	import { users } from '@/schema.js'
+	import { eq } from 'drizzle-orm'
+	import { Hono } from 'hono'
+	import { authenticate } from '@/middleware/authenticate.js'
+	
+	export const router = new Hono()
+	
+	router.get('/profile', authenticate, async (c) => {
+		const user = c.get('user')
+	
+		const dbUser = await db.query.users.findFirst({
+			${
+				nonSelectAttrs.length > 0
+					? `columns: {
+				${nonSelectAttrs.map((x) => `${x.name}: false`).join(',\n')}
+				},`
+					: ''
+			}
+			where: eq(users.id, user.id),
+		})
+	
+		return c.json(dbUser)
 	})
-
-	return c.json(dbUser)
-})
-`
+	`
+}
 
 export default tmpl

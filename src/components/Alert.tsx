@@ -7,7 +7,7 @@ import {
 	AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
-import { uuid } from '@/lib/utils'
+import { generateId, uuid } from '@/lib/utils'
 import { ReactNode, useState } from 'react'
 
 type AlertDef = {
@@ -26,7 +26,7 @@ const container: {
 export type CloseFn = () => void
 
 export const openAlert = (x: { render: (close: CloseFn) => ReactNode }) => {
-	const id = uuid()
+	const id = generateId()
 	const close = () => container.removeAlert(id)
 
 	container.addAlert({

@@ -49,6 +49,7 @@ const parseProject = (content: string) => {
 	return {
 		project: proj.project,
 		formatSettings: proj.formatSettings,
+		auth: proj.auth,
 		env: proj.env,
 		models: proj.models.map((x) => {
 			return {

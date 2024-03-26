@@ -17,6 +17,7 @@ const tmpl = ({ project }: { project: ProjectCtx }) => {
 		},
 		dependencies: {
 			'@envelop/graphql-middleware': '^6.0.0',
+			'@escape.tech/graphql-armor': '^2.4.0',
 			'@graphql-yoga/plugin-disable-introspection': '^2.2.0',
 			'@hono/node-server': '^1.8.2',
 			'@hono/zod-validator': '^0.2.0',

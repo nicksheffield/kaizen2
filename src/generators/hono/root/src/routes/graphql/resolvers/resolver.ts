@@ -1,10 +1,13 @@
 import { ModelCtx } from '@/generators/hono/contexts'
 import { mapAttrToGQLFilter, mapAttrToGarph } from '@/generators/hono/utils'
+import { ProjectCtx } from '@/generators/types'
 import { isNotNone } from '@/lib/utils'
 import { plural } from 'pluralize'
 
-const tmpl = ({ model }: { model: ModelCtx }) => {
+const tmpl = ({ model, project }: { model: ModelCtx; project: ProjectCtx }) => {
 	const nonSelectAttrs = model.attributes.filter((x) => !x.selectable)
+
+	const isUserModel = project.project.userModelId === model.id
 
 	return `import { db } from '@/lib/db.js'
 	import { Resolvers } from '@/routes/graphql/router.js'
@@ -21,7 +24,7 @@ const tmpl = ({ model }: { model: ModelCtx }) => {
 	} from 'drizzle-orm'
 	import { g, Infer } from 'garph'
 	import { generateId } from 'lucia'
-	${model.name === 'User' ? `import { createUser, updateUser } from '@/lib/manageUser.js'` : ''}
+	${isUserModel ? `import { createUser, updateUser } from '@/lib/manageUser.js'` : ''}
 	${model.relatedModels
 		.map((x) => {
 			return `import * as ${x.otherModel.name} from './${x.tableName}.js'`
@@ -72,7 +75,9 @@ const tmpl = ({ model }: { model: ModelCtx }) => {
 		create: g.inputType('Create${model.name}', {
 			${model.attributes
 				.map((x) => {
-					return `${x.name}: g.${mapAttrToGarph(x.type)}()${x.optional || x.name === 'id' ? '.optional()' : ''},`
+					if (!x.insertable) return null
+
+					return `${x.name}: g.${mapAttrToGarph(x.type)}${x.optional || x.name === 'id' ? '.optional()' : ''},`
 				})
 				.filter(isNotNone)
 				.join('\n')}
@@ -89,8 +94,9 @@ const tmpl = ({ model }: { model: ModelCtx }) => {
 			${model.attributes
 				.map((x) => {
 					if (x.name === 'id') return null
+					if (!x.insertable) return null
 
-					return `${x.name}: g.${mapAttrToGarph(x.type)}().optional(),`
+					return `${x.name}: g.${mapAttrToGarph(x.type)}.optional(),`
 				})
 				.filter(isNotNone)
 				.join('\n')}
@@ -270,9 +276,11 @@ const tmpl = ({ model }: { model: ModelCtx }) => {
 			for (const datum of args.data) {
 				const { __typename, ...data } = datum
 
+				const { email, password, ...fields} = data
+
 				${
-					model.name === 'User'
-						? `const item = await createUser(data.email, data.password)`
+					isUserModel
+						? `const item = await createUser(email, password, ...fields)`
 						: `const newId = generateId(15)
 	
 					await db.insert(tables.${model.tableName}).values({
@@ -304,12 +312,15 @@ const tmpl = ({ model }: { model: ModelCtx }) => {
 			for (const datum of args.data) {
 				const { __typename, ...data } = datum
 
+				const { email, password, ...fields} = data
+
 				${
-					model.name === 'User'
+					isUserModel
 						? `await updateUser(
 					args.id,
-					data.email ?? undefined,
-					data.password ?? undefined
+					email ?? undefined,
+					password ?? undefined,
+					...fields
 				)`
 						: `await db
 				.update(tables.${model.tableName})

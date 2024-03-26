@@ -11,7 +11,7 @@ import { useLocalStorage } from 'usehooks-ts'
 import { ListCollapseIcon, MaximizeIcon, PlusIcon, SaveIcon, SearchIcon, ShrinkIcon, Undo2Icon } from 'lucide-react'
 import { RevealButton } from '@/components/RevealButton'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { cn } from '@/lib/utils'
+import { cn, generateId, getUserModelFields } from '@/lib/utils'
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
 
 export const Editor = () => {
@@ -83,7 +83,7 @@ export const Editor = () => {
 	}, [relations])
 
 	const addNode = (data?: Partial<Model>) => {
-		const id = crypto.randomUUID()
+		const id = generateId()
 
 		const model: Model = {
 			id,
@@ -97,13 +97,14 @@ export const Editor = () => {
 			...data,
 			attributes: [
 				{
-					id: crypto.randomUUID(),
+					id: generateId(),
 					name: 'id',
 					type: AttributeType.uuid,
 					order: 0,
 					modelId: id,
 					nullable: false,
 					selectable: true,
+					insertable: true,
 					enabled: true,
 					default: null,
 					foreignKey: false,
@@ -201,6 +202,7 @@ export const Editor = () => {
 			}
 			if (attr.nullable !== original.nullable) return true
 			if (attr.selectable !== original.selectable) return true
+			if (attr.insertable !== original.insertable) return true
 			if (attr.default !== original.default) return true
 			if (attr.enabled !== original.enabled) return true
 		}
@@ -286,12 +288,39 @@ export const Editor = () => {
 
 		saveProject({
 			...project,
+			project: {
+				...project.project,
+				userModelId,
+			},
 			models: nodes.map((x) => ({ ...x.data, posX: x.position.x, posY: x.position.y })),
 			relations,
 		})
 
 		setDefaultModels(nodes.map((x) => ({ ...x.data, posX: x.position.x, posY: x.position.y })))
 		setDefaultRelations(relations)
+	}
+
+	const [userModelId, setUserModelId] = useState(project?.project.userModelId || '')
+
+	const updateUserModelId = (id: string) => {
+		setUserModelId(id)
+		const newAttrs = getUserModelFields(id)
+
+		setNodes((nds) => {
+			return nds.map((x) => {
+				if (x.data.id === id) {
+					return {
+						...x,
+						data: {
+							...x.data,
+							attributes: [...x.data.attributes, ...newAttrs],
+						},
+					}
+				}
+
+				return x
+			})
+		})
 	}
 
 	if (!project) return null
@@ -309,129 +338,117 @@ export const Editor = () => {
 				setDetailed,
 				attrTypeRecommends,
 				focusOn,
+				userModelId,
+				setUserModelId: updateUserModelId,
 			}}
 		>
-			<div className={cn('flex flex-col flex-1 relative bg-background', max && 'fixed inset-0 z-50')}>
-				<div className="pointer-events-none absolute right-0 top-0 z-20 mr-1 mt-1">
-					{conflicts.length > 0 && (
-						<ul className="flex flex-col gap-2 rounded bg-destructive px-2 py-1 pl-6 text-destructive-foreground">
-							{conflicts.map((message) => (
-								<li className="list-disc text-sm font-medium" key={message}>
-									{message}
-								</li>
-							))}
-						</ul>
-					)}
-				</div>
-
-				<div className="pointer-events-none absolute top-0 left-0 w-full grid grid-cols-[40px,1fr,40px] z-10">
-					<div>
-						<Popover>
-							<PopoverTrigger asChild>
-								<RevealButton
-									variant="outline"
-									icon={<SearchIcon className="w-4 h-4 shrink-0" />}
-									className="rounded-full pointer-events-auto m-2 min-w-10 h-10 py-0 px-[11px] bg-background/50 backdrop-blur-sm shadow-md"
-									label="Search Models"
-								/>
-							</PopoverTrigger>
-							<PopoverContent
-								side="bottom"
-								align="start"
-								className="bg-background/50 backdrop-blur-sm p-0"
-							>
-								<Command>
-									<CommandInput placeholder="Search for models..." />
-									<CommandList className="p-2">
-										<CommandEmpty>No results found.</CommandEmpty>
-
-										{nodes.map((x) => (
-											<CommandItem key={x.id} onSelect={() => focusOn(x)} className="px-3 py-2">
-												{x.data.name}
-											</CommandItem>
-										))}
-									</CommandList>
-								</Command>
-								{/* <div className="flex flex-col gap-4">
-									<Input
-										placeholder="Search"
-										value={modelFilter}
-										onChange={(e) => setModelFilter(e.target.value)}
+			<div className={cn('relative flex flex-1 flex-col bg-background', max && 'fixed inset-0 z-50')}>
+				<div className="pointer-events-none absolute left-0 top-0 z-10 flex w-full flex-col items-center gap-2">
+					<div className="grid w-full grid-cols-[40px,1fr,40px]">
+						<div>
+							<Popover>
+								<PopoverTrigger asChild>
+									<RevealButton
+										variant="outline"
+										icon={<SearchIcon className="h-4 w-4 shrink-0" />}
+										className="pointer-events-auto m-2 h-10 min-w-10 rounded-full bg-background/50 px-[11px] py-0 shadow-md backdrop-blur-sm"
+										label="Search Models"
 									/>
+								</PopoverTrigger>
+								<PopoverContent
+									side="bottom"
+									align="start"
+									className="bg-background/50 p-0 backdrop-blur-sm"
+								>
+									<Command>
+										<CommandInput placeholder="Search for models..." />
+										<CommandList className="p-2">
+											<CommandEmpty>No results found.</CommandEmpty>
 
-									<div className="flex flex-col gap-1">
-										{nodes
-											.filter((x) =>
-												x.data.name.toLowerCase().includes(modelFilter.toLowerCase())
-											)
-											.map((x) => (
-												<div
+											{nodes.map((x) => (
+												<CommandItem
 													key={x.id}
-													className="px-2 py-1 rounded-lg hover:bg-primary hover:text-primary-foreground text-sm font-medium cursor-pointer"
-													onClick={() => focusOn(x)}
+													onSelect={() => focusOn(x)}
+													className="px-3 py-2"
 												>
 													{x.data.name}
-												</div>
+												</CommandItem>
 											))}
-									</div>
-								</div> */}
-							</PopoverContent>
-						</Popover>
-					</div>
+										</CommandList>
+									</Command>
+								</PopoverContent>
+							</Popover>
+						</div>
 
-					<div className="flex justify-center">
-						<div className="pointer-events-auto rounded-full h-10 bg-background/50 backdrop-blur-sm flex items-center justify-center shadow-md px-1.5 border mt-2 gap-1.5">
+						<div className="flex justify-center">
+							<div className="pointer-events-auto mt-2 flex h-10 items-center justify-center gap-1.5 rounded-full border bg-background/50 px-1.5 shadow-md backdrop-blur-sm">
+								<RevealButton
+									variant="ghost"
+									size="pip"
+									onClick={() => addNode()}
+									icon={<PlusIcon className="h-4 w-4" />}
+									label="Add Model"
+								/>
+								<RevealButton
+									variant="ghost"
+									size="pip"
+									onClick={() => center()}
+									icon={<ShrinkIcon className="h-4 w-4" />}
+									label="Center"
+								/>
+								<RevealButton
+									variant="ghost"
+									size="pip"
+									onClick={() => setDetailed((x) => !x)}
+									icon={<ListCollapseIcon className="h-4 w-4" />}
+									label="Show Details"
+								/>
+								<RevealButton
+									variant="ghost"
+									size="pip"
+									onClick={reset}
+									icon={<Undo2Icon className="h-4 w-4" />}
+									label="Reset"
+								/>
+								<RevealButton
+									variant="ghost"
+									size="pip"
+									onClick={save}
+									icon={<SaveIcon className="h-4 w-4" />}
+									label="Save"
+									revealLabel={isDirty ? 'Save Changes' : ''}
+								/>
+							</div>
+						</div>
+
+						<div className="flex justify-end">
 							<RevealButton
-								variant="ghost"
-								size="pip"
-								onClick={() => addNode()}
-								icon={<PlusIcon className="w-4 h-4" />}
-								label="Add Model"
-							/>
-							<RevealButton
-								variant="ghost"
-								size="pip"
-								onClick={() => center()}
-								icon={<ShrinkIcon className="w-4 h-4" />}
-								label="Center"
-							/>
-							<RevealButton
-								variant="ghost"
-								size="pip"
-								onClick={() => setDetailed((x) => !x)}
-								icon={<ListCollapseIcon className="w-4 h-4" />}
-								label="Show Details"
-							/>
-							<RevealButton
-								variant="ghost"
-								size="pip"
-								onClick={reset}
-								icon={<Undo2Icon className="w-4 h-4" />}
-								label="Reset"
-							/>
-							<RevealButton
-								variant="ghost"
-								size="pip"
-								onClick={save}
-								icon={<SaveIcon className="w-4 h-4" />}
-								label="Save"
-								revealLabel={isDirty ? 'Save Changes' : ''}
+								variant="outline"
+								icon={<MaximizeIcon className="h-4 w-4" />}
+								className="pointer-events-auto m-2 rounded-full bg-background/50 px-3 shadow-md backdrop-blur-sm"
+								label="Full Screen"
+								iconSide="right"
+								onClick={() => {
+									setMax((x) => !x)
+									setTimeout(() => center(max ? 0.8 : 1), 1)
+								}}
 							/>
 						</div>
 					</div>
 
-					<div className="flex justify-end">
-						<RevealButton
-							variant="outline"
-							icon={<MaximizeIcon className="w-4 h-4" />}
-							className="rounded-full pointer-events-auto m-2 px-3 bg-background/50 backdrop-blur-sm shadow-md"
-							label="Full Screen"
-							iconSide="right"
-							onClick={() => {
-								setMax((x) => !x)
-								setTimeout(() => center(max ? 0.8 : 1), 1)
-							}}
-						/>
+					<div>
+						{conflicts.length > 0 && (
+							<div className="flex flex-col items-center gap-2">
+								{conflicts.map((message) => (
+									<div
+										className="rounded-full border bg-destructive/50 p-2 px-3 text-sm font-medium text-destructive-foreground backdrop-blur-sm"
+										key={message}
+									>
+										{message}
+									</div>
+								))}
+							</div>
+						)}
 					</div>
 				</div>
 

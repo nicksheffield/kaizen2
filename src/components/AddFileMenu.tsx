@@ -1,20 +1,40 @@
 import { openPrompt } from '@/components/modals/openPrompt'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { useApp } from '@/lib/AppContext'
 import { getEmptyProject } from '@/lib/utils'
-import { PlusSquareIcon } from 'lucide-react'
+import { PlusCircleIcon, PlusSquareIcon } from 'lucide-react'
 
 export const AddFileMenu = () => {
 	const { files, saveFile, openPath } = useApp()
 
 	const projectJson = files.find((x) => x.path === 'project.json')
 
+	if (!projectJson) {
+		return (
+			<Tooltip>
+				<TooltipTrigger asChild>
+					<Button
+						variant="ghost"
+						size="pip-icon"
+						onClick={() => {
+							saveFile('project.json', JSON.stringify(getEmptyProject(), null, 4))
+						}}
+					>
+						<PlusCircleIcon className="h-4 w-4" />
+					</Button>
+				</TooltipTrigger>
+				<TooltipContent>Create Project</TooltipContent>
+			</Tooltip>
+		)
+	}
+
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
 				<Button variant="ghost" size="pip-icon">
-					<PlusSquareIcon className="w-4 h-4" />
+					<PlusSquareIcon className="h-4 w-4" />
 				</Button>
 			</DropdownMenuTrigger>
 
@@ -37,15 +57,6 @@ export const AddFileMenu = () => {
 				>
 					Add Endpoint
 				</DropdownMenuItem>
-				{!projectJson && (
-					<DropdownMenuItem
-						onClick={() => {
-							saveFile('project.json', JSON.stringify(getEmptyProject(), null, 4))
-						}}
-					>
-						project.json
-					</DropdownMenuItem>
-				)}
 			</DropdownMenuContent>
 		</DropdownMenu>
 	)

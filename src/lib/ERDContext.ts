@@ -16,6 +16,8 @@ type ERDContextType = {
 	setDetailed: Dispatch<SetStateAction<boolean>>
 	attrTypeRecommends: AttrTypeRecommend[]
 	focusOn: (node: Node<Model>) => void
+	userModelId: string
+	setUserModelId: (id: string) => void
 }
 
 export const ERDContext = createContext({} as ERDContextType)

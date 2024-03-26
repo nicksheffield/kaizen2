@@ -15,6 +15,7 @@ export const ProjectSettings = () => {
 	const form = useForm({
 		initialValues: {
 			project: project?.project,
+			auth: project?.auth,
 			formatSettings: project?.formatSettings,
 			env: project?.env,
 		},
@@ -26,6 +27,11 @@ export const ProjectSettings = () => {
 				project: {
 					...project.project,
 					...values.project,
+				},
+				auth: {
+					expiresIn: values.auth?.expiresIn ?? '60',
+					cookies: values.auth?.cookies ?? true,
+					bearer: values.auth?.bearer ?? true,
 				},
 				formatSettings: {
 					...project.formatSettings,
@@ -43,6 +49,8 @@ export const ProjectSettings = () => {
 			toast('Project settings saved', { closeButton: true })
 		},
 	})
+
+	const gen = form.values.project?.generator
 
 	const [accordion, setAccordion] = useLocalStorage('project-settings-accordion', 'project')
 
@@ -80,6 +88,32 @@ export const ProjectSettings = () => {
 						</AccordionContent>
 					</AccordionItem>
 
+					{gen === 'hono' && (
+						<AccordionItem value="auth">
+							<AccordionTrigger className="px-4">Auth</AccordionTrigger>
+							<AccordionContent>
+								<div className="mx-auto flex w-full max-w-[600px] flex-col gap-6 p-4">
+									<FormInputRow
+										name="auth.expiresIn"
+										label="Session Expiry Time (Minutes)"
+										description="How long a login session is valid for. If a request is made within the last 50% of the time, the session is extended by this much again."
+										type="number"
+									/>
+									<FormSwitchRow
+										name="auth.cookies"
+										label="Cookies"
+										description="Use HttpOnly cookies for auth."
+									/>
+									<FormSwitchRow
+										name="auth.bearer"
+										label="Bearer"
+										description="Use Bearer tokens for auth."
+									/>
+								</div>
+							</AccordionContent>
+						</AccordionItem>
+					)}
+
 					<AccordionItem value="format">
 						<AccordionTrigger className="px-4">Formatting</AccordionTrigger>
 						<AccordionContent>
@@ -89,15 +123,15 @@ export const ProjectSettings = () => {
 									label="Tabs"
 									description="Indent lines with tabs instead of spaces."
 								/>
-								<FormInputRow
-									name="formatSettings.prettierTabWidth"
-									label="Tab Width"
-									description="Specify the number of spaces per indentation-level."
-								/>
 								<FormSwitchRow
 									name="formatSettings.prettierSemicolons"
 									label="Semicolons"
 									description="Print semicolons at the ends of statements."
+								/>
+								<FormInputRow
+									name="formatSettings.prettierTabWidth"
+									label="Tab Width"
+									description="Specify the number of spaces per indentation-level."
 								/>
 								<FormInputRow
 									name="formatSettings.prettierPrintWidth"
@@ -112,33 +146,80 @@ export const ProjectSettings = () => {
 						<AccordionTrigger className="px-4">Environment</AccordionTrigger>
 						<AccordionContent>
 							<div className="mx-auto flex w-full max-w-[600px] flex-col gap-6 p-4">
-								<TogglePasswordInputRow
-									name="env.ACCESS_TOKEN_SECRET"
-									label="ACCESS_TOKEN_SECRET"
-									description="A secret string used to encode and decode JWT access tokens."
-								/>
+								{gen === 'express' && (
+									<>
+										<TogglePasswordInputRow
+											name="env.ACCESS_TOKEN_SECRET"
+											label="ACCESS_TOKEN_SECRET"
+											description="The secret used to sign JWTs."
+										/>
+										<TogglePasswordInputRow
+											name="env.REFRESH_TOKEN_SECRET"
+											label="REFRESH_TOKEN_SECRET"
+											description="The secret used to sign JWTs."
+										/>
+										<TogglePasswordInputRow
+											name="env.MARIADB_ROOT_PASSWORD"
+											label="MARIADB_ROOT_PASSWORD"
+											description="The password of the db's root account."
+										/>
+										<TogglePasswordInputRow
+											name="env.MYSQL_USER"
+											label="MYSQL_USER"
+											description="The name of the main db user."
+										/>
+										<TogglePasswordInputRow
+											name="env.MYSQL_PASSWORD"
+											label="MYSQL_PASSWORD"
+											description="The password of the main db user."
+										/>
+									</>
+								)}
 
-								<TogglePasswordInputRow
-									name="env.REFRESH_TOKEN_SECRET"
-									label="REFRESH_TOKEN_SECRET"
-									description="A secret string used to encode and decode JWT refresh tokens."
-								/>
-
-								<TogglePasswordInputRow
-									name="env.MARIADB_ROOT_PASSWORD"
-									label="MARIADB_ROOT_PASSWORD"
-									description="The password of the db's root account."
-								/>
-								<TogglePasswordInputRow
-									name="env.MYSQL_USER"
-									label="MYSQL_USER"
-									description="The name of the main db user."
-								/>
-								<TogglePasswordInputRow
-									name="env.MYSQL_PASSWORD"
-									label="MYSQL_PASSWORD"
-									description="The password of the main db user."
-								/>
+								{gen === 'hono' && (
+									<>
+										<TogglePasswordInputRow
+											name="env.MARIADB_ROOT_PASSWORD"
+											label="MARIADB_ROOT_PASSWORD"
+											description="The password of the db's root account."
+										/>
+										<TogglePasswordInputRow
+											name="env.MYSQL_USER"
+											label="MYSQL_USER"
+											description="The name of the main db user."
+										/>
+										<TogglePasswordInputRow
+											name="env.MYSQL_PASSWORD"
+											label="MYSQL_PASSWORD"
+											description="The password of the main db user."
+										/>
+										<TogglePasswordInputRow
+											name="env.EMAIL_HOST"
+											label="EMAIL_HOST"
+											description="The url of the email server."
+										/>
+										<TogglePasswordInputRow
+											name="env.EMAIL_PORT"
+											label="EMAIL_PORT"
+											description="The port of the email server."
+										/>
+										<TogglePasswordInputRow
+											name="env.EMAIL_USER"
+											label="EMAIL_USER"
+											description="The username for connecting to the email server."
+										/>
+										<TogglePasswordInputRow
+											name="env.EMAIL_PASS"
+											label="EMAIL_PASS"
+											description="The password that goes with the username."
+										/>
+										<TogglePasswordInputRow
+											name="env.EMAIL_FROM"
+											label="EMAIL_FROM"
+											description="The address to use as the 'from' field of an email."
+										/>
+									</>
+								)}
 							</div>
 						</AccordionContent>
 					</AccordionItem>

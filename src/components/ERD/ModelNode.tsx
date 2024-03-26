@@ -2,9 +2,9 @@
 
 import { Dispatch, SetStateAction } from 'react'
 import { useUpdateNodeInternals, type NodeProps } from 'reactflow'
-import { camelize, cn } from '@/lib/utils'
+import { camelize, cn, generateId } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import { CalendarIcon, LinkIcon, LockIcon, PlusIcon, Settings2Icon, SparklesIcon, Trash2Icon } from 'lucide-react'
+import { CalendarIcon, LinkIcon, LockIcon, PlusIcon, SettingsIcon, SparklesIcon, Trash2Icon } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Switch } from '@/components/ui/switch'
 import { Input } from '@/components/ui/input'
@@ -31,6 +31,7 @@ import { restrictToVerticalAxis, restrictToParentElement } from '@dnd-kit/modifi
 import { useModelField } from '@/lib/useModelField'
 import { isReservedKeyword } from '@/lib/ERDHelpers'
 import { plural } from 'pluralize'
+import { useApp } from '@/lib/AppContext'
 
 type Model = BasicModel & {
 	attributes: Attribute[]
@@ -51,7 +52,10 @@ const isModelLocked = (model: Model) => {
 }
 
 export const ModelNode = ({ data, selected }: NodeProps<Model>) => {
-	const { project, nodes, setNodes, detailed, relations, setRelations } = useERDContext()
+	const { project, userModelId, setUserModelId, nodes, setNodes, detailed, relations, setRelations } = useERDContext()
+
+	const hasUserModel = nodes.some((x) => x.data.id === userModelId)
+	const isUser = data.id === userModelId
 
 	// const titleHSL = hexToCssHsl(data.color || stringToColor(data.name))
 	// const getTitleBG = (hsl: ReturnType<typeof hexToCssHsl>) => `hsl(${hsl.h},90%, ${hsl.l}%, 50%)`
@@ -95,13 +99,14 @@ export const ModelNode = ({ data, selected }: NodeProps<Model>) => {
 			attributes: [
 				...data.attributes,
 				{
-					id: crypto.randomUUID(),
+					id: generateId(),
 					name: suggestion?.name || '',
 					type: validateSuggestionType(suggestion?.type) || AttributeType.text,
 					order: data.attributes.length,
 					modelId: data.id,
 					nullable: false,
 					selectable: true,
+					insertable: true,
 					default: '',
 					enabled: true,
 					foreignKey: false,
@@ -146,7 +151,7 @@ export const ModelNode = ({ data, selected }: NodeProps<Model>) => {
 
 		setRelations((prev) => {
 			const newRel = {
-				id: crypto.randomUUID(),
+				id: generateId(),
 				type: RelationType.manyToOne,
 				sourceName: '',
 				targetName: '',
@@ -176,15 +181,15 @@ export const ModelNode = ({ data, selected }: NodeProps<Model>) => {
 	return (
 		<div
 			className={cn(
-				'flex min-w-[216px] cursor-default flex-col bg-background border transition-shadow dark:border rounded-md overflow-hidden',
+				'flex min-w-[216px] cursor-default flex-col overflow-hidden rounded-md border bg-background transition-shadow dark:border',
 				selected && 'ring-2 ring-ring ring-offset-2 ring-offset-muted dark:ring-offset-background',
 				!data.enabled && 'opacity-50'
 			)}
 		>
-			<div className="p-0 mb-[12px]">
+			<div className="mb-[12px] p-0">
 				<div
 					className={cn(
-						'drag-handle flex h-[36px] cursor-grab items-center justify-between pl-4 pr-2 active:cursor-grabbing bg-primary text-primary-foreground border-b',
+						'drag-handle flex h-[36px] cursor-grab items-center justify-between border-b bg-primary pl-4 pr-2 text-primary-foreground active:cursor-grabbing',
 						selected && 'bg-blue-100 text-blue-600 dark:bg-blue-600/20 dark:text-blue-300'
 					)}
 					// style={{ background: getTitleBG(titleHSL), color: 'black' }}
@@ -197,92 +202,109 @@ export const ModelNode = ({ data, selected }: NodeProps<Model>) => {
 						<div className="text-sm font-medium italic text-destructive">New Model</div>
 					)}
 
-					<div>
-						<Popover>
-							<PopoverTrigger asChild>
-								<Button
-									variant="ghost"
-									size="xs"
-									className="h-6 w-6 rounded-full px-0 dark:hover:bg-foreground/10"
-								>
-									<Settings2Icon className="h-4 w-4" />
-								</Button>
-							</PopoverTrigger>
+					<Popover>
+						<PopoverTrigger asChild>
+							<Button
+								variant="ghost"
+								size="xs"
+								className="h-6 w-6 rounded-full px-0 dark:hover:bg-foreground/10"
+							>
+								<SettingsIcon className="h-4 w-4" />
+							</Button>
+						</PopoverTrigger>
 
-							<PopoverContent align="center" side="right">
-								<div className="grid auto-rows-fr grid-cols-1 gap-3">
-									<div className="flex items-center justify-between pb-3">
-										<div>Model Settings</div>
+						<PopoverContent align="center" side="right">
+							<div className="flex flex-col gap-3">
+								<div className="flex items-center justify-between pb-3">
+									<div>Model Settings</div>
 
-										<div className="flex items-center gap-2">
-											{isModelLocked(data) ? (
-												<Button variant="ghost" size="xs">
-													<LockIcon className="h-4 w-4" />
-												</Button>
-											) : (
-												<Button
-													variant="ghost"
-													size="xs"
-													onClick={() => {
-														removeSelf()
-													}}
-												>
-													<Trash2Icon className="h-4 w-4" />
-												</Button>
-											)}
+									<div className="flex items-center gap-2">
+										{isModelLocked(data) ? (
+											<Button variant="ghost" size="xs">
+												<LockIcon className="h-4 w-4" />
+											</Button>
+										) : (
+											<Button
+												variant="ghost"
+												size="xs"
+												onClick={() => {
+													removeSelf()
+												}}
+											>
+												<Trash2Icon className="h-4 w-4" />
+											</Button>
+										)}
+									</div>
+								</div>
+
+								{!hasUserModel && (
+									<div className="flex flex-col gap-2 rounded-md border p-2">
+										<Button
+											size="sm"
+											onClick={() => {
+												setUserModelId(data.id)
+											}}
+										>
+											Set as Auth Model
+										</Button>
+										<div className="rounded-md bg-muted p-2 text-sm text-muted-foreground">
+											The auth model comes with a set of required attributes.
 										</div>
 									</div>
+								)}
 
-									<PanelRow label="Name" hint="The name of the model used for...">
-										<Input
-											value={name}
-											onChange={(e) => {
-												setName(e.currentTarget.value.replace(/\s/g, ''))
-											}}
-											autoFocus
-										/>
-									</PanelRow>
+								<PanelRow label="Name" hint="The name of the model used for...">
+									<Input
+										value={name}
+										onChange={(e) => {
+											setName(e.currentTarget.value.replace(/\s/g, ''))
+										}}
+										size="sm"
+										autoFocus
+									/>
+								</PanelRow>
 
-									<PanelRow label="Key" hint="The name of the model used in code">
-										<Input
-											value={key}
-											onChange={(e) => {
-												setKey(e.currentTarget.value)
-											}}
-											disabled={isModelLocked(data)}
-											placeholder={keyPlaceholder}
-										/>
-									</PanelRow>
+								<PanelRow label="Key" hint="The name of the model used in code">
+									<Input
+										value={key}
+										onChange={(e) => {
+											setKey(e.currentTarget.value)
+										}}
+										size="sm"
+										disabled={isModelLocked(data)}
+										placeholder={keyPlaceholder}
+									/>
+								</PanelRow>
 
-									<PanelRow label="Table" hint="The name of the database table">
-										<Input
-											value={tableName}
-											onChange={(e) => setTableName(e.currentTarget.value)}
-											placeholder={tablePlaceholder}
-										/>
-									</PanelRow>
+								<PanelRow label="Table" hint="The name of the database table">
+									<Input
+										value={tableName}
+										onChange={(e) => setTableName(e.currentTarget.value)}
+										placeholder={tablePlaceholder}
+										size="sm"
+									/>
+								</PanelRow>
 
-									<PanelRow label="Audit Dates" hint="Whether to include createdAt, etc">
-										<Switch
-											checked={data.auditDates}
-											onCheckedChange={(val) => updateModelField('auditDates', val)}
-										/>
-									</PanelRow>
+								<PanelRow label="Audit Dates" hint="Whether to include createdAt, etc">
+									<Switch
+										checked={data.auditDates}
+										onCheckedChange={(val) => updateModelField('auditDates', val)}
+									/>
+								</PanelRow>
 
-									<PanelRow
-										label="Enabled"
-										hint="If set to false, this model will be omitted from the generated app and db schema"
-									>
-										<Switch
-											checked={data.enabled}
-											onCheckedChange={(val) => updateModelField('enabled', val)}
-											disabled={isUserModel}
-										/>
-									</PanelRow>
-								</div>
-							</PopoverContent>
-						</Popover>
-					</div>
+								<PanelRow
+									label="Enabled"
+									hint="If set to false, this model will be omitted from the generated app and db schema"
+								>
+									<Switch
+										checked={data.enabled}
+										onCheckedChange={(val) => updateModelField('enabled', val)}
+										disabled={isUserModel}
+									/>
+								</PanelRow>
+							</div>
+						</PopoverContent>
+					</Popover>
 				</div>
 			</div>
 
@@ -336,7 +358,7 @@ export const ModelNode = ({ data, selected }: NodeProps<Model>) => {
 				)}
 			</div>
 
-			<div className="flex h-[34px] mt-[10px] items-center justify-between gap-2 border-t px-2">
+			<div className="mt-[10px] flex h-[34px] items-center justify-between gap-2 border-t px-2">
 				<div className="flex gap-2">
 					<Tooltip content="Add Attribute" delayDuration={0} side="bottom">
 						<Button

@@ -1,4 +1,4 @@
-import { AlertOctagonIcon, AlertTriangleIcon, FolderSearchIcon, Loader2Icon, RefreshCcwDotIcon } from 'lucide-react'
+import { AlertOctagonIcon, FolderSearchIcon, Loader2Icon, RefreshCcwDotIcon } from 'lucide-react'
 import { Tree } from './Tree'
 import { Button } from './ui/button'
 import { useApp } from '../lib/AppContext'
@@ -40,12 +40,13 @@ export const Sidebar = () => {
 			) : (
 				<>
 					<div className="flex min-h-0 flex-1 flex-col divide-y">
-						<div className="flex h-10 shrink-0 flex-row items-center justify-between pl-2 pr-1">
+						<div className="flex h-10 shrink-0 flex-row items-center justify-between px-1">
 							<div>
 								<div className="flex items-center gap-2">
 									<Button
 										variant="pip"
-										className="text-sm font-medium text-muted-foreground"
+										className="text-sm font-normal hover:bg-foreground/5"
+										size="pip"
 										onClick={() => {
 											openConfirm({
 												title: 'Close this project?',

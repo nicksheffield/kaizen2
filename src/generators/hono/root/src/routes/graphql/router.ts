@@ -9,6 +9,7 @@ import { createYoga } from 'graphql-yoga'
 import { rule, shield } from 'graphql-shield'
 import { useDisableIntrospection } from '@graphql-yoga/plugin-disable-introspection'
 import { useGraphQLMiddleware } from '@envelop/graphql-middleware'
+import { EnvelopArmorPlugin } from '@escape.tech/graphql-armor'
 import { getSession } from '@/middleware/authenticate.js'
 import { User as AuthUser, Session } from 'lucia'
 import { env } from '@/lib/env.js'
@@ -68,7 +69,8 @@ const yoga = createYoga({
 	schema,
 	graphiql: false,
 	plugins: [
-		!isDev && useDisableIntrospection,
+		!isDev && useDisableIntrospection(),
+		EnvelopArmorPlugin(),
 		useGraphQLMiddleware([
 			// all this bullshit is here to make it so you can introspect without auth, but everything else requires auth
 			shield({
