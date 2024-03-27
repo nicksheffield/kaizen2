@@ -1,16 +1,19 @@
+import { ModelCtx } from '@/generators/hono/contexts'
 import { mapAttributeTypeToJs } from '@/generators/hono/utils'
 import { ProjectCtx } from '@/generators/types'
 import { isNotNone } from '@/lib/utils'
 
-const tmpl = ({ project }: { project: ProjectCtx }) => {
-	const user = project.models.find((x) => project.project.userModelId === x.id)
+const tmpl = ({ models, project }: { models: ModelCtx[]; project: ProjectCtx }) => {
+	const user = models.find((x) => project.project.userModelId === x.id)
+
+	if (!user) return ''
 
 	return `import { db } from '@/lib/db.js'
-	import { emailVerificationCodes, users } from '@/schema.js'
+	import { emailVerificationCodes, ${user.drizzleName} } from '@/schema.js'
 	import { generateId } from 'lucia'
 	import { TimeSpan, createDate } from 'oslo'
 	import { generateRandomString, alphabet } from 'oslo/crypto'
-	import { eq } from 'drizzle-orm'
+	import { eq, or } from 'drizzle-orm'
 	import { sendVerificationEmail } from '@/lib/email.js'
 	import { HTTPException } from 'hono/http-exception'
 	import { hashPassword, validatePassword } from '@/lib/password.js'
@@ -35,25 +38,26 @@ const tmpl = ({ project }: { project: ProjectCtx }) => {
 		return code
 	}
 
-	type UserFields = {
+	type CreateUserFields = {
 		${user?.attributes
 			.map((x) => {
 				if (!x.insertable) return null
 				if (x.name === 'password') return null
 				if (x.name === 'email') return null
 
-				return `${x.name}: ${mapAttributeTypeToJs(x.type)} ${x.nullable || x.name === 'id' ? '| null | undefined' : ''}`
+				return `${x.name}${x.name === 'id' || x.optional ? '?' : ''}: ${mapAttributeTypeToJs(x.type)} ${x.optional || x.name === 'id' ? '| null | undefined' : ''}`
 			})
 			.filter(isNotNone)
 			.join('; ')}
 	}
 	
-	export const createUser = async (email: string, password: string, fields: UserFields) => {
+	export const createUser = async (email: string, password: string, fields: CreateUserFields) => {
 		const userId = fields.id || generateId(15)
 	
 		const newUser = {
-			id: userId,
+			...fields,
 			email,
+			id: userId,
 		}
 	
 		await validatePassword(password)
@@ -86,12 +90,26 @@ const tmpl = ({ project }: { project: ProjectCtx }) => {
 			where: eq(users.id, userId),
 		})
 	}
+
+	type UpdateUserFields = {
+		${user?.attributes
+			.map((x) => {
+				if (!x.insertable) return null
+				if (x.name === 'password') return null
+				if (x.name === 'email') return null
+				if (x.name === 'id') return null
+
+				return `${x.name}?: ${mapAttributeTypeToJs(x.type)} | null | undefined`
+			})
+			.filter(isNotNone)
+			.join('; ')}
+	}
 	
 	export const updateUser = async (
 		userId: string,
 		email: string | undefined,
 		password: string | undefined,
-		fields: Omit<UserFields, 'id'>
+		fields: UpdateUserFields
 	) => {
 		const user = await db.query.users.findFirst({
 			where: eq(users.id, userId),
@@ -115,7 +133,17 @@ const tmpl = ({ project }: { project: ProjectCtx }) => {
 			.set({
 				email,
 				password: hashedPassword,
-				...fields
+				${user?.attributes
+					.map((x) => {
+						if (!x.insertable) return null
+						if (x.name === 'password') return null
+						if (x.name === 'email') return null
+						if (x.name === 'id') return null
+
+						return `${x.name}: fields.${x.name} ?? undefined`
+					})
+					.filter(isNotNone)
+					.join(', ')}
 			})
 			.where(eq(users.id, userId))
 	

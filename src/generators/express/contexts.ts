@@ -22,7 +22,6 @@ export const createModelCtx = (model: ProjectCtx['models'][number], ctx: Project
 	const allSourceRels = ctx.relations.filter((x) => x.sourceId === model.id)
 	const allTargetRels = ctx.relations.filter((x) => x.targetId === model.id)
 
-	// const idDefault = ctx.database === 'postgres' ? 'uuid_generate_v4()' : null
 	const idDefault = null
 
 	return {

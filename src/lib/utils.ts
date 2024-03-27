@@ -4,12 +4,9 @@ import { singular } from 'pluralize'
 import { twMerge } from 'tailwind-merge'
 import { alphabet, generateRandomString } from 'oslo/crypto'
 
-import { v4 } from 'uuid'
 import { Attribute, Project } from '@/lib/schemas'
 
 export const generateId = (length: number = 5) => generateRandomString(length, alphabet('0-9', 'a-z'))
-
-export const uuid = v4
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs))

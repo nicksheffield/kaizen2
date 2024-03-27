@@ -78,7 +78,7 @@ export const vetDefault = (def: any): string | boolean | number | null => {
 
 export const mapAttrToGarph = (type: string) => {
 	switch (type) {
-		case 'uuid':
+		case 'id':
 			return 'id()'
 		case 'a_i':
 			return 'id()'
@@ -107,7 +107,7 @@ export const mapAttrToGarph = (type: string) => {
 
 export const mapAttrToDrizzleTypeName = (type: string) => {
 	switch (type) {
-		case 'uuid':
+		case 'id':
 			return 'varchar'
 		case 'a_i':
 			return 'int'
@@ -138,7 +138,7 @@ export const mapAttrToDrizzleTypeFn = (attr: { name: string; type: string }) => 
 	const name = attr.name
 
 	switch (attr.type) {
-		case 'uuid':
+		case 'id':
 			return `varchar('${name}', { length: 15 }).primaryKey()`
 		case 'a_i':
 			return `int('${name}').primaryKey().autoincrement()`
@@ -213,7 +213,7 @@ export const mapAttrToGQLFilter = (type: AttributeType) => {
 		case 'varchar':
 		case 'base64':
 		case 'password':
-		case 'uuid':
+		case 'id':
 			return 'StringFilter'
 		case 'int':
 		case 'float':

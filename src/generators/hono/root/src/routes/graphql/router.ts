@@ -10,11 +10,11 @@ import { rule, shield } from 'graphql-shield'
 import { useDisableIntrospection } from '@graphql-yoga/plugin-disable-introspection'
 import { useGraphQLMiddleware } from '@envelop/graphql-middleware'
 import { EnvelopArmorPlugin } from '@escape.tech/graphql-armor'
-import { getSession } from '@/middleware/authenticate.js'
+import { getSession, authDecorate } from '@/middleware/authenticate.js'
 import { User as AuthUser, Session } from 'lucia'
 import { env } from '@/lib/env.js'
 import { isNotFalse } from '@/lib/utils.js'
-${models.map((model) => `import * as ${model.name} from './resolvers/${model.tableName}.js'`).join('\n')}
+${models.map((model) => `import * as ${model.name} from './resolvers/${model.drizzleName}.js'`).join('\n')}
 
 const isDev = env.NODE_ENV !== 'production'
 
@@ -100,7 +100,7 @@ const yoga = createYoga({
 
 const methods = isDev ? ['GET', 'POST'] : ['POST']
 
-router.on(methods, '/', async (context) => {
+router.on(methods, '/', authDecorate, async (context) => {
 	return yoga.handle(context.req.raw, context)
 })
 `

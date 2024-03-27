@@ -6,16 +6,16 @@ export const useAttrField = (
 	modelId: string,
 	attrId: string,
 	field: keyof Attribute
-): [string, (x: string) => void] => {
+): [string | null, (x: string | null) => void] => {
 	const { nodes, setNodes } = useERDContext()
 
 	const model = nodes.find((n) => n.id === modelId)?.data
 	const attr = model?.attributes.find((a) => a.id === attrId)
 
-	const [state, updateState] = useState<string>(attr?.[field] as string)
+	const [state, updateState] = useState<string | null>(attr?.[field] as string)
 
 	const setState = useCallback(
-		(value: string) => {
+		(value: string | null) => {
 			updateState(value)
 			setNodes((prev) => {
 				return prev.map((x) => {
@@ -28,7 +28,7 @@ export const useAttrField = (
 										return a.id === attrId ? { ...a, [field]: value } : a
 									}),
 								},
-						  }
+							}
 						: x
 				})
 			})

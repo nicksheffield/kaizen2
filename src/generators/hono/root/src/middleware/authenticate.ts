@@ -70,6 +70,16 @@ const tmpl = ({ project }: { project: ProjectCtx }) => {
 	
 		await next()
 	}
+
+	// a version of the authenticate middleware that doesn't throw an error
+	export const authDecorate: MiddlewareHandler = async (c, next) => {
+		const { user, session } = await getSession(c)
+
+		c.set('user', user)
+		c.set('session', session)
+
+		await next()
+	}
 	
 	export const setSessionCookies = async (c: Context, user: { id: string }) => {
 		const session = await lucia.createSession(user.id, {})

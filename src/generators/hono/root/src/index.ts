@@ -5,7 +5,6 @@ import { mountRoutes } from '@/lib/mountRoutes.js'
 import { join } from 'path'
 import { showRoutes } from 'hono/dev'
 import { cors } from 'hono/cors'
-import { compress } from 'hono/compress'
 import { secureHeaders } from 'hono/secure-headers'
 import { seed } from '@/seed.js'
 import path from 'path'
@@ -23,8 +22,6 @@ app.use(
 		credentials: true,
 	})
 )
-
-app.use(compress())
 
 app.use(
 	secureHeaders({

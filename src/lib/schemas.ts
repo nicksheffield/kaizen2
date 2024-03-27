@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 export type AttributeType = keyof typeof AttributeType
 export const AttributeType = {
-	uuid: 'uuid',
+	id: 'id',
 	a_i: 'a_i',
 	varchar: 'varchar',
 	text: 'text',

@@ -36,7 +36,7 @@ type Model = BasicModel & {
 	attributes: Attribute[]
 }
 
-const AttrType = z.enum(['uuid', 'a_i', 'text', 'password', 'int', 'float', 'boolean', 'datetime', 'date', 'time'])
+const AttrType = z.enum(['id', 'a_i', 'text', 'password', 'int', 'float', 'boolean', 'datetime', 'date', 'time'])
 
 const validateSuggestionType = (suggestion?: string) => {
 	const validation = AttrType.safeParse(suggestion)

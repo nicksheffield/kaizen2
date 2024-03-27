@@ -71,7 +71,7 @@ const tmpl = ({ models, project }: { models: ModelCtx[]; project: ProjectCtx }) 
 						...model.foreignKeys.map((fk) => ({
 							id: fk.id,
 							name: fk.name,
-							type: 'uuid',
+							type: 'id',
 							default: null,
 							nullable: fk.optional,
 							selectable: true,

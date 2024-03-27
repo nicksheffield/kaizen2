@@ -1,5 +1,10 @@
-const tmpl = () => `### @name Login
-POST http://localhost:5555/auth/login
+import { ProjectCtx } from '@/generators/types'
+
+const tmpl = ({ project }: { project: ProjectCtx }) => {
+	const port = 5556
+
+	return `### @name Login
+POST http://localhost:${port}/auth/login
 Content-Type: application/json
 
 {
@@ -9,10 +14,10 @@ Content-Type: application/json
 }
 
 ### @name Logout
-POST http://localhost:5555/auth/logout
+POST http://localhost:${port}/auth/logout
 
 ### @name ConfirmAccount
-POST http://localhost:5555/auth/confirm-account
+POST http://localhost:${port}/auth/confirm-account
 Content-Type: application/json
 
 {
@@ -21,19 +26,19 @@ Content-Type: application/json
 }
 
 ### @name Setup2FA
-POST http://localhost:5555/auth/setup-twofactor
+POST http://localhost:${port}/auth/setup-twofactor
 
 ### @name Confirm2FA
-POST http://localhost:5555/auth/confirm-twofactor
+POST http://localhost:${port}/auth/confirm-twofactor
 
 ### @name Disable2FA
-POST http://localhost:5555/auth/disable-twofactor
+POST http://localhost:${port}/auth/disable-twofactor
 
 ### @name Profile
-GET http://localhost:5555/auth/profile
+GET http://localhost:${port}/auth/profile
 
 ### @name ResetPassword
-POST http://localhost:5555/auth/reset-password
+POST http://localhost:${port}/auth/reset-password
 Content-Type: application/json
 
 {
@@ -41,7 +46,7 @@ Content-Type: application/json
 }
 
 ### @name ResetPasswordWithCode
-POST http://localhost:5555/auth/reset-password/bydmrkqn8u71o6k7qmay17rir4k9nigzrj5kfemt
+POST http://localhost:${port}/auth/reset-password/bydmrkqn8u71o6k7qmay17rir4k9nigzrj5kfemt
 Content-Type: application/json
 
 {
@@ -49,15 +54,16 @@ Content-Type: application/json
 }
 
 ### @name GetUsers
-GET http://localhost:5555/api/users
+GET http://localhost:${port}/api/users
 
 ### @name CreateUser
-POST http://localhost:5555/api/users
+POST http://localhost:${port}/api/users
 Content-Type: application/json
 
 {
   "email": "user@example.com",
   "password": "1f64f903"
 }`
+}
 
 export default tmpl

@@ -1,14 +1,20 @@
-const tmpl = () => {
+import { ModelCtx } from '@/generators/hono/contexts'
+import { ProjectCtx } from '@/generators/types'
+import { isNotNone } from '@/lib/utils'
+
+const tmpl = ({ models, project }: { models: ModelCtx[]; project: ProjectCtx }) => {
+	const userModel = models.find((x) => project.project.userModelId === x.id)
+
 	return `import { db } from '@/lib/db.js'
 import { eq, lt } from 'drizzle-orm'
 import * as tables from '@/schema.js'
 import { generateId } from 'lucia'
 import { Argon2id } from 'oslo/password'
-import { migrate } from 'drizzle-orm/mysql2/migrator'
+import { migrate } from '@/migrate.js'
 
 export const seed = async () => {
 	// update database schema
-	await migrate(db, { migrationsFolder: './migrations' })
+	await migrate()
 
 	// wipe out all the old sessions
 	await db
@@ -36,6 +42,20 @@ export const seed = async () => {
 			email: 'admin@example.com',
 			password: await new Argon2id().hash('password'),
 			roles: 'default|admin',
+			${userModel?.attributes
+				.map((x) => {
+					if (!x.insertable) return null
+					if (x.name === 'id') return null
+					if (x.name === 'email') return null
+					if (x.name === 'password') return null
+					if (x.name === 'roles') return null
+
+					if (x.type === 'varchar' || x.type === 'text') {
+						return `${x.name}: ''`
+					}
+				})
+				.filter(isNotNone)
+				.join(',')}
 		})
 	}
 }

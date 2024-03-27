@@ -53,7 +53,12 @@ const tmpl = ({ project }: { project: ProjectCtx }) => {
 	return stringify(
 		{
 			version: '3.1',
-			services: { node, db, adminer, nginx },
+			services: {
+				// node,
+				db,
+				adminer,
+				// nginx
+			},
 			volumes,
 		},
 		null,

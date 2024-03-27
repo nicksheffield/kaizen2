@@ -3,7 +3,7 @@ const tmpl = () => {
 		compilerOptions: {
 			target: 'ES6',
 			lib: ['es2018', 'esnext.asynciterable'],
-			module: 'ES2022',
+			module: 'NodeNext',
 			allowJs: true,
 			outDir: 'build',
 			rootDir: 'src',

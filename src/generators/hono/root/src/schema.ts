@@ -1,7 +1,8 @@
 import { mapAttrToDrizzleTypeFn, mapAttrToDrizzleTypeName } from '../../utils'
 import { ModelCtx } from '../../contexts'
+import { ProjectCtx } from '@/generators/types'
 
-const tmpl = (ctx: { models: ModelCtx[] }) => {
+const tmpl = (ctx: { models: ModelCtx[]; project: ProjectCtx }) => {
 	const attrTypeImports = ctx.models.flatMap((x) => x.attributes).map((x) => mapAttrToDrizzleTypeName(x.type))
 	const requiredTypeImports = ['mysqlTable', 'timestamp', 'varchar', 'datetime']
 
@@ -13,43 +14,43 @@ const tmpl = (ctx: { models: ModelCtx[] }) => {
 import { ${drizzleTypeImports.join(', ')} } from 'drizzle-orm/mysql-core'
 
 const auditDates = {
-	createdAt: timestamp('created_at').defaultNow().notNull(),
-	updatedAt: timestamp('updated_at').onUpdateNow(),
-	deletedAt: timestamp('deleted_at'),
+	createdAt: timestamp('createdAt').defaultNow().notNull(),
+	updatedAt: timestamp('updatedAt').onUpdateNow(),
+	deletedAt: timestamp('deletedAt'),
 }
 
 /**
  * Auth Tables
  */
-export const sessions = mysqlTable('sessions', {
+export const sessions = mysqlTable('_sessions', {
 	id: varchar('id', { length: 15 }).primaryKey(),
-	userId: varchar('user_id', { length: 255 })
+	userId: varchar('userId', { length: 255 })
 		.notNull()
 		.references(() => users.id),
-	expiresAt: datetime('expires_at').notNull(),
+	expiresAt: datetime('expiresAt').notNull(),
 })
 
-export const emailVerificationCodes = mysqlTable('email_verification_codes', {
+export const emailVerificationCodes = mysqlTable('_email_verification_codes', {
 	id: varchar('id', { length: 15 }).primaryKey(),
 	code: varchar('code', { length: 255 }).notNull(),
-	userId: varchar('user_id', { length: 15 })
+	userId: varchar('userId', { length: 15 })
 		.notNull()
 		.references(() => users.id),
 	email: varchar('email', { length: 255 }).notNull(),
-	expiresAt: datetime('expires_at').notNull(),
+	expiresAt: datetime('expiresAt').notNull(),
 })
 
-export const passwordResetToken = mysqlTable('password_reset_token', {
-	tokenHash: varchar('token_hash', { length: 255 }).unique(),
-	userId: varchar('user_id', { length: 15 })
+export const passwordResetToken = mysqlTable('_password_reset_token', {
+	tokenHash: varchar('tokenHash', { length: 255 }).unique(),
+	userId: varchar('userId', { length: 15 })
 		.notNull()
 		.references(() => users.id),
-	expiresAt: datetime('expires_at').notNull(),
+	expiresAt: datetime('expiresAt').notNull(),
 })
 
-export const recoveryCodes = mysqlTable('recovery_codes', {
-	codeHash: varchar('code_hash', { length: 255 }).unique().notNull(),
-	userId: varchar('user_id', { length: 15 })
+export const recoveryCodes = mysqlTable('_recovery_codes', {
+	codeHash: varchar('codeHash', { length: 255 }).unique().notNull(),
+	userId: varchar('userId', { length: 15 })
 		.notNull()
 		.references(() => users.id),
 })
@@ -96,7 +97,7 @@ export const recoveryCodesRelations = relations(recoveryCodes, ({ one }) => ({
  */
 ${models
 	.map((model) => {
-		return `export const ${model.tableName} = mysqlTable('${model.tableName}', {
+		return `export const ${model.drizzleName} = mysqlTable('${model.tableName}', {
 	id: varchar('id', { length: 15 }).primaryKey(),
 	${model.attributes
 		.map((attr) => {
@@ -132,9 +133,10 @@ ${models
 
 		if (relationTypes.length === 0) return null
 
-		return `export const ${model.tableName}Relations = relations(${model.tableName}, ({ ${relationTypes.join(', ')} }) => ({
+		// ${relationTypes.join(', ')}
+		return `export const ${model.drizzleName}Relations = relations(${model.tableName}, ({ one, many }) => ({
 	${
-		model.tableName === 'users'
+		model.id === ctx.project.project.userModelId
 			? `sessions: many(sessions),
 	emailVerificationCodes: many(emailVerificationCodes),
 	passwordResetTokens: many(passwordResetToken),
@@ -147,11 +149,11 @@ ${models
 			if (rel.targetType === 'one') {
 				return `${rel.fieldName}: one(${rel.tableName}, {
 		fields: [${model.tableName}.${rel.thisKey}],
-		references: [${rel.tableName}.${rel.oppositeKey}],
+		references: [${rel.drizzleName}.${rel.oppositeKey}],
 	})`
 			}
 			// ${rel.side}
-			return `${rel.fieldName}: many(${rel.tableName})`
+			return `${rel.fieldName}: many(${rel.drizzleName})`
 		})
 		.join(',\n\t')}
 }))

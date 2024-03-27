@@ -10,11 +10,11 @@ import prettierRc from './root/prettierrc'
 import schemaJson from './root/schema.json'
 import packageJson from './root/package.json'
 import tsconfigJson from './root/tsconfig.json'
-import drizzleConfig from './root/drizzle.config'
 import dockerCompose from './root/docker-compose'
 
 import src_index from './root/src/index'
 import src_seed from './root/src/seed'
+import src_migrate from './root/src/migrate'
 import src_schema from './root/src/schema'
 
 import src_lib_db from './root/src/lib/db'
@@ -51,23 +51,23 @@ export const generate: GeneratorFn = async (project) => {
 	dir['/.env'] = env({ project })
 	dir['/.env.example'] = envExample()
 	dir['/.gitignore'] = gitignore()
-	dir['/rest.http'] = restHttp()
+	dir['/rest.http'] = restHttp({ project })
 	dir['/.pretterrc'] = prettierRc({ project })
 	dir['/schema.json'] = schemaJson({ models, project })
 	dir['/package.json'] = packageJson({ project })
 	dir['/tsconfig.json'] = tsconfigJson()
-	dir['/drizzle.config.ts'] = drizzleConfig()
 	dir['/docker-compose.yml'] = dockerCompose({ project })
 
 	dir['/src/index.ts'] = await format(src_index())
-	dir['/src/seed.ts'] = await format(src_seed())
-	dir['/src/schema.ts'] = await format(src_schema({ models }))
+	dir['/src/seed.ts'] = await format(src_seed({ models, project }))
+	dir['/src/migrate.ts'] = await format(src_migrate())
+	dir['/src/schema.ts'] = await format(src_schema({ models, project }))
 
 	dir['/src/lib/db.ts'] = await format(src_lib_db())
 	dir['/src/lib/email.ts'] = await format(src_lib_email())
 	dir['/src/lib/env.ts'] = await format(src_lib_env())
 	dir['/src/lib/lucia.ts'] = await format(src_lib_lucia({ project }))
-	dir['/src/lib/manageUser.ts'] = await format(src_lib_manageUser({ project }))
+	dir['/src/lib/manageUser.ts'] = await format(src_lib_manageUser({ models, project }))
 	dir['/src/lib/mountRoutes.ts'] = await format(src_lib_mountRoutes())
 	dir['/src/lib/password.ts'] = await format(src_lib_password())
 	dir['/src/lib/utils.ts'] = await format(src_lib_utils())
@@ -87,7 +87,7 @@ export const generate: GeneratorFn = async (project) => {
 	dir['/src/routes/graphql/resolvers/_utils.ts'] = await format(src_routes_graphql_resolvers_utils())
 
 	for (const model of models) {
-		dir[`/src/routes/graphql/resolvers/${model.tableName}.ts`] = await format(
+		dir[`/src/routes/graphql/resolvers/${model.drizzleName}.ts`] = await format(
 			src_routes_graphql_resolvers_resolver({ model, project })
 		)
 	}

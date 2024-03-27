@@ -1,5 +1,6 @@
 import {
 	getBigName,
+	getSmallName,
 	getTableName,
 	lc,
 	mapAttributeTypeToGQL,
@@ -23,7 +24,6 @@ export const createModelCtx = (model: ProjectCtx['models'][number], ctx: Project
 	const allSourceRels = ctx.relations.filter((x) => x.sourceId === model.id)
 	const allTargetRels = ctx.relations.filter((x) => x.targetId === model.id)
 
-	// const idDefault = ctx.database === 'postgres' ? 'uuid_generate_v4()' : null
 	const idDefault = null
 
 	return {
@@ -31,7 +31,7 @@ export const createModelCtx = (model: ProjectCtx['models'][number], ctx: Project
 		id: model.id,
 		name: model.name,
 		tableName: getTableName(model),
-		entityName: getBigName(model),
+		drizzleName: pluralize(getSmallName(model), 2),
 		gqlTypeName: getBigName(model),
 		endpointName: lc(pluralize(model.key || camelize(model.name), 2)),
 		single: pluralize(model.key || camelize(model.name), 1),
@@ -148,6 +148,7 @@ export const createModelCtx = (model: ProjectCtx['models'][number], ctx: Project
 						relation: rel,
 						targetType,
 						tableName,
+						drizzleName: pluralize(getSmallName(otherModel), 2),
 						fieldName,
 						thisKey,
 						oppositeKey,
@@ -196,6 +197,7 @@ export const createModelCtx = (model: ProjectCtx['models'][number], ctx: Project
 						relation: rel,
 						targetType,
 						tableName,
+						drizzleName: pluralize(getSmallName(otherModel), 2),
 						fieldName,
 						thisKey,
 						oppositeKey,

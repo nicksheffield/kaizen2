@@ -15,6 +15,7 @@ import {
 	PlusIcon,
 	TextIcon,
 	Trash2Icon,
+	XIcon,
 } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Switch } from '@/components/ui/switch'
@@ -50,7 +51,7 @@ export const AttributeRow = ({ attr, model, remove, updateField }: AttributeRowP
 
 	const AttrIcon: ElementType = useMemo(() => {
 		switch (attr.type) {
-			case AttributeType.uuid:
+			case AttributeType.id:
 				return FingerprintIcon
 			case AttributeType.a_i:
 				return PlusIcon
@@ -178,7 +179,7 @@ export const AttributeRow = ({ attr, model, remove, updateField }: AttributeRowP
 										</SelectTrigger>
 
 										<SelectContent position="item-aligned">
-											<SelectItem value="uuid">UUID</SelectItem>
+											<SelectItem value="id">ID</SelectItem>
 											<SelectItem value="a_i">Auto-Increment</SelectItem>
 										</SelectContent>
 									</Select>
@@ -188,7 +189,7 @@ export const AttributeRow = ({ attr, model, remove, updateField }: AttributeRowP
 							<>
 								<PanelRow label="Name">
 									<Input
-										value={name}
+										value={name || ''}
 										size="sm"
 										onChange={(e) => {
 											const val = e.currentTarget.value.replace(/\s/g, '')
@@ -230,34 +231,46 @@ export const AttributeRow = ({ attr, model, remove, updateField }: AttributeRowP
 								</PanelRow>
 
 								<PanelRow label="Default">
-									{attr.type === 'uuid' || attr.type === 'datetime' || attr.type === 'boolean' ? (
-										<Select
-											value={def === null ? 'null' : def || ''}
-											onValueChange={(val) => setDef(val === null ? 'null' : val)}
-											disabled={isLocked}
-										>
-											<SelectTrigger className="h-8 px-2 py-1 text-sm">
-												<SelectValue placeholder="Default" />
-											</SelectTrigger>
+									{attr.type === 'id' || attr.type === 'datetime' || attr.type === 'boolean' ? (
+										<div className="relative w-full">
+											<Select
+												value={def || ''}
+												onValueChange={(val) => setDef(val === '' ? null : val)}
+												disabled={isLocked}
+											>
+												<SelectTrigger className="h-8 px-2 py-1 text-sm">
+													<SelectValue />
+												</SelectTrigger>
 
-											<SelectContent position="item-aligned">
-												<SelectItem value="null">&nbsp;</SelectItem>
-												{attr.type === 'uuid' && (
-													<SelectItem value="uuid_generate_v4()">
-														uuid_generate_v4()
-													</SelectItem>
-												)}
-												{attr.type === 'datetime' && (
-													<SelectItem value="now()">now()</SelectItem>
-												)}
-												{attr.type === 'boolean' && (
-													<>
-														<SelectItem value="true">True</SelectItem>
-														<SelectItem value="false">False</SelectItem>
-													</>
-												)}
-											</SelectContent>
-										</Select>
+												<SelectContent position="item-aligned">
+													{/* <SelectItem value="">None</SelectItem> */}
+													{attr.nullable && <SelectItem value="null">NULL</SelectItem>}
+													{attr.type === 'datetime' && (
+														<SelectItem value="CURRENT_TIMESTAMP">
+															CURRENT_TIMESTAMP
+														</SelectItem>
+													)}
+													{attr.type === 'boolean' && (
+														<>
+															<SelectItem value="true">TRUE</SelectItem>
+															<SelectItem value="false">FALSE</SelectItem>
+														</>
+													)}
+												</SelectContent>
+											</Select>
+											<div className="absolute right-0 top-0 mr-6 flex h-full translate-x-px items-center">
+												<Button
+													size="pip-icon"
+													variant="outline"
+													className="h-5 w-5 border-0"
+													onClick={() => {
+														setDef('')
+													}}
+												>
+													<XIcon className="w-3" />
+												</Button>
+											</div>
+										</div>
 									) : (
 										<Input
 											value={attr.default || ''}

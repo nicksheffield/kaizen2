@@ -99,7 +99,7 @@ export const Editor = () => {
 				{
 					id: generateId(),
 					name: 'id',
-					type: AttributeType.uuid,
+					type: AttributeType.id,
 					order: 0,
 					modelId: id,
 					nullable: false,

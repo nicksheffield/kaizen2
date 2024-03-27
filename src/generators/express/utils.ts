@@ -187,7 +187,7 @@ export const mapAttributeTypeToZod = (type: AttributeType) => {
 		case 'text':
 		case 'base64':
 		case 'password':
-		case 'uuid':
+		case 'id':
 			return 'string'
 		case 'int':
 		case 'float':
@@ -211,8 +211,8 @@ export const mapAttributeTypeToPostgres = (type: AttributeType) => {
 			return 'text'
 		case 'base64':
 			return 'longtext'
-		case 'uuid':
-			return 'uuid'
+		case 'id':
+			return 'id'
 		case 'int':
 		case 'a_i':
 			return 'int8'
@@ -276,7 +276,7 @@ export const mapAttributeTypeToGQLFilter = (type: AttributeType) => {
 		case 'text':
 		case 'base64':
 		case 'password':
-		case 'uuid':
+		case 'id':
 			return 'StringFilterInput'
 		case 'int':
 		case 'float':

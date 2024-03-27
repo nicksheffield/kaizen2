@@ -7,7 +7,7 @@ import { plural } from 'pluralize'
 const tmpl = ({ model, project }: { model: ModelCtx; project: ProjectCtx }) => {
 	const nonSelectAttrs = model.attributes.filter((x) => !x.selectable)
 
-	const isUserModel = project.project.userModelId === model.id
+	const isAuthModel = project.project.userModelId === model.id
 
 	return `import { db } from '@/lib/db.js'
 	import { Resolvers } from '@/routes/graphql/router.js'
@@ -24,10 +24,10 @@ const tmpl = ({ model, project }: { model: ModelCtx; project: ProjectCtx }) => {
 	} from 'drizzle-orm'
 	import { g, Infer } from 'garph'
 	import { generateId } from 'lucia'
-	${isUserModel ? `import { createUser, updateUser } from '@/lib/manageUser.js'` : ''}
+	${isAuthModel ? `import { createUser, updateUser } from '@/lib/manageUser.js'` : ''}
 	${model.relatedModels
 		.map((x) => {
-			return `import * as ${x.otherModel.name} from './${x.tableName}.js'`
+			return `import * as ${x.otherModel.name} from './${x.drizzleName}.js'`
 		})
 		.join('\n')}
 	import { removeDuplicates } from '@/lib/utils.js'
@@ -35,7 +35,14 @@ const tmpl = ({ model, project }: { model: ModelCtx; project: ProjectCtx }) => {
 	import { handleFilters, BooleanFilter, StringFilter, NumberFilter } from './_filters.js'
 	
 	const OrderBys = g.enumType('${model.name}OrderBy', [
-		${model.attributes.map((x) => `'${x.name}'`).join(',')}
+		${model.attributes
+			.map((x) => {
+				if (!x.selectable) return null
+
+				return `'${x.name}'`
+			})
+			.filter(isNotNone)
+			.join(',')}
 		${model.auditDates ? `,'createdAt', 'updatedAt', 'deletedAt'` : ''}
 	] as const)
 	
@@ -141,20 +148,20 @@ const tmpl = ({ model, project }: { model: ModelCtx; project: ProjectCtx }) => {
 		${model.relatedModels
 			.map((rel) => {
 				let returnStmt = `return queries.map(
-					(q) => ${rel.tableName}.${rel.isArray ? 'filter' : 'find'}((u) => u.${rel.oppositeKey} === q.parent.${rel.thisKey})!
+					(q) => ${rel.drizzleName}.${rel.isArray ? 'filter' : 'find'}((u) => u.${rel.oppositeKey} === q.parent.${rel.thisKey})!
 				)`
 
 				if (rel.isArray) {
 					returnStmt = `return queries.map(
-						(q) => ${rel.tableName}.${rel.isArray ? 'filter' : 'find'}((u) => u.${rel.oppositeKey} === q.parent.${rel.thisKey})!
+						(q) => ${rel.drizzleName}.${rel.isArray ? 'filter' : 'find'}((u) => u.${rel.oppositeKey} === q.parent.${rel.thisKey})!
 					)`
 				}
 
 				return `${rel.fieldName}: {
 				async loadBatch(queries) {
-					const ${rel.tableName} = await db.query.${rel.tableName}.findMany({
+					const ${rel.drizzleName} = await db.query.${rel.drizzleName}.findMany({
 						where: inArray(
-							tables.${rel.tableName}.${rel.oppositeKey},
+							tables.${rel.drizzleName}.${rel.oppositeKey},
 							removeDuplicates(queries.map((q) => q.parent.${rel.thisKey} ?? ''))
 						),
 					})
@@ -184,7 +191,7 @@ const tmpl = ({ model, project }: { model: ModelCtx; project: ProjectCtx }) => {
 	// the resolvers for the queries
 	export const queryResolvers: Resolvers['Query'] = {
 		${model.name.toLowerCase()}: async (_, args) => {
-			const item = await db.query.${model.tableName}.findFirst({
+			const item = await db.query.${model.drizzleName}.findFirst({
 				${
 					nonSelectAttrs.length > 0
 						? `columns: {
@@ -193,8 +200,8 @@ const tmpl = ({ model, project }: { model: ModelCtx; project: ProjectCtx }) => {
 						: ''
 				}
 				where: and(
-					eq(tables.${model.tableName}.id, args.id),
-					isNull(tables.${model.tableName}.deletedAt)
+					eq(tables.${model.drizzleName}.id, args.id),
+					isNull(tables.${model.drizzleName}.deletedAt)
 				),
 			})
 	
@@ -206,11 +213,11 @@ const tmpl = ({ model, project }: { model: ModelCtx; project: ProjectCtx }) => {
 			const dir = args.orderDir === 'ASC' ? asc : desc
 	
 			const where = and(
-				...handleFilters(tables.${model.tableName}, args.where),
-				isNull(tables.${model.tableName}.deletedAt)
+				...handleFilters(tables.${model.drizzleName}, args.where),
+				isNull(tables.${model.drizzleName}.deletedAt)
 			)
 	
-			const items = await db.query.${model.tableName}.findMany({
+			const items = await db.query.${model.drizzleName}.findMany({
 				${
 					nonSelectAttrs.length > 0
 						? `columns: {
@@ -221,8 +228,8 @@ const tmpl = ({ model, project }: { model: ModelCtx; project: ProjectCtx }) => {
 				offset: (args.page - 1) * Math.min(args.limit, 100),
 				limit: Math.min(args.limit, 100),
 				orderBy: dir(
-					tables.${model.tableName}[
-						args.orderBy as keyof typeof tables.${model.tableName}
+					tables.${model.drizzleName}[
+						args.orderBy as keyof typeof tables.${model.drizzleName}
 					] as Column
 				),
 				where,
@@ -230,7 +237,7 @@ const tmpl = ({ model, project }: { model: ModelCtx; project: ProjectCtx }) => {
 	
 			const [{ totalCount }] = await db
 				.select({ totalCount: count() })
-				.from(tables.${model.tableName})
+				.from(tables.${model.drizzleName})
 				.where(where)
 	
 			return {
@@ -245,7 +252,6 @@ const tmpl = ({ model, project }: { model: ModelCtx; project: ProjectCtx }) => {
 		create${model.name}: g
 			.ref(types.type)
 			.list()
-			.optional()
 			.args({
 				data: g.ref(types.create).list(),
 			}),
@@ -253,7 +259,6 @@ const tmpl = ({ model, project }: { model: ModelCtx; project: ProjectCtx }) => {
 		update${model.name}: g
 			.ref(types.type)
 			.list()
-			.optional()
 			.args({
 				id: g.id(),
 				data: g.ref(types.update).list(),
@@ -273,22 +278,19 @@ const tmpl = ({ model, project }: { model: ModelCtx; project: ProjectCtx }) => {
 		create${model.name}: async (_, args, c) => {
 			const results: Omit<Infer<typeof types.type>, ${model.relatedModels.map((x) => `'${x.fieldName}'`).join('|')}>[] = []
 	
-			for (const datum of args.data) {
-				const { __typename, ...data } = datum
-
-				const { email, password, ...fields} = data
-
+			for (const data of args.data) {
 				${
-					isUserModel
-						? `const item = await createUser(email, password, ...fields)`
+					isAuthModel
+						? `const { email, password, ...fields} = data
+						const item = await createUser(email, password, fields)`
 						: `const newId = generateId(15)
 	
-					await db.insert(tables.${model.tableName}).values({
+					await db.insert(tables.${model.drizzleName}).values({
 						...data,
 						id: data.id ?? newId,
 					})
 		
-					const item = await db.query.${model.tableName}.findFirst({
+					const item = await db.query.${model.drizzleName}.findFirst({
 						${
 							nonSelectAttrs.length > 0
 								? `columns: {
@@ -296,7 +298,7 @@ const tmpl = ({ model, project }: { model: ModelCtx; project: ProjectCtx }) => {
 							},`
 								: ''
 						}
-						where: eq(tables.${model.tableName}.id, newId),
+						where: eq(tables.${model.drizzleName}.id, newId),
 					})`
 				}
 	
@@ -309,21 +311,19 @@ const tmpl = ({ model, project }: { model: ModelCtx; project: ProjectCtx }) => {
 		update${model.name}: async (_, args) => {
 			const results: Omit<Infer<typeof types.type>, ${model.relatedModels.map((x) => `'${x.fieldName}'`).join('|')}>[] = []
 	
-			for (const datum of args.data) {
-				const { __typename, ...data } = datum
-
-				const { email, password, ...fields} = data
-
+			for (const data of args.data) {
 				${
-					isUserModel
-						? `await updateUser(
+					isAuthModel
+						? `const { email, password, ...fields} = data
+						
+						await updateUser(
 					args.id,
 					email ?? undefined,
 					password ?? undefined,
-					...fields
+					fields
 				)`
 						: `await db
-				.update(tables.${model.tableName})
+				.update(tables.${model.drizzleName})
 				.set({
 					${model.attributes
 						.map((x) => {
@@ -338,10 +338,10 @@ const tmpl = ({ model, project }: { model: ModelCtx; project: ProjectCtx }) => {
 						})
 						.join('\n')}
 				})
-				.where(eq(tables.${model.tableName}.id, args.id))`
+				.where(eq(tables.${model.drizzleName}.id, args.id))`
 				}
 	
-				const item = await db.query.${model.tableName}.findFirst({
+				const item = await db.query.${model.drizzleName}.findFirst({
 					${
 						nonSelectAttrs.length > 0
 							? `columns: {
@@ -349,7 +349,7 @@ const tmpl = ({ model, project }: { model: ModelCtx; project: ProjectCtx }) => {
 						},`
 							: ''
 					}
-					where: eq(tables.${model.tableName}.id, args.id),
+					where: eq(tables.${model.drizzleName}.id, args.id),
 				})
 	
 				if (item) results.push(item)
@@ -359,7 +359,7 @@ const tmpl = ({ model, project }: { model: ModelCtx; project: ProjectCtx }) => {
 		},
 	
 		delete${model.name}: async (_, args) => {
-			const items = await db.query.${model.tableName}.findMany({
+			const items = await db.query.${model.drizzleName}.findMany({
 				${
 					nonSelectAttrs.length > 0
 						? `columns: {
@@ -367,14 +367,14 @@ const tmpl = ({ model, project }: { model: ModelCtx; project: ProjectCtx }) => {
 					},`
 						: ''
 				}
-				where: inArray(tables.${model.tableName}.id, args.id),
+				where: inArray(tables.${model.drizzleName}.id, args.id),
 			})
 	
 			for (const id of args.id) {
 				if (args.softDelete) {
-					await db.update(tables.${model.tableName}).set({ deletedAt: new Date() }).where(eq(tables.${model.tableName}.id, id))
+					await db.update(tables.${model.drizzleName}).set({ deletedAt: new Date() }).where(eq(tables.${model.drizzleName}.id, id))
 				} else {
-					await db.delete(tables.${model.tableName}).where(eq(tables.${model.tableName}.id, id))
+					await db.delete(tables.${model.drizzleName}).where(eq(tables.${model.drizzleName}.id, id))
 				}
 			}
 	
