@@ -5,7 +5,7 @@ const tmpl = (ctx: { models: ModelCtx[] }) => {
 
 	return `import { Context, Hono } from 'hono'
 import { g, InferResolvers, buildSchema } from 'garph'
-import { createYoga } from 'graphql-yoga'
+import { createYoga, maskError } from 'graphql-yoga'
 import { rule, shield } from 'graphql-shield'
 import { useDisableIntrospection } from '@graphql-yoga/plugin-disable-introspection'
 import { useGraphQLMiddleware } from '@envelop/graphql-middleware'

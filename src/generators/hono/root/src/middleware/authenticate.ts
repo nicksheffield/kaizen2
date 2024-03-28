@@ -72,7 +72,12 @@ const tmpl = ({ project }: { project: ProjectCtx }) => {
 	}
 
 	// a version of the authenticate middleware that doesn't throw an error
-	export const authDecorate: MiddlewareHandler = async (c, next) => {
+	export const authDecorate: MiddlewareHandler<{
+		Variables: {
+			user: User | null
+			session: Session | null
+		}
+	}> = async (c, next) => {
 		const { user, session } = await getSession(c)
 
 		c.set('user', user)

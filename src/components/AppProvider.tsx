@@ -255,15 +255,19 @@ export const AppProvider = ({ children }: PropsWithChildren) => {
 
 			if (!generate) return
 
-			const generated = await convertGeneratedFilesToDescs(await generate(project), rootHandle)
+			const generated = await generate(project, {
+				seeder: files.filter(isFile).find((x) => x.path.startsWith('config/seed.ts'))?.content,
+			})
 
-			const unformatted = generated.filter(isFile).filter((x) => x.content.startsWith('/* unformatted */'))
+			const generatedDescs = await convertGeneratedFilesToDescs(generated, rootHandle)
+
+			const unformatted = generatedDescs.filter(isFile).filter((x) => x.content.startsWith('/* unformatted */'))
 
 			setBuildErrorPaths(unformatted.map((x) => x.path))
 
 			await syncFiles(
 				files.filter(isFile).filter((x) => x.path.startsWith('build')),
-				generated,
+				generatedDescs,
 				rootHandle
 			)
 

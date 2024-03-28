@@ -1,4 +1,4 @@
-const tmpl = () => {
+const tmpl = ({ importSeeder }: { importSeeder: boolean }) => {
 	return `import { serve } from '@hono/node-server'
 import { Hono } from 'hono'
 import { mountRoutes } from '@/lib/mountRoutes.js'
@@ -6,14 +6,14 @@ import { join } from 'path'
 import { showRoutes } from 'hono/dev'
 import { cors } from 'hono/cors'
 import { secureHeaders } from 'hono/secure-headers'
-import { seed } from '@/seed.js'
+${importSeeder ? `import { seed } from '@/seed.js'` : ''}
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { env } from '@/lib/env.js'
 
 const app = new Hono()
 
-seed()
+${importSeeder ? 'seed()' : ''}
 
 app.use(
 	cors({

@@ -44,7 +44,10 @@ export type TemplateEndpointCtx = {
 }
 
 export type GeneratorFn = (
-	project: ProjectCtx
+	project: ProjectCtx,
+	extras: {
+		seeder: string | undefined
+	}
 	// ctx: TemplateCtx & {
 	// 	endpointGroups: (EndpointGroup & { endpoints: Endpoint[] })[]
 	// 	generatorSettings: GeneratorSetting[]

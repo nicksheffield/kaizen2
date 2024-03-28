@@ -13,7 +13,6 @@ import tsconfigJson from './root/tsconfig.json'
 import dockerCompose from './root/docker-compose'
 
 import src_index from './root/src/index'
-import src_seed from './root/src/seed'
 import src_migrate from './root/src/migrate'
 import src_schema from './root/src/schema'
 
@@ -41,7 +40,7 @@ import src_routes_graphql_resolvers_filters from './root/src/routes/graphql/reso
 import src_routes_graphql_resolvers_utils from './root/src/routes/graphql/resolvers/_utils'
 import src_routes_graphql_resolvers_resolver from './root/src/routes/graphql/resolvers/resolver'
 
-export const generate: GeneratorFn = async (project) => {
+export const generate: GeneratorFn = async (project, extras) => {
 	const models = project.models.map((model) => createModelCtx(model, project))
 
 	const format = getProjectFormatter(project)
@@ -58,8 +57,11 @@ export const generate: GeneratorFn = async (project) => {
 	dir['/tsconfig.json'] = tsconfigJson()
 	dir['/docker-compose.yml'] = dockerCompose({ project })
 
-	dir['/src/index.ts'] = await format(src_index())
-	dir['/src/seed.ts'] = await format(src_seed({ models, project }))
+	dir['/src/index.ts'] = await format(src_index({ importSeeder: !!extras.seeder }))
+	// dir['/src/seed.ts'] = await format(src_seed({ models, project }))
+	if (extras.seeder) {
+		dir['/src/seed.ts'] = await format(extras.seeder.replaceAll('../build/src/', '@/'))
+	}
 	dir['/src/migrate.ts'] = await format(src_migrate())
 	dir['/src/schema.ts'] = await format(src_schema({ models, project }))
 
