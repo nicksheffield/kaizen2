@@ -187,17 +187,15 @@ export const ModelNode = ({ data, selected }: NodeProps<Model>) => {
 			<div className="mb-[12px] p-0">
 				<div
 					className={cn(
-						'drag-handle flex h-[36px] cursor-grab items-center justify-between border-b bg-primary pl-4 pr-2 text-primary-foreground active:cursor-grabbing',
-						selected && 'bg-blue-100 text-blue-600 dark:bg-blue-600/20 dark:text-blue-300'
+						'drag-handle flex h-[36px] cursor-grab items-center justify-between border-b bg-background pl-3 pr-2 text-foreground active:cursor-grabbing',
+						selected && 'text-primary dark:text-primary'
 					)}
 					// style={{ background: getTitleBG(titleHSL), color: 'black' }}
 				>
 					{data.name ? (
-						<div className={cn('text-sm font-medium', nameConflicted && 'text-destructive')}>
-							{data.name}
-						</div>
+						<div className={cn('font', nameConflicted && 'text-destructive')}>{data.name}</div>
 					) : (
-						<div className="text-sm font-medium italic text-destructive">New Model</div>
+						<div className="font italic text-destructive">New Model</div>
 					)}
 
 					<Popover>
@@ -207,7 +205,7 @@ export const ModelNode = ({ data, selected }: NodeProps<Model>) => {
 								size="xs"
 								className="h-6 w-6 rounded-full px-0 dark:hover:bg-foreground/10"
 							>
-								<SettingsIcon className="h-4 w-4" />
+								<SettingsIcon className="h-4 w-4 opacity-50" />
 							</Button>
 						</PopoverTrigger>
 

@@ -175,11 +175,11 @@ const tmpl = ({ model, project }: { model: ModelCtx; project: ProjectCtx }) => {
 	
 	// the types for the queries
 	export const queryTypes = {
-		${model.name.toLowerCase()}: g.ref(types.type).optional().args({
+		${model.drizzleName}: g.ref(types.type).optional().args({
 			id: g.id(),
 		}),
 	
-		${plural(model.name.toLowerCase())}: g.ref(types.collection).args({
+		${plural(model.drizzleName)}: g.ref(types.collection).args({
 			page: g.int().default(1),
 			limit: g.int().default(10),
 			orderBy: g.ref(OrderBys).default('createdAt'),
@@ -190,7 +190,7 @@ const tmpl = ({ model, project }: { model: ModelCtx; project: ProjectCtx }) => {
 	
 	// the resolvers for the queries
 	export const queryResolvers: Resolvers['Query'] = {
-		${model.name.toLowerCase()}: async (_, args) => {
+		${model.drizzleName}: async (_, args) => {
 			const item = await db.query.${model.drizzleName}.findFirst({
 				${
 					nonSelectAttrs.length > 0
@@ -209,7 +209,7 @@ const tmpl = ({ model, project }: { model: ModelCtx; project: ProjectCtx }) => {
 			return item
 		},
 	
-		${plural(model.name.toLowerCase())}: async (_, args, c) => {
+		${plural(model.drizzleName)}: async (_, args, c) => {
 			const dir = args.orderDir === 'ASC' ? asc : desc
 	
 			const where = and(

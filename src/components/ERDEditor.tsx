@@ -1,4 +1,13 @@
-import ReactFlow, { Node, NodeChange, ReactFlowProvider, applyNodeChanges, useReactFlow, useStore } from 'reactflow'
+import ReactFlow, {
+	Background,
+	BackgroundVariant,
+	Node,
+	NodeChange,
+	ReactFlowProvider,
+	applyNodeChanges,
+	useReactFlow,
+	useStore,
+} from 'reactflow'
 import { ERDProvider } from './ERDProvider'
 import { getAttrTypeRecommends, getSourceName, getTargetName, isReservedKeyword } from '@/lib/ERDHelpers'
 import { useCallback, useMemo, useState } from 'react'
@@ -490,7 +499,13 @@ export const Editor = () => {
 					deleteKeyCode={null}
 					className="h-full w-full"
 				>
-					{/* <CustomBackground gap={12} size={3} /> */}
+					<Background
+						gap={12}
+						size={1}
+						variant={BackgroundVariant.Dots}
+						color="currentColor"
+						className="text-foreground/20"
+					/>
 				</ReactFlow>
 			</div>
 		</ERDProvider>

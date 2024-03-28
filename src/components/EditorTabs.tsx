@@ -84,7 +84,7 @@ export const EditorTabs = () => {
 
 	return (
 		<ScrollArea className="w-full shrink-0" orientation="horizontal" ref={holderRef}>
-			<div className="h-10 flex max-w-full w-full">
+			<div className="flex h-10 w-full max-w-full">
 				<DndContext
 					sensors={sensors}
 					collisionDetection={closestCenter}
@@ -179,9 +179,9 @@ const FileTab = ({ filePath, index, onSelect }: FileTabProps) => {
 				>
 					<div
 						className={cn(
-							'hover:bg-muted group flex items-center gap-2 pr-2 pl-4 justify-center text-sm font-medium cursor-pointer select-none h-full',
+							'group flex h-full cursor-pointer select-none items-center justify-center gap-2 pl-4 pr-2 text-sm font-medium hover:bg-muted',
 							filePath === selectedPath &&
-								'bg-blue-100 text-blue-600 hover:bg-blue-200 dark:bg-blue-600/20 dark:text-blue-300'
+								'bg-primary/10 text-primary hover:bg-primary/15 dark:bg-primary/20 dark:text-primary'
 						)}
 					>
 						<div {...attributes} {...listeners} className="flex items-center gap-2">
@@ -195,10 +195,10 @@ const FileTab = ({ filePath, index, onSelect }: FileTabProps) => {
 								closePath(filePath)
 							}}
 							className={cn(
-								'pointer-events-none opacity-0 group-hover:opacity-50 group-hover:pointer-events-auto group-hover:hover:opacity-100'
+								'pointer-events-none opacity-0 group-hover:pointer-events-auto group-hover:opacity-50 group-hover:hover:opacity-100'
 							)}
 						>
-							<XIcon className="w-4 h-4" />
+							<XIcon className="h-4 w-4" />
 						</div>
 					</div>
 				</div>

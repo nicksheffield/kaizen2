@@ -11,19 +11,22 @@ import { Toaster } from '@/components/ui/sonner'
 
 import './index.css'
 import 'reactflow/dist/style.css'
+import { AppThemeProvider } from '@/components/AppThemeProvider'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
 	<React.StrictMode>
 		<ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-			<AppProvider>
-				<CommandMenu />
-				<ModalProvider />
-				<AlertProvider />
-				<Toaster />
-				<TooltipProvider>
-					<App />
-				</TooltipProvider>
-			</AppProvider>
+			<AppThemeProvider>
+				<AppProvider>
+					<CommandMenu />
+					<ModalProvider />
+					<AlertProvider />
+					<Toaster />
+					<TooltipProvider>
+						<App />
+					</TooltipProvider>
+				</AppProvider>
+			</AppThemeProvider>
 		</ThemeProvider>
 	</React.StrictMode>
 )
