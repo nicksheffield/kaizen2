@@ -4,13 +4,7 @@ import mysql from 'mysql2/promise'
 import * as schema from '@/schema.js'
 import { env } from '@/lib/env.js'
 
-const connection = mysql.createPool({
-	host: env.DB_HOST,
-	port: +env.DB_PORT,
-	user: env.DB_USER,
-	password: env.DB_PASS,
-	database: env.DB_NAME,
-})
+const connection = mysql.createPool({ uri: env.DB_URI })
 
 export const db = drizzle(connection, {
 	mode: 'default',

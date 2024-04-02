@@ -102,6 +102,17 @@ export const AppProvider = ({ children }: PropsWithChildren) => {
 		setDirOpenStatus({ '': true })
 	}, [])
 
+	const openFile = useCallback(
+		(path: string) => {
+			setSelectedPath(path)
+			setOpenPaths((x) => {
+				if (x.includes(path)) return x
+				return [...x, path]
+			})
+		},
+		[files]
+	)
+
 	// the current branch according to the .git/HEAD file
 	const head =
 		files
@@ -259,14 +270,14 @@ export const AppProvider = ({ children }: PropsWithChildren) => {
 				seeder: files.filter(isFile).find((x) => x.path.startsWith('config/seed.ts'))?.content,
 			})
 
-			const generatedDescs = await convertGeneratedFilesToDescs(generated, rootHandle)
+			const generatedDescs = await convertGeneratedFilesToDescs(generated, rootHandle, project.project.devDir)
 
 			const unformatted = generatedDescs.filter(isFile).filter((x) => x.content.startsWith('/* unformatted */'))
 
 			setBuildErrorPaths(unformatted.map((x) => x.path))
 
 			await syncFiles(
-				files.filter(isFile).filter((x) => x.path.startsWith('build')),
+				files.filter(isFile).filter((x) => x.path.startsWith(project.project.devDir)),
 				generatedDescs,
 				rootHandle
 			)
@@ -311,6 +322,7 @@ export const AppProvider = ({ children }: PropsWithChildren) => {
 			value={{
 				files,
 				setFiles,
+				openFile,
 				openPaths,
 				setOpenPaths,
 				dirOpenStatus,

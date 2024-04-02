@@ -23,8 +23,7 @@ const tmpl = ({ model, project }: { model: ModelCtx; project: ProjectCtx }) => {
 		isNull,
 	} from 'drizzle-orm'
 	import { g, Infer } from 'garph'
-	import { generateId } from 'lucia'
-	${isAuthModel ? `import { createUser, updateUser } from '@/lib/manageUser.js'` : ''}
+	${isAuthModel ? `import { createUser, updateUser } from '@/lib/manageUser.js'` : `import { generateId } from 'lucia'`}
 	${model.relatedModels
 		.map((x) => {
 			return `import * as ${x.otherModel.name} from './${x.drizzleName}.js'`

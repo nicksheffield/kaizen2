@@ -109,6 +109,7 @@ export const ProjectSchema = z.object({
 		maxBodySize: z.string().optional(),
 		connectionTimeout: z.number().optional(),
 		userModelId: z.string().optional(),
+		devDir: z.string().optional().default('dev'),
 	}),
 	auth: z
 		.object({

@@ -10,7 +10,7 @@ import { TOTPController, createTOTPKeyURI } from 'oslo/otp'
 import { authenticate } from '@/middleware/authenticate.js'
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
-import crypto from 'crypto'
+import crypto from 'node:crypto'
 import { Argon2id } from 'oslo/password'
 
 const appName = '${project.project.name}'

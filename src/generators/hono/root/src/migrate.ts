@@ -1,10 +1,9 @@
 const tmpl = () => {
 	return `import { env } from '@/lib/env.js'
 	import { migrate as nsMigrate } from 'ns-migrate'
-	import { readFileSync } from 'fs'
-	import { fileURLToPath } from 'url'
-	import { join } from 'path'
-	import path from 'path'
+	import { readFileSync } from 'node:fs'
+	import { fileURLToPath } from 'node:url'
+	import path from 'node:path'
 	
 	const dirname = path.dirname(fileURLToPath(import.meta.url))
 	
@@ -17,7 +16,8 @@ const tmpl = () => {
 				password: env.DB_PASS,
 				database: env.DB_NAME,
 			},
-			JSON.parse(readFileSync(join(dirname, '../schema.json'), 'utf8'))
+			JSON.parse(readFileSync(path.join(dirname, '../schema.json'), 'utf8')),
+			{ log: true }
 		)
 	}
 	

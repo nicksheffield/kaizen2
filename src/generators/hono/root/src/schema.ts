@@ -58,7 +58,6 @@ export const recoveryCodes = mysqlTable('_recovery_codes', {
 /**
  * Auth Relations
  */
-/*
 export const sessionsRelations = relations(sessions, ({ one }) => ({
 	user: one(users, {
 		fields: [sessions.userId],
@@ -92,7 +91,6 @@ export const recoveryCodesRelations = relations(recoveryCodes, ({ one }) => ({
 		references: [users.id],
 	}),
 }))
-*/
 
 /**
  * App Tables
@@ -126,7 +124,6 @@ ${models
 /**
  * App Relations
  */
-/*
 ${models
 	.map((model) => {
 		const relationTypes = [
@@ -164,7 +161,6 @@ ${models
 	})
 	.filter((x) => !!x)
 	.join('\n')}
-	*/
 `
 }
 

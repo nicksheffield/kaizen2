@@ -15,14 +15,14 @@ export const EditorFrame = () => {
 		<DiffView key={selectedPath} />
 	) : selectedPath === 'project.json' ? (
 		<ProjectView key={project?.project.id} />
-	) : selectedPath.startsWith('build') ? (
+	) : project && selectedPath.startsWith(project.project.devDir) ? (
 		<ReadonlyCodeView key={`${project?.project.id}-${selectedPath}`} />
 	) : (
 		<CodeEditor key={project?.project.id} />
 	)
 
 	return (
-		<div className="flex flex-1 shrink flex-col relative min-h-0 min-w-0 divide-y">
+		<div className="relative flex min-h-0 min-w-0 flex-1 shrink flex-col divide-y">
 			<EditorTabs />
 
 			{Editor}

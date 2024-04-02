@@ -118,7 +118,8 @@ export const rm = async (dirHandle: FileSystemDirectoryHandle, name: string) => 
 
 export const convertGeneratedFilesToDescs = async (
 	generated: Record<string, string>,
-	rootHandle: FileSystemDirectoryHandle
+	rootHandle: FileSystemDirectoryHandle,
+	buildDir: string
 ) => {
 	const items: FileDesc[] = []
 
@@ -128,10 +129,10 @@ export const convertGeneratedFilesToDescs = async (
 		items.push({
 			type: 'file',
 			name: path.split('/').pop() || '',
-			path: `build${path}`,
+			path: `${buildDir}/${path}`,
 			extension: path.split('.').pop() || '.txt',
 			content,
-			handle: await getFileHandle(`build/${path}`, rootHandle),
+			handle: await getFileHandle(`${buildDir}/${path}`, rootHandle),
 		})
 	}
 

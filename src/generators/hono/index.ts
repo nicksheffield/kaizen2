@@ -10,6 +10,7 @@ import prettierRc from './root/prettierrc'
 import schemaJson from './root/schema.json'
 import packageJson from './root/package.json'
 import tsconfigJson from './root/tsconfig.json'
+import drizzleConfig from './root/drizzle.config'
 import dockerCompose from './root/docker-compose'
 
 import src_index from './root/src/index'
@@ -50,17 +51,18 @@ export const generate: GeneratorFn = async (project, extras) => {
 	dir['/.env'] = env({ project })
 	dir['/.env.example'] = envExample()
 	dir['/.gitignore'] = gitignore()
-	dir['/rest.http'] = restHttp({ project })
+	dir['/rest.http'] = restHttp()
 	dir['/.pretterrc'] = prettierRc({ project })
 	dir['/schema.json'] = schemaJson({ models, project })
 	dir['/package.json'] = packageJson({ project })
 	dir['/tsconfig.json'] = tsconfigJson()
+	dir['/drizzle.config.ts'] = drizzleConfig()
 	dir['/docker-compose.yml'] = dockerCompose({ project })
 
 	dir['/src/index.ts'] = await format(src_index({ importSeeder: !!extras.seeder }))
 	// dir['/src/seed.ts'] = await format(src_seed({ models, project }))
 	if (extras.seeder) {
-		dir['/src/seed.ts'] = await format(extras.seeder.replaceAll('../build/src/', '@/'))
+		dir['/src/seed.ts'] = await format(extras.seeder.replaceAll(`../${project.project.devDir}/src/`, '@/'))
 	}
 	dir['/src/migrate.ts'] = await format(src_migrate())
 	dir['/src/schema.ts'] = await format(src_schema({ models, project }))

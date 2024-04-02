@@ -9,6 +9,7 @@ export type AppContextType = {
 	setFiles: React.Dispatch<React.SetStateAction<FSDesc[]>>
 	loading: boolean
 	setLoading: React.Dispatch<React.SetStateAction<boolean>>
+	openFile: (path: string) => void
 	openPaths: string[]
 	setOpenPaths: React.Dispatch<React.SetStateAction<string[]>>
 	dirOpenStatus: Record<string, boolean>

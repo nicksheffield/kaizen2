@@ -193,9 +193,9 @@ export const ModelNode = ({ data, selected }: NodeProps<Model>) => {
 					// style={{ background: getTitleBG(titleHSL), color: 'black' }}
 				>
 					{data.name ? (
-						<div className={cn('font', nameConflicted && 'text-destructive')}>{data.name}</div>
+						<div className={cn(nameConflicted && 'text-destructive')}>{data.name}</div>
 					) : (
-						<div className="font italic text-destructive">New Model</div>
+						<div className="italic text-destructive">New Model</div>
 					)}
 
 					<Popover>

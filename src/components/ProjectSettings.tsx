@@ -132,6 +132,11 @@ export const ProjectSettings = () => {
 									label="Connection Timeout"
 									description="How long to allow connecting to the database before giving up."
 								/>
+								<FormInputRow
+									name="project.devDir"
+									label="Dev Build Directory"
+									description="Where to put the auto-generated dev build."
+								/>
 							</div>
 						</div>
 					)}

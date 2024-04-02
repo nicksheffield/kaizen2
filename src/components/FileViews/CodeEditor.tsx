@@ -5,27 +5,27 @@ import { SaveIcon } from 'lucide-react'
 import { MonacoEditor } from '../MonacoEditor'
 
 export const CodeEditor = () => {
-	const { selectedFile, saveFile } = useApp()
+	const { selectedFile, saveFile, project } = useApp()
 
 	const [value, setValue] = useState(selectedFile?.content || '')
 
 	if (!selectedFile) return null
 
 	return (
-		<div className="flex flex-1 flex-col relative min-h-0">
-			<div className="absolute top-0 right-0 mr-4 mt-4">
+		<div className="relative flex min-h-0 flex-1 flex-col">
+			<div className="absolute right-0 top-0 mr-4 mt-4">
 				<Button
 					variant="outline"
 					onClick={() => {
 						saveFile(selectedFile.path, value)
 					}}
 				>
-					<SaveIcon className="w-4 h-4 mr-2" />
+					<SaveIcon className="mr-2 h-4 w-4" />
 					Save
 				</Button>
 			</div>
 			<div
-				className="flex-1 min-h-0 overflow-auto flex flex-col"
+				className="flex min-h-0 flex-1 flex-col overflow-auto"
 				onKeyDown={(e) => {
 					if (e.key === 's' && e.metaKey) {
 						e.stopPropagation()
@@ -39,7 +39,7 @@ export const CodeEditor = () => {
 					value={value}
 					onValueChange={(val) => setValue(val)}
 					extension={selectedFile?.extension}
-					readonly={selectedFile.path.startsWith('build')}
+					readonly={project && selectedFile.path.startsWith(project.project.devDir)}
 				/>
 			</div>
 		</div>

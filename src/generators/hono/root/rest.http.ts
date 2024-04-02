@@ -1,6 +1,7 @@
-import { ProjectCtx } from '@/generators/types'
+// import { ProjectCtx } from '@/generators/types'
 
-const tmpl = ({ project }: { project: ProjectCtx }) => {
+// const tmpl = ({ project }: { project: ProjectCtx }) => {
+const tmpl = () => {
 	const port = 5556
 
 	return `### @name Login

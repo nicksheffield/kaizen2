@@ -71,7 +71,7 @@ export const VersionControl = () => {
 				const status = await git.status(file.path)
 
 				if (!status) continue
-				// if (file.path.startsWith('build')) continue
+				// if (file.path.startsWith(project.project.devDir)) continue
 				diffs[file.path] = status
 			}
 
@@ -86,11 +86,11 @@ export const VersionControl = () => {
 	if (!root) return <div></div>
 
 	return (
-		<div className="flex-1 shrink-0 flex flex-col divide-y min-h-0 min-w-0 bg-muted/50">
+		<div className="flex min-h-0 min-w-0 flex-1 shrink-0 flex-col divide-y bg-muted/50">
 			{/* <div className="px-2 h-10 shrink-0 flex items-center">
 				<div className="text-sm font-medium opacity-50">Version Control</div>
 			</div> */}
-			<div className="px-2 py-2 shrink-0 flex flex-col gap-2">
+			<div className="flex shrink-0 flex-col gap-2 px-2 py-2">
 				<Textarea value={commitMsg} onValueChange={setCommitMsg} placeholder="Commit Message..." />
 
 				<Button
@@ -100,13 +100,13 @@ export const VersionControl = () => {
 						console.log(await git?.thing())
 					}}
 				>
-					<CheckIcon className="w-4 h-4 mr-2" />
+					<CheckIcon className="mr-2 h-4 w-4" />
 					Commit
 				</Button>
 			</div>
 
-			<ScrollArea className="flex-1 overflow-auto flex flex-col min-w-0">
-				<div className="p-2 flex flex-col min-w-0 flex-1">
+			<ScrollArea className="flex min-w-0 flex-1 flex-col overflow-auto">
+				<div className="flex min-w-0 flex-1 flex-col p-2">
 					{changes.length > 0 && (
 						<>
 							<div className="px-3 py-1 text-xs font-medium opacity-50">Changes</div>
@@ -114,7 +114,7 @@ export const VersionControl = () => {
 								<div
 									key={path}
 									className={cn(
-										'px-2 group h-7 rounded-lg relative gap-2 cursor-pointer min-w-0 hover:bg-foreground/10 flex items-center w-[calc(300px-(4*0.25rem))]',
+										'group relative flex h-7 w-[calc(300px-(4*0.25rem))] min-w-0 cursor-pointer items-center gap-2 rounded-lg px-2 hover:bg-foreground/10',
 										selectedPath === `diff:${path}` &&
 											'bg-primary text-primary-foreground hover:bg-primary/90'
 									)}
@@ -124,19 +124,19 @@ export const VersionControl = () => {
 								>
 									<TreeFileIcon path={path} />
 
-									<div className="truncate flex-1 align-baseline">
+									<div className="flex-1 truncate align-baseline">
 										<span className="text-sm">{path.split('/').pop()} </span>
-										<span className="opacity-50 text-xs">
+										<span className="text-xs opacity-50">
 											{path.split('/').slice(0, -1).join('/')}
 										</span>
 									</div>
 
-									<div className="flex-row opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto hidden group-hover:flex">
+									<div className="pointer-events-none hidden flex-row opacity-0 group-hover:pointer-events-auto group-hover:flex group-hover:opacity-100">
 										<Button
 											variant="secondary"
 											size="pip-icon"
 											className={cn(
-												'bg-transparent hover:bg-foreground/10 w-5 h-5',
+												'h-5 w-5 bg-transparent hover:bg-foreground/10',
 												selectedPath === `diff:${path}` && 'text-light'
 											)}
 											onClick={async () => {
@@ -150,21 +150,21 @@ export const VersionControl = () => {
 												}
 											}}
 										>
-											<Undo2Icon className="w-4 h-4" />
+											<Undo2Icon className="h-4 w-4" />
 										</Button>
 										<Button
 											variant="secondary"
 											size="pip-icon"
 											className={cn(
-												'bg-transparent hover:bg-foreground/10 w-5 h-5',
+												'h-5 w-5 bg-transparent hover:bg-foreground/10',
 												selectedPath === `diff:${path}` && 'text-light'
 											)}
 										>
-											<PlusIcon className="w-4 h-4" />
+											<PlusIcon className="h-4 w-4" />
 										</Button>
 									</div>
 
-									<span className="text-xs text-gray-500 w-4 text-center justify-self-end">
+									<span className="w-4 justify-self-end text-center text-xs text-gray-500">
 										<StatusSymbol
 											status={status}
 											className={cn(selectedPath === `diff:${path}` && 'text-light')}

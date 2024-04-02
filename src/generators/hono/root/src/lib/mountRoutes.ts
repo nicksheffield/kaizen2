@@ -1,7 +1,6 @@
 const tmpl = () => `import { Hono } from 'hono'
-import { stat } from 'fs/promises'
-import { readdir } from 'fs/promises'
-import { join } from 'path'
+import { stat, readdir } from 'node:fs/promises'
+import { join } from 'node:path'
 
 // Do some file based routing.
 // A recursive function that looks through folders for ts files that have a "router" export, and mounts them

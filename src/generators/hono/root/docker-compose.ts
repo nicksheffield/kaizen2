@@ -2,29 +2,29 @@ import { ProjectCtx } from '@/generators/types'
 import { stringify } from 'yaml'
 
 const tmpl = ({ project }: { project: ProjectCtx }) => {
-	const settings = project.project
+	// 	// const settings = project.project
 	const secrets = project.env
 
-	const node = {
-		image: 'node:18',
-		working_dir: '/home/node/app',
-		volumes: ['./:/home/node/app'],
-		expose: [8000],
-		environment: {
-			VIRTUAL_HOST: `www.${settings.domainName},${settings.domainName}`,
-			VIRTUAL_PORT: 8000,
-		},
-		command: `sh -c "npm install && npm run dev"`,
-		depends_on: ['db'],
-		links: ['db'],
-	}
+	// const node = {
+	// 	image: 'node:18',
+	// 	working_dir: '/home/node/app',
+	// 	volumes: ['./:/home/node/app'],
+	// 	expose: [8000],
+	// 	environment: {
+	// 		VIRTUAL_HOST: `www.${settings.domainName},${settings.domainName}`,
+	// 		VIRTUAL_PORT: 8000,
+	// 	},
+	// 	command: `sh -c "npm install && npm run dev"`,
+	// 	depends_on: ['db'],
+	// 	links: ['db'],
+	// }
 
-	const nginx = {
-		image: 'nginxproxy/nginx-proxy:1.4',
-		restart: 'always',
-		ports: ['80:80', '443:443'],
-		volumes: ['/var/run/docker.sock:/tmp/docker.sock:ro', '/etc/ssl/nginx:/etc/nginx/certs'],
-	}
+	// const nginx = {
+	// 	image: 'nginxproxy/nginx-proxy:1.4',
+	// 	restart: 'always',
+	// 	ports: ['80:80', '443:443'],
+	// 	volumes: ['/var/run/docker.sock:/tmp/docker.sock:ro', '/etc/ssl/nginx:/etc/nginx/certs'],
+	// }
 
 	const db = {
 		image: 'mariadb',

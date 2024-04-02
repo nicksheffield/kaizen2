@@ -10,11 +10,7 @@ const tmpl = ({ project }: { project: ProjectCtx }) => {
 PORT=5556
 
 # database connection
-DB_HOST=localhost
-DB_PORT=3307
-DB_USER=${secrets.MYSQL_USER}
-DB_PASS=${secrets.MYSQL_PASSWORD}
-DB_NAME=db
+DB_URI=mysql://${secrets.MYSQL_USER}@localhost:3308?password=${secrets.MYSQL_PASSWORD}&database=db
 
 # email configuration
 EMAIL_HOST=sandbox.smtp.mailtrap.io

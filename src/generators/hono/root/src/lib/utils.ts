@@ -1,5 +1,5 @@
 const tmpl = () => `import { GraphQLSchema, introspectionFromSchema } from 'graphql'
-import { writeFile } from 'fs/promises'
+import { writeFile } from 'node:fs/promises'
 
 export const removeDuplicates = <T>(list: T[]): T[] => {
 	return list.filter((x, i, a) => a.indexOf(x) === i)

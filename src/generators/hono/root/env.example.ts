@@ -2,11 +2,7 @@ const tmpl = () => `DOMAINS=
 PORT=
 
 # database connection
-DB_HOST=localhost
-DB_PORT=3307
-DB_USER=
-DB_PASS=
-DB_NAME=
+DB_URI=mysql://user@localhost:3306?password=example&database=db
 
 # email configuration
 EMAIL_HOST=
