@@ -4,7 +4,7 @@ import { ProjectCtx } from '@/generators/types'
 import pluralize from 'pluralize'
 import { z } from 'zod'
 import { isNotNone } from '@/lib/utils'
-import { RelationType } from '@/lib/schemas'
+import { RelationType } from '@/lib/projectSchemas'
 
 const AttributeSchema = z.object({
 	id: z.string(),

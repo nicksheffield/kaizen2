@@ -2,7 +2,7 @@ import { ProjectCtx } from '@/generators/types'
 import prettier from 'prettier'
 import typescriptPlugin from 'prettier/plugins/typescript'
 import estreePlugin from 'prettier/plugins/estree'
-import { Attribute, AttributeType, Model } from '@/lib/schemas'
+import { Attribute, AttributeType, Model } from '@/lib/projectSchemas'
 import { plural, singular } from 'pluralize'
 
 export const format = async (content: string, settings: Partial<prettier.Options> = {}) => {

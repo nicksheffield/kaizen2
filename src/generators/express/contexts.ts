@@ -9,7 +9,7 @@ import {
 } from '@/generators/express/utils'
 import { ProjectCtx } from '@/generators/types'
 import { camelize, isNotNone } from '@/lib/utils'
-import { RelationType } from '@/lib/schemas'
+import { RelationType } from '@/lib/projectSchemas'
 import pluralize from 'pluralize'
 
 export type ModelCtx = ReturnType<typeof createModelCtx>

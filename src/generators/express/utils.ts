@@ -1,5 +1,5 @@
 import { ProjectCtx, RelationWithModels } from '@/generators/types'
-import { RelationType, type AttributeType, Model, Attribute, Relation } from '@/lib/schemas'
+import { RelationType, type AttributeType, Model, Attribute, Relation } from '@/lib/projectSchemas'
 import pluralize, { plural, singular } from 'pluralize'
 import prettier from 'prettier'
 // import typescriptParser from 'prettier/parser-typescript'

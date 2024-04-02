@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react'
 import { DirDesc, FileDesc, FSDesc } from './handle'
-import { Project } from '@/lib/schemas'
+import { Project } from '@/lib/projectSchemas'
 import { FsaNodeFs } from 'memfs/lib/fsa-to-node'
 import { GitInstance } from '@/lib/git'
 

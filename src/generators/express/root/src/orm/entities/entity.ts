@@ -1,4 +1,4 @@
-import { AttributeType, RelationType } from '@/lib/schemas'
+import { AttributeType, RelationType } from '@/lib/projectSchemas'
 import { ModelCtx } from '../../../../contexts'
 import { uc } from '../../../../utils'
 

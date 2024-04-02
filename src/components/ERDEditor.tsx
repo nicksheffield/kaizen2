@@ -11,7 +11,7 @@ import ReactFlow, {
 import { ERDProvider } from './ERDProvider'
 import { getAttrTypeRecommends, getSourceName, getTargetName, isReservedKeyword } from '@/lib/ERDHelpers'
 import { useCallback, useMemo, useState } from 'react'
-import { AttributeType, Model, Relation } from '@/lib/schemas'
+import { AttributeType, Model, Relation } from '@/lib/projectSchemas'
 import { ERDMarkers } from '@/components/ERDMarkers'
 import { useApp } from '@/lib/AppContext'
 import { ModelNode } from '@/components/ERD/ModelNode'

@@ -14,7 +14,6 @@ import {
 import { AppContext } from '../lib/AppContext'
 import { db } from '../lib/db'
 import { useLocalStorage } from 'usehooks-ts'
-import { Project, ProjectSchema } from '@/lib/schemas'
 import { generators } from '@/generators'
 import deepEqual from 'deep-equal'
 import ini from 'ini'
@@ -22,6 +21,7 @@ import { FsaNodeFs } from 'memfs/lib/fsa-to-node'
 import type * as fsa from 'memfs/lib/fsa/types'
 import { createGitInstance } from '@/lib/git'
 import { GeneratorFn } from '@/generators/types'
+import { Project, parseProject } from '@/lib/projectSchemas'
 
 const checkFilesChanged = (a: FSDesc[], b: FSDesc[]) => {
 	if (a.length !== b.length) return true
@@ -41,24 +41,6 @@ const checkFilesChanged = (a: FSDesc[], b: FSDesc[]) => {
 	}
 
 	return false
-}
-
-const parseProject = (content: string) => {
-	const proj = ProjectSchema.parse(JSON.parse(content))
-
-	return {
-		project: proj.project,
-		formatSettings: proj.formatSettings,
-		auth: proj.auth,
-		env: proj.env,
-		models: proj.models.map((x) => {
-			return {
-				...x,
-				attributes: x.attributes.filter((attr) => !attr.foreignKey),
-			}
-		}),
-		relations: proj.relations,
-	}
 }
 
 export const AppProvider = ({ children }: PropsWithChildren) => {

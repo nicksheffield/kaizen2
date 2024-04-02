@@ -2,9 +2,8 @@ import { z } from 'zod'
 
 export type AttributeType = keyof typeof AttributeType
 export const AttributeType = {
-	id: 'id',
+	uuid: 'uuid',
 	a_i: 'a_i',
-	varchar: 'varchar',
 	text: 'text',
 	base64: 'base64',
 	password: 'password',
@@ -100,31 +99,15 @@ export const EndpointGroupSchema = z.object({
 
 export type Project = z.infer<typeof ProjectSchema>
 export const ProjectSchema = z.object({
+	v: z.literal(1),
 	project: z.object({
 		id: z.string(),
 		name: z.string(),
 		repoUrl: z.string().nullable(),
-		generator: z.string().optional(),
 		domainName: z.string().optional(),
 		maxBodySize: z.string().optional(),
 		connectionTimeout: z.number().optional(),
-		userModelId: z.string().optional(),
-		devDir: z.string().optional().default('dev'),
 	}),
-	settings: z.object({
-		dev: z.object({}),
-		production: z.object({
-			keyPath: z.string().default('/etc/letsencrypt/live/example.com/privkey.pem'),
-			certPath: z.string().default('/etc/letsencrypt/live/example.com/fullchain.pem'),
-		}),
-	}),
-	auth: z
-		.object({
-			cookies: z.boolean().optional().default(true),
-			bearer: z.boolean().optional().default(true),
-			expiresIn: z.string().optional().default('60'),
-		})
-		.optional(),
 	formatSettings: z
 		.object({
 			prettierTabs: z.boolean().optional(),
@@ -140,13 +123,10 @@ export const ProjectSchema = z.object({
 			MARIADB_ROOT_PASSWORD: z.string().optional(),
 			MYSQL_USER: z.string().optional(),
 			MYSQL_PASSWORD: z.string().optional(),
-			EMAIL_HOST: z.string().optional(),
-			EMAIL_PORT: z.string().optional(),
-			EMAIL_USER: z.string().optional(),
-			EMAIL_PASS: z.string().optional(),
-			EMAIL_FROM: z.string().optional(),
 		})
 		.optional(),
 	models: z.array(ModelSchema),
 	relations: z.array(RelationSchema),
 })
+
+export const upgrade = () => {}

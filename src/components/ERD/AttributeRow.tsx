@@ -21,7 +21,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Switch } from '@/components/ui/switch'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Attribute, Model as BasicModel, AttributeType } from '@/lib/schemas'
+import { Attribute, Model as BasicModel, AttributeType } from '@/lib/projectSchemas'
 import { PanelRow } from './PanelRow'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'

@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useERDContext } from '@/lib/ERDContext'
 import { plural, singular } from 'pluralize'
 import { PanelRow } from './PanelRow'
-import { RelationType, type Model, type Relation } from '@/lib/schemas'
+import { RelationType, type Model, type Relation } from '@/lib/projectSchemas'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useSortable } from '@dnd-kit/sortable'

@@ -4,7 +4,7 @@ import { singular } from 'pluralize'
 import { twMerge } from 'tailwind-merge'
 import { alphabet, generateRandomString } from 'oslo/crypto'
 
-import { Attribute, Project } from '@/lib/schemas'
+import { Attribute, Project } from '@/lib/projectSchemas'
 
 export const generateId = (length: number = 5) => generateRandomString(length, alphabet('0-9', 'a-z'))
 
@@ -65,7 +65,6 @@ export const userModelFields: Attribute[] = [
 		order: 2,
 		enabled: true,
 		modelId: '',
-		foreignKey: false,
 	},
 	{
 		id: 'yni7z',
@@ -78,7 +77,6 @@ export const userModelFields: Attribute[] = [
 		order: 3,
 		enabled: true,
 		modelId: '',
-		foreignKey: false,
 	},
 	{
 		id: 'c77ge',
@@ -91,7 +89,6 @@ export const userModelFields: Attribute[] = [
 		order: 4,
 		enabled: true,
 		modelId: '',
-		foreignKey: false,
 	},
 	{
 		id: '5oa41',
@@ -104,7 +101,6 @@ export const userModelFields: Attribute[] = [
 		order: 5,
 		enabled: true,
 		modelId: '',
-		foreignKey: false,
 	},
 	{
 		id: '3c9u5',
@@ -117,7 +113,6 @@ export const userModelFields: Attribute[] = [
 		order: 6,
 		enabled: true,
 		modelId: '',
-		foreignKey: false,
 	},
 	{
 		id: 'viuvb',
@@ -130,7 +125,6 @@ export const userModelFields: Attribute[] = [
 		order: 7,
 		enabled: true,
 		modelId: '',
-		foreignKey: false,
 	},
 ]
 
@@ -144,6 +138,7 @@ export const getIsUserAttr = (id: string) => {
 
 export const getEmptyProject = (): Project => {
 	return {
+		v: 2,
 		project: {
 			id: generateId(5),
 			name: 'New Project',
@@ -153,6 +148,14 @@ export const getEmptyProject = (): Project => {
 			maxBodySize: '2mb',
 			connectionTimeout: 10000,
 			userModelId: '',
+			devDir: 'dev',
+		},
+		settings: {
+			dev: {},
+			production: {
+				keyPath: '/etc/letsencrypt/live/example.com/privkey.pem',
+				certPath: '/etc/letsencrypt/live/example.com/fullchain.pem',
+			},
 		},
 		auth: {
 			cookies: true,

@@ -1,3 +1,5 @@
+import { generateId, userModelFields } from '@/lib/utils'
+import * as V1_0 from './v1.0'
 import { z } from 'zod'
 
 export type AttributeType = keyof typeof AttributeType
@@ -29,7 +31,6 @@ export const AttributeSchema = z.object({
 	order: z.number(),
 	enabled: z.boolean().optional(),
 	modelId: z.string(),
-	foreignKey: z.boolean(),
 })
 
 export type Model = z.infer<typeof ModelSchema>
@@ -100,6 +101,7 @@ export const EndpointGroupSchema = z.object({
 
 export type Project = z.infer<typeof ProjectSchema>
 export const ProjectSchema = z.object({
+	v: z.literal(2),
 	project: z.object({
 		id: z.string(),
 		name: z.string(),
@@ -150,3 +152,58 @@ export const ProjectSchema = z.object({
 	models: z.array(ModelSchema),
 	relations: z.array(RelationSchema),
 })
+
+export const upgrade = (project: V1_0.Project) => {
+	const v1models = z.array(V1_0.ModelSchema).parse(project.models)
+	const models = z.array(ModelSchema).parse(
+		v1models.map((model) => {
+			const isUser = model.name === 'User'
+
+			const attrs = model.attributes
+				.filter((x) => !x.foreignKey)
+				.filter((x) => {
+					if (!isUser) return true
+
+					return x.name !== 'password' && x.name !== 'email'
+				})
+				.map((y) => ({
+					...y,
+					type: y.type === 'uuid' ? 'id' : y.type,
+				}))
+
+			return {
+				...model,
+				attributes: [...attrs, ...(isUser ? userModelFields.map((x) => ({ ...x, modelId: model.id })) : [])],
+			}
+		})
+	)
+
+	const relations = z.array(V1_0.RelationSchema).parse(project.relations)
+
+	return ProjectSchema.parse({
+		v: 2,
+		project: {
+			...project.project,
+			id: generateId(),
+			generator: 'hono',
+			userModelId: models.find((x) => x.name === 'User')?.id,
+			devDir: 'dev',
+		},
+		settings: {
+			dev: {},
+			production: {
+				keyPath: '/etc/letsencrypt/live/example.com/privkey.pem',
+				certPath: '/etc/letsencrypt/live/example.com/fullchain.pem',
+			},
+		},
+		auth: {
+			expiresIn: '60',
+			bearer: true,
+			cookies: true,
+		},
+		formatSettings: project.formatSettings,
+		env: project.env,
+		models,
+		relations,
+	})
+}

@@ -1,4 +1,4 @@
-import { Attribute } from '@/lib/schemas'
+import { Attribute } from '@/lib/projectSchemas'
 import { useERDContext } from '@/lib/ERDContext'
 import { useCallback, useState } from 'react'
 

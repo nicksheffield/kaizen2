@@ -1,4 +1,4 @@
-import { type Attribute, type Model, type Relation, Project, Endpoint, EndpointGroup } from '@/lib/schemas'
+import { type Attribute, type Model, type Relation, Project, Endpoint, EndpointGroup } from '@/lib/projectSchemas'
 
 // export type ProjectCtx = Awaited<ReturnType<typeof getProjectCtx>>
 export type ProjectCtx = Project

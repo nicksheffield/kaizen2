@@ -16,7 +16,7 @@ import { PanelRow } from './PanelRow'
 import { FieldRow } from './FieldRow'
 import { AttributeRow } from './AttributeRow'
 import { RelationRow } from './RelationRow'
-import { Attribute, Model as BasicModel, AttributeType, RelationType, Relation } from '@/lib/schemas'
+import { Attribute, Model as BasicModel, AttributeType, RelationType, Relation } from '@/lib/projectSchemas'
 import {
 	DndContext,
 	closestCenter,

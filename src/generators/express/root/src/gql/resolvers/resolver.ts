@@ -1,4 +1,4 @@
-import { AttributeType } from '@/lib/schemas'
+import { AttributeType } from '@/lib/projectSchemas'
 import { ModelCtx } from '../../../../contexts'
 import { plural } from 'pluralize'
 
