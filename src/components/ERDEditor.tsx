@@ -116,7 +116,6 @@ export const Editor = () => {
 					insertable: true,
 					enabled: true,
 					default: null,
-					foreignKey: false,
 				},
 			],
 		}

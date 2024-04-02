@@ -107,7 +107,6 @@ export const ModelNode = ({ data, selected }: NodeProps<Model>) => {
 					insertable: true,
 					default: '',
 					enabled: true,
-					foreignKey: false,
 				},
 			],
 		})

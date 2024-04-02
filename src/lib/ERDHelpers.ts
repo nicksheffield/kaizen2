@@ -1,5 +1,5 @@
 import { type Node } from 'reactflow'
-import { AttributeType, Project, type Model, type Relation } from './schemas'
+import { AttributeType, Project, type Model, type Relation } from './projectSchemas'
 import { plural, singular } from 'pluralize'
 import { camelize } from '@/lib/utils'
 
@@ -10,7 +10,7 @@ export const getSourceName = (rel: Relation, nodes: Node<Model>[]) => {
 	return sourceCardinality === 'one'
 		? `${singular(rel.sourceName || sourceModel?.key || camelize(sourceModel?.name || ''))}${
 				rel.optional ? '?' : ''
-		  }`
+			}`
 		: plural(rel.sourceName || sourceModel?.key || camelize(sourceModel?.name || ''))
 }
 
@@ -21,7 +21,7 @@ export const getTargetName = (rel: Relation, nodes: Node<Model>[]) => {
 	return targetCardinality === 'one'
 		? `${singular(rel.targetName || targetModel?.key || camelize(targetModel?.name || ''))}${
 				rel.optional ? '?' : ''
-		  }`
+			}`
 		: plural(rel.targetName || targetModel?.key || camelize(targetModel?.name || ''))
 }
 
