@@ -1,13 +1,10 @@
 import { useApp } from '../../lib/AppContext'
 import { MonacoEditor } from '../MonacoEditor'
-import { isFile } from '@/lib/handle'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card'
 import { HelpCircleIcon } from 'lucide-react'
 
 export const ReadonlyCodeView = () => {
-	const { selectedPath, files } = useApp()
-
-	const selectedFile = files.filter(isFile).find((x) => x.path === selectedPath)
+	const { selectedFile } = useApp()
 
 	if (!selectedFile) return null
 

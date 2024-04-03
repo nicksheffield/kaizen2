@@ -47,6 +47,7 @@ export type GeneratorFn = (
 	project: ProjectCtx,
 	extras: {
 		seeder: string | undefined
+		emails: string[]
 	}
 	// ctx: TemplateCtx & {
 	// 	endpointGroups: (EndpointGroup & { endpoints: Endpoint[] })[]

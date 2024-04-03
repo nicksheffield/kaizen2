@@ -124,7 +124,10 @@ const FileTab = ({ filePath, index, onSelect }: FileTabProps) => {
 				.slice(0, -1)
 				.map((x, i, a) => (i === 0 ? x : a.slice(0, i + 1).join('/')))
 
-			const opens = parts.reduce<Record<string, boolean>>((acc, part) => ({ ...acc, [part]: true }), {})
+			const opens = parts.reduce<Record<string, boolean>>((acc, part) => {
+				acc[part] = true
+				return acc
+			}, {})
 
 			return { ...y, ...opens }
 		})

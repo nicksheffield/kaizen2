@@ -297,10 +297,8 @@ export const getAttrTypeRecommends = (project?: Project) => {
 		const otherAttrs = attrs.filter((x) => x.name.trim().toLowerCase() === attr.name.trim().toLowerCase())
 
 		const counters = otherAttrs.reduce<Record<string, number>>((acc, attr) => {
-			return {
-				...acc,
-				[attr.type]: (acc?.[attr.type] || 0) + 1,
-			}
+			acc[attr.type] = (acc?.[attr.type] || 0) + 1
+			return acc
 		}, {})
 
 		return [

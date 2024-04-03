@@ -132,7 +132,8 @@ export const getSimpleRecord = (obj: object) => {
 	return Object.entries(obj).reduce<Record<string, string>>(
 		(acc, [key, val]) => {
 			if (typeof val === 'string') {
-				return { ...acc, [key]: val }
+				acc[key] = val
+				return acc
 			}
 			return acc
 		},

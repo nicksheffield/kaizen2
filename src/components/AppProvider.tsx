@@ -250,6 +250,10 @@ export const AppProvider = ({ children }: PropsWithChildren) => {
 
 			const generated = await generate(project, {
 				seeder: files.filter(isFile).find((x) => x.path.startsWith('config/seed.ts'))?.content,
+				emails: files
+					.filter(isFile)
+					.filter((x) => x.path.startsWith('emails'))
+					.map((x) => x.content),
 			})
 
 			const generatedDescs = await convertGeneratedFilesToDescs(generated, rootHandle, project.project.devDir)
