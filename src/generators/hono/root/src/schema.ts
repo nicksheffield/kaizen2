@@ -1,6 +1,6 @@
 import { mapAttrToDrizzleTypeFn, mapAttrToDrizzleTypeName } from '../../utils'
 import { ModelCtx } from '../../contexts'
-import { ProjectCtx } from '@/generators/types'
+import { ProjectCtx } from '@/generators/hono/types'
 
 const tmpl = (ctx: { models: ModelCtx[]; project: ProjectCtx }) => {
 	const attrTypeImports = ctx.models.flatMap((x) => x.attributes).map((x) => mapAttrToDrizzleTypeName(x.type))

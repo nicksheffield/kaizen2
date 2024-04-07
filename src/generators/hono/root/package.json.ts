@@ -1,4 +1,4 @@
-import { ProjectCtx } from '@/generators/types'
+import { ProjectCtx } from '@/generators/hono/types'
 
 const tmpl = ({ project }: { project: ProjectCtx }) => {
 	const name = project.project.name.toLowerCase().replace(/\s/, '-')
@@ -22,6 +22,8 @@ const tmpl = ({ project }: { project: ProjectCtx }) => {
 			'@hono/node-server': '^1.8.2',
 			'@hono/zod-validator': '^0.2.0',
 			'@lucia-auth/adapter-drizzle': '^1.0.3',
+			'@react-email/components': '^0.0.16',
+			'@react-email/render': '^0.0.12',
 			'date-fns': '^3.3.1',
 			dotenv: '^16.4.5',
 			'drizzle-kit': '^0.20.14',

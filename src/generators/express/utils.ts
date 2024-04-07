@@ -1,4 +1,4 @@
-import { ProjectCtx, RelationWithModels } from '@/generators/types'
+import { RelationWithModels } from './types'
 import { RelationType, type AttributeType, Model, Attribute, Relation } from '@/lib/projectSchemas'
 import pluralize, { plural, singular } from 'pluralize'
 import prettier from 'prettier'
@@ -24,24 +24,6 @@ export const format = async (content: string, settings: Partial<prettier.Options
 	} catch (e) {
 		console.log(e)
 		return content
-	}
-}
-
-export const getProjectFormatter = (project: ProjectCtx) => {
-	const formatSettings = {
-		useTabs: project.formatSettings?.prettierTabs,
-		tabWidth: project.formatSettings?.prettierTabWidth,
-		semi: project.formatSettings?.prettierSemicolons,
-		printWidth: project.formatSettings?.prettierPrintWidth,
-	}
-
-	return async (content: string) => {
-		try {
-			return format(content, formatSettings)
-		} catch (e) {
-			console.log(e)
-			return content
-		}
 	}
 }
 

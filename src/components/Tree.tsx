@@ -113,7 +113,7 @@ const DescRow = ({ file, isSelected, onSelect, onDelete, level = 1, isOpen }: De
 						openConfirm({
 							title: 'Delete file?',
 							variant: 'destructive',
-							onConfirm: async () => {
+							onSubmit: async () => {
 								await onDelete()
 							},
 						})

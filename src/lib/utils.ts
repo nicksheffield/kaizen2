@@ -3,6 +3,9 @@ import { type ClassValue, clsx } from 'clsx'
 import { singular } from 'pluralize'
 import { twMerge } from 'tailwind-merge'
 import { alphabet, generateRandomString } from 'oslo/crypto'
+import prettier from 'prettier'
+import typescriptPlugin from 'prettier/plugins/typescript'
+import estreePlugin from 'prettier/plugins/estree'
 
 import { Attribute, Project } from '@/lib/projectSchemas'
 
@@ -20,6 +23,10 @@ export const isNotNone = <T>(x: T | None): x is T => {
 
 export const alphabetical = (a: string, b: string) => {
 	return a < b ? -1 : a > b ? 1 : 0
+}
+
+export const snakeToCamel = (str: string) => {
+	return str.replace(/([-_]\w)/g, (g) => g[1].toUpperCase())
 }
 
 export const camelize = (str: string) => {
@@ -136,6 +143,28 @@ export const getIsUserAttr = (id: string) => {
 	return userModelFields.some((x) => x.id === id)
 }
 
+export const format = async (content: string, settings: Partial<prettier.Options> = {}) => {
+	try {
+		const result = await prettier.format(content, {
+			tabWidth: 4,
+			useTabs: true,
+			singleQuote: true,
+			semi: false,
+			printWidth: 80,
+			trailingComma: 'es5',
+			arrowParens: 'always',
+			parser: 'typescript',
+			...settings,
+			plugins: [estreePlugin, typescriptPlugin],
+		})
+		return result
+	} catch (e) {
+		console.log(e)
+		return `/* unformatted */
+${content}`
+	}
+}
+
 export const getEmptyProject = (): Project => {
 	return {
 		v: 2,
@@ -161,12 +190,6 @@ export const getEmptyProject = (): Project => {
 			cookies: true,
 			bearer: true,
 			expiresIn: '60',
-		},
-		formatSettings: {
-			prettierTabs: true,
-			prettierTabWidth: 4,
-			prettierSemicolons: false,
-			prettierPrintWidth: 120,
 		},
 		env: {
 			ACCESS_TOKEN_SECRET: secrets.ACCESS_TOKEN_SECRET(),

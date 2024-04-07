@@ -1,6 +1,6 @@
 import { camelize, lc } from '../utils'
 import { ModelCtx } from '../contexts'
-import { ProjectCtx } from '@/generators/types'
+import { ProjectCtx } from '@/generators/hono/types'
 import pluralize from 'pluralize'
 import { z } from 'zod'
 import { isNotNone } from '@/lib/utils'

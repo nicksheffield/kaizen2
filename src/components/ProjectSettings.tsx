@@ -16,7 +16,6 @@ export const ProjectSettings = () => {
 		initialValues: {
 			project: project?.project,
 			auth: project?.auth,
-			formatSettings: project?.formatSettings,
 			env: project?.env,
 		},
 		onSubmit: async (values) => {
@@ -32,11 +31,6 @@ export const ProjectSettings = () => {
 					expiresIn: values.auth?.expiresIn ?? '60',
 					cookies: values.auth?.cookies ?? true,
 					bearer: values.auth?.bearer ?? true,
-				},
-				formatSettings: {
-					...project.formatSettings,
-					...values.formatSettings,
-					prettierPrintWidth: parseInt(String(values.formatSettings?.prettierPrintWidth) || '120'),
 				},
 				env: {
 					...project.env,

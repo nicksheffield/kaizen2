@@ -9,7 +9,7 @@ import {
 	sortAttrs,
 	vetDefault,
 } from '@/generators/hono/utils'
-import { ProjectCtx } from '@/generators/types'
+import { ProjectCtx } from './types'
 import { camelize, isNotNone } from '@/lib/utils'
 import { RelationType } from '@/lib/projectSchemas'
 import pluralize from 'pluralize'

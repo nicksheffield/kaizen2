@@ -3,15 +3,16 @@ import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { useApp } from '@/lib/AppContext'
-import { getEmptyProject } from '@/lib/utils'
-import { PlusCircleIcon, PlusSquareIcon } from 'lucide-react'
+import { getEmptyProject, camelize, uc } from '@/lib/utils'
+import { Link2Icon, MailPlusIcon, PlusCircleIcon, PlusSquareIcon } from 'lucide-react'
+import emailTemplate from '@/templates/email-template'
 
 export const AddFileMenu = () => {
-	const { files, saveFile, openPath } = useApp()
+	const { files, saveFile, openPath, project } = useApp()
 
 	const projectJson = files.find((x) => x.path === 'project.json')
 
-	if (!projectJson) {
+	if (!project || !projectJson) {
 		return (
 			<Tooltip>
 				<TooltipTrigger asChild>
@@ -42,7 +43,7 @@ export const AddFileMenu = () => {
 				<DropdownMenuItem
 					onClick={() => {
 						openPrompt({
-							label: 'Endpoint path',
+							title: 'Endpoint path',
 							onSubmit: async (val) => {
 								let path = val
 
@@ -55,7 +56,23 @@ export const AddFileMenu = () => {
 						})
 					}}
 				>
-					Add Endpoint
+					<Link2Icon className="mr-2 w-4" />
+					<div>Add Endpoint</div>
+				</DropdownMenuItem>
+				<DropdownMenuItem
+					onClick={() => {
+						openPrompt({
+							title: 'Email name',
+							onSubmit: async (name) => {
+								const fixedName = uc(camelize(name))
+								await saveFile(`emails/${fixedName}.tsx`, emailTemplate({ name: fixedName, project }))
+								openPath(`emails/${fixedName}.tsx`)
+							},
+						})
+					}}
+				>
+					<MailPlusIcon className="mr-2 w-4" />
+					<div>Add Email</div>
 				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>

@@ -52,7 +52,14 @@ export type AppContextType = {
 	getRootHandle: () => Promise<void>
 	clearRootHandle: () => void
 	refreshFiles: () => Promise<void>
-	saveFile: (path: string, content: string) => Promise<void>
+	saveFile: (
+		path: string,
+		content: string,
+		options?: {
+			showToast?: boolean
+			format?: boolean
+		}
+	) => Promise<void>
 	deleteFile: (path: string | FSDesc) => Promise<void>
 }
 

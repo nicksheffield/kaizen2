@@ -1,12 +1,12 @@
 import { ModalCloseFn, openModal } from '@/components/Modal'
-import { DialogContent } from '@/components/ui/dialog'
+import { DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Form, FormInputRow, useForm } from '@/components/form'
 import { Loader2Icon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 type OpenPromptProps = {
-	label: string
+	title: string
 	onSubmit: (val: string) => Promise<void> | void
 }
 
@@ -16,7 +16,7 @@ export const openPrompt = (props: OpenPromptProps) => {
 	})
 }
 
-const Congratulate = ({ label, onSubmit, close }: OpenPromptProps & { close: ModalCloseFn }) => {
+const Congratulate = ({ title, onSubmit, close }: OpenPromptProps & { close: ModalCloseFn }) => {
 	const form = useForm<{ prompt: string }>({
 		initialValues: {
 			prompt: '',
@@ -27,11 +27,15 @@ const Congratulate = ({ label, onSubmit, close }: OpenPromptProps & { close: Mod
 		},
 	})
 	return (
-		<DialogContent>
+		<DialogContent className="p-0">
+			<DialogHeader className="px-4 pt-4">
+				<DialogTitle>{title}</DialogTitle>
+			</DialogHeader>
 			<Form context={form}>
-				<div className="flex flex-row gap-2 items-end">
-					<FormInputRow label={label} name="prompt" className="flex-1" />
-
+				<div className="p-4">
+					<FormInputRow name="prompt" className="flex-1" />
+				</div>
+				<DialogFooter className="border-t bg-muted/50 p-4">
 					<Button type="submit" variant="default" disabled={form.isSubmitting} className="relative">
 						<div
 							className={cn(
@@ -44,7 +48,7 @@ const Congratulate = ({ label, onSubmit, close }: OpenPromptProps & { close: Mod
 
 						<div className={cn(form.isSubmitting && 'opacity-0')}>Ok</div>
 					</Button>
-				</div>
+				</DialogFooter>
 			</Form>
 		</DialogContent>
 	)

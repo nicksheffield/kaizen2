@@ -43,7 +43,7 @@ const tmpl = ({ model }: { model: ModelCtx }) => {
 
 				return `
 						${
-							attr.type === 'id'
+							attr.name === 'id'
 								? `@Field(() => ID ${attr.optional ? ', { nullable: true }' : ''})`
 								: attr.selectable
 									? `@Field(${type}${type && attr.optional ? ', ' : ''}${
@@ -51,7 +51,7 @@ const tmpl = ({ model }: { model: ModelCtx }) => {
 										})`
 									: ''
 						}
-						${attr.type === 'id' ? `@PrimaryGeneratedColumn('id')` : `@Column(${JSON.stringify(column)})`}
+						${attr.name === 'id' ? `@PrimaryGeneratedColumn('id')` : `@Column(${JSON.stringify(column)})`}
 						${attr.name}${!attr.optional ? '!' : '?'}: ${attr.jsType}
 					`
 			})

@@ -1,6 +1,6 @@
 import { ModelCtx } from '@/generators/hono/contexts'
 import { mapAttrToGQLFilter, mapAttrToGarph } from '@/generators/hono/utils'
-import { ProjectCtx } from '@/generators/types'
+import { ProjectCtx } from '@/generators/hono/types'
 import { isNotNone } from '@/lib/utils'
 import { plural } from 'pluralize'
 

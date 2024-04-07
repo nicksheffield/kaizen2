@@ -1,4 +1,3 @@
-import { ProjectCtx } from '@/generators/types'
 import prettier from 'prettier'
 import typescriptPlugin from 'prettier/plugins/typescript'
 import estreePlugin from 'prettier/plugins/estree'
@@ -12,7 +11,7 @@ export const format = async (content: string, settings: Partial<prettier.Options
 			useTabs: true,
 			singleQuote: true,
 			semi: false,
-			printWidth: 120,
+			printWidth: 80,
 			trailingComma: 'es5',
 			arrowParens: 'always',
 			parser: 'typescript',
@@ -25,16 +24,6 @@ export const format = async (content: string, settings: Partial<prettier.Options
 		return `/* unformatted */
 ${content}`
 	}
-}
-
-export const getProjectFormatter = (project: ProjectCtx) => {
-	return async (content: string) =>
-		format(content, {
-			useTabs: project.formatSettings?.prettierTabs,
-			tabWidth: project.formatSettings?.prettierTabWidth,
-			semi: project.formatSettings?.prettierSemicolons,
-			printWidth: project.formatSettings?.prettierPrintWidth,
-		})
 }
 
 export const sortAttrs = (a: Attribute, b: Attribute) => {

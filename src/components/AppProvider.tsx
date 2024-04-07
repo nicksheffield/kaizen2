@@ -13,6 +13,7 @@ import {
 } from '../lib/handle'
 import { AppContext } from '../lib/AppContext'
 import { db } from '../lib/db'
+import { format as formatFile } from '@/lib/utils'
 import { useLocalStorage } from 'usehooks-ts'
 import { generators } from '@/generators'
 import deepEqual from 'deep-equal'
@@ -20,8 +21,9 @@ import ini from 'ini'
 import { FsaNodeFs } from 'memfs/lib/fsa-to-node'
 import type * as fsa from 'memfs/lib/fsa/types'
 import { createGitInstance } from '@/lib/git'
-import { GeneratorFn } from '@/generators/types'
+import { GeneratorFn } from '@/generators'
 import { Project, parseProject } from '@/lib/projectSchemas'
+import { toast } from 'sonner'
 
 const checkFilesChanged = (a: FSDesc[], b: FSDesc[]) => {
 	if (a.length !== b.length) return true
@@ -216,20 +218,30 @@ export const AppProvider = ({ children }: PropsWithChildren) => {
 	/**
 	 * save any file to the file system
 	 */
-	const saveFile = useMemo(() => {
-		return async (x: FileDesc | string, content: string) => {
+	const saveFile = useCallback(
+		async (x: FileDesc | string, content: string, options?: { showToast?: boolean; format?: boolean }) => {
 			if (!rootHandle) return
+			const { showToast = true, format = false } = options || {}
 
-			const fileHandle = await getFileHandle(isFile(x) ? x.path : x, rootHandle)
+			const path = isFile(x) ? x.path : x
+			const fileName = path.split('/').pop()
+
+			const fileHandle = await getFileHandle(path, rootHandle)
 
 			if (fileHandle) {
 				const writable = await fileHandle.createWritable({ keepExistingData: false })
-				await writable.write(content)
+				if (format) {
+					await writable.write(await formatFile(content))
+				} else {
+					await writable.write(content)
+				}
 				await writable.close()
+				if (showToast) toast.success(`File saved: ${fileName}`)
 				await loadFiles(rootHandle)
 			}
-		}
-	}, [rootHandle, files, getFileHandle, loadFiles])
+		},
+		[rootHandle, files, getFileHandle, loadFiles]
+	)
 
 	const project = useMemo(() => {
 		const file = files.find((x) => x.path === 'project.json')
@@ -253,7 +265,10 @@ export const AppProvider = ({ children }: PropsWithChildren) => {
 				emails: files
 					.filter(isFile)
 					.filter((x) => x.path.startsWith('emails'))
-					.map((x) => x.content),
+					.reduce<Record<string, string>>((acc, file) => {
+						acc[file.name] = file.content
+						return acc
+					}, {}),
 			})
 
 			const generatedDescs = await convertGeneratedFilesToDescs(generated, rootHandle, project.project.devDir)

@@ -1,5 +1,5 @@
-import { GeneratorFn } from '@/generators/types'
-import { getProjectFormatter } from './utils'
+import { HonoGeneratorFn } from './types'
+import { format } from './utils'
 import { createModelCtx } from './contexts'
 
 import env from './root/env'
@@ -41,10 +41,8 @@ import src_routes_graphql_resolvers_filters from './root/src/routes/graphql/reso
 import src_routes_graphql_resolvers_utils from './root/src/routes/graphql/resolvers/_utils'
 import src_routes_graphql_resolvers_resolver from './root/src/routes/graphql/resolvers/resolver'
 
-export const generate: GeneratorFn = async (project, extras) => {
+export const generate: HonoGeneratorFn = async (project, extras) => {
 	const models = project.models.map((model) => createModelCtx(model, project))
-
-	const format = getProjectFormatter(project)
 
 	const dir: Record<string, string> = {}
 
@@ -52,7 +50,7 @@ export const generate: GeneratorFn = async (project, extras) => {
 	dir['/.env.example'] = envExample()
 	dir['/.gitignore'] = gitignore()
 	dir['/rest.http'] = restHttp()
-	dir['/.pretterrc'] = prettierRc({ project })
+	dir['/.pretterrc'] = prettierRc()
 	dir['/schema.json'] = schemaJson({ models, project })
 	dir['/package.json'] = packageJson({ project })
 	dir['/tsconfig.json'] = tsconfigJson()
@@ -94,6 +92,10 @@ export const generate: GeneratorFn = async (project, extras) => {
 		dir[`/src/routes/graphql/resolvers/${model.drizzleName}.ts`] = await format(
 			src_routes_graphql_resolvers_resolver({ model, project })
 		)
+	}
+
+	for (const email in extras.emails) {
+		dir[`/src/emails/${email}`] = extras.emails[email]
 	}
 
 	return dir

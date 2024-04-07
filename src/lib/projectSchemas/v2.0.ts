@@ -127,14 +127,6 @@ export const ProjectSchema = z.object({
 			expiresIn: z.string().optional().default('60'),
 		})
 		.optional(),
-	formatSettings: z
-		.object({
-			prettierTabs: z.boolean().optional(),
-			prettierTabWidth: z.number().optional(),
-			prettierSemicolons: z.boolean().optional(),
-			prettierPrintWidth: z.number().optional(),
-		})
-		.optional(),
 	env: z
 		.object({
 			ACCESS_TOKEN_SECRET: z.string().optional(),
@@ -201,7 +193,6 @@ export const upgrade = (project: V1_0.Project) => {
 			bearer: true,
 			cookies: true,
 		},
-		formatSettings: project.formatSettings,
 		env: project.env,
 		models,
 		relations,

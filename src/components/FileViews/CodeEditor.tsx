@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useApp } from '../../lib/AppContext'
 import { Button } from '../ui/button'
 import { SaveIcon } from 'lucide-react'
@@ -9,21 +9,28 @@ export const CodeEditor = () => {
 
 	const [value, setValue] = useState(selectedFile?.content || '')
 
+	const hasChanges = useMemo(() => {
+		return selectedFile?.content !== value
+	}, [selectedFile, value])
+
 	if (!selectedFile) return null
 
 	return (
-		<div className="relative flex min-h-0 flex-1 flex-col">
-			<div className="absolute right-0 top-0 mr-4 mt-4">
+		<div className="relative flex min-h-0 flex-1 flex-col divide-y">
+			<div className="flex h-10 items-center gap-3 px-4">
 				<Button
-					variant="outline"
+					variant="pip"
+					size="pip"
 					onClick={() => {
-						saveFile(selectedFile.path, value)
+						saveFile(selectedFile.path, value, { showToast: true, format: true })
 					}}
+					disabled={!hasChanges}
 				>
 					<SaveIcon className="mr-2 h-4 w-4" />
 					Save
 				</Button>
 			</div>
+
 			<div
 				className="flex min-h-0 flex-1 flex-col overflow-auto"
 				onKeyDown={(e) => {

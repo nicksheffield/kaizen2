@@ -1,6 +1,6 @@
 import { ModelCtx } from '@/generators/hono/contexts'
 import { mapAttributeTypeToJs } from '@/generators/hono/utils'
-import { ProjectCtx } from '@/generators/types'
+import { ProjectCtx } from '@/generators/hono/types'
 import { isNotNone } from '@/lib/utils'
 
 const tmpl = ({ models, project }: { models: ModelCtx[]; project: ProjectCtx }) => {

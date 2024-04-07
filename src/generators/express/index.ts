@@ -1,5 +1,5 @@
-import { GeneratorFn } from '@/generators/types'
-import { getProjectFormatter } from './utils'
+import { ExpressGeneratorFn } from './types'
+import { format } from './utils'
 import { createModelCtx } from './contexts'
 
 import { default as env } from './root/env'
@@ -30,7 +30,7 @@ import { default as src_rest_auth } from './root/src/rest/auth'
 // import { default as src_rest_api_group_index } from './root/src/rest/api/group/index'
 // import { default as src_rest_api_group_endpoint } from './root/src/rest/api/group/endpoint'
 
-export const generate: GeneratorFn = async (project) => {
+export const generate: ExpressGeneratorFn = async (project) => {
 	const models = project.models.map((model) => createModelCtx(model, project))
 
 	// const gqlEnabled = project.gqlEnabled
@@ -43,15 +43,13 @@ export const generate: GeneratorFn = async (project) => {
 	const gqlEnabled = true
 	const restEnabled = true
 
-	const format = getProjectFormatter(project)
-
 	const dir: Record<string, string> = {}
 
 	// handle root dir
 	dir['/.env.example'] = envExample()
 	dir['/.env'] = env({ project })
 	dir['/.gitignore'] = gitignore()
-	dir['/.pretterrc'] = prettierRc({ project })
+	dir['/.pretterrc'] = prettierRc()
 	dir['/docker-compose.yml'] = dockerCompose({ project })
 	dir['/package.json'] = packageJson({ project })
 	dir['/tsconfig.json'] = tsconfigJson()

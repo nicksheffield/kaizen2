@@ -1,4 +1,4 @@
-import { ProjectCtx } from '@/generators/types'
+import { ProjectCtx } from '@/generators/express/types'
 
 const tmpl = ({ project }: { project: ProjectCtx }) => {
 	const name = project.project.name.toLowerCase().replace(/\s/, '-')

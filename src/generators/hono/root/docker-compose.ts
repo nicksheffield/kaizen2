@@ -1,4 +1,4 @@
-import { ProjectCtx } from '@/generators/types'
+import { ProjectCtx } from '@/generators/hono/types'
 import { stringify } from 'yaml'
 
 const tmpl = ({ project }: { project: ProjectCtx }) => {

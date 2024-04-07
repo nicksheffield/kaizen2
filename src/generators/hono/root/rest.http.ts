@@ -1,4 +1,4 @@
-// import { ProjectCtx } from '@/generators/types'
+// import { ProjectCtx } from '@/generators/hono/types'
 
 // const tmpl = ({ project }: { project: ProjectCtx }) => {
 const tmpl = () => {

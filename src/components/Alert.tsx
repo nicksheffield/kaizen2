@@ -73,7 +73,7 @@ type OpenConfirmProps = {
 	message?: ReactNode
 	buttonLabel?: string
 	variant?: 'default' | 'destructive'
-	onConfirm: () => void | Promise<void>
+	onSubmit: () => void | Promise<void>
 }
 
 export const openConfirm = (props: OpenConfirmProps) => {
@@ -82,7 +82,7 @@ export const openConfirm = (props: OpenConfirmProps) => {
 	})
 }
 
-const Confirm = ({ title, message, buttonLabel, variant, onConfirm, close }: OpenConfirmProps & { close: CloseFn }) => {
+const Confirm = ({ title, message, buttonLabel, variant, onSubmit, close }: OpenConfirmProps & { close: CloseFn }) => {
 	return (
 		<AlertDialogContent>
 			<AlertDialogHeader>
@@ -98,7 +98,7 @@ const Confirm = ({ title, message, buttonLabel, variant, onConfirm, close }: Ope
 					autoFocus
 					variant={variant}
 					onClick={async () => {
-						await onConfirm()
+						await onSubmit()
 						close()
 					}}
 				>

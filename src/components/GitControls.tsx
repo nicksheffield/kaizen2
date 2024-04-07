@@ -19,11 +19,11 @@ export const GitControls = () => {
 
 	return (
 		<div className="flex flex-col divide-y">
-			<div className="h-10 flex justify-between items-center pl-2 pr-2 shrink-0">
+			<div className="flex h-10 shrink-0 items-center justify-between pl-2 pr-2">
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
 						<Button variant="ghost" size="pip" className="flex items-center gap-2 px-2">
-							<GitForkIcon className="w-4 h-4 text-indigo-600" />
+							<GitForkIcon className="h-4 w-4 text-indigo-600" />
 							{head}
 						</Button>
 					</DropdownMenuTrigger>
@@ -49,14 +49,14 @@ export const GitControls = () => {
 							<DropdownMenuItem
 								onClick={() => {
 									openPrompt({
-										label: 'Branch Name',
+										title: 'Branch Name',
 										onSubmit: async (val) => {
 											if (git) await git.branch(val)
 										},
 									})
 								}}
 							>
-								<GitBranchIcon className="w-4 h-4 mr-2" />
+								<GitBranchIcon className="mr-2 h-4 w-4" />
 								New Branch
 							</DropdownMenuItem>
 						</DropdownMenuGroup>

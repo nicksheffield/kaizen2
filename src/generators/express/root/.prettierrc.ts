@@ -1,17 +1,10 @@
-import { ProjectCtx } from '@/generators/types'
-
-const tmpl = ({ project }: { project: ProjectCtx }) => {
-	const useTabs = project.formatSettings?.prettierTabs ?? true
-	const tabWidth = project.formatSettings?.prettierTabWidth ?? 4
-	const semi = project.formatSettings?.prettierSemicolons ?? false
-	const printWidth = project.formatSettings?.prettierPrintWidth ?? 120
-
+const tmpl = () => {
 	const prettierRc = {
-		tabWidth,
-		useTabs,
+		tabWidth: 4,
+		useTabs: true,
 		singleQuote: true,
-		semi,
-		printWidth,
+		semi: false,
+		printWidth: 120,
 		trailingComma: 'es5',
 		arrowParens: 'always',
 	}

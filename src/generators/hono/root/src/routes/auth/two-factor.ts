@@ -1,4 +1,4 @@
-import { ProjectCtx } from '@/generators/types'
+import { ProjectCtx } from '@/generators/hono/types'
 
 const tmpl = ({ project }: { project: ProjectCtx }) => {
 	return `import { db } from '@/lib/db.js'

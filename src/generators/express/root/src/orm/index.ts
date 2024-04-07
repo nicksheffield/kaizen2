@@ -1,5 +1,5 @@
 import { ModelCtx } from '../../../contexts'
-import { ProjectCtx } from '@/generators/types'
+import { ProjectCtx } from '@/generators/express/types'
 
 const tmpl = ({ models, project }: { models: ModelCtx[]; project: ProjectCtx }) => {
 	const settings = project.project

@@ -43,11 +43,11 @@ export type TemplateEndpointCtx = {
 	relations: RelationWithModels[]
 }
 
-export type GeneratorFn = (
+export type HonoGeneratorFn = (
 	project: ProjectCtx,
 	extras: {
 		seeder: string | undefined
-		emails: string[]
+		emails: Record<string, string>
 	}
 	// ctx: TemplateCtx & {
 	// 	endpointGroups: (EndpointGroup & { endpoints: Endpoint[] })[]

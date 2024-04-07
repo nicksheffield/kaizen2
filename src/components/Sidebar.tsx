@@ -51,7 +51,7 @@ export const Sidebar = () => {
 											openConfirm({
 												title: 'Close this project?',
 												variant: 'destructive',
-												onConfirm: () => {
+												onSubmit: () => {
 													clearRootHandle()
 												},
 											})
