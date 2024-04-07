@@ -318,50 +318,88 @@ export const AppProvider = ({ children }: PropsWithChildren) => {
 		}
 	}, [project])
 
-	return (
-		<AppContext.Provider
-			value={{
-				files,
-				setFiles,
-				openFile,
-				openPaths,
-				setOpenPaths,
-				dirOpenStatus,
-				setDirOpenStatus,
-				selectedPath,
-				setSelectedPath,
-				loading,
-				setLoading,
-				hasNewChanges,
-				setHasNewChanges,
-				openPath,
+	const value = useMemo(
+		() => ({
+			files,
+			setFiles,
+			openFile,
+			openPaths,
+			setOpenPaths,
+			dirOpenStatus,
+			setDirOpenStatus,
+			selectedPath,
+			setSelectedPath,
+			loading,
+			setLoading,
+			hasNewChanges,
+			setHasNewChanges,
+			openPath,
 
-				gitConfig,
+			gitConfig,
 
-				fs,
-				git,
-				head,
-				localBranches,
-				remoteBranches,
-				selectedFile,
-				root,
+			fs,
+			git,
+			head,
+			localBranches,
+			remoteBranches,
+			selectedFile,
+			root,
 
-				project,
-				saveProject,
-				generateProject,
-				isGenerating,
-				buildErrorPaths,
-				draft,
-				setDraft,
+			project,
+			saveProject,
+			generateProject,
+			isGenerating,
+			buildErrorPaths,
+			draft,
+			setDraft,
 
-				getRootHandle,
-				clearRootHandle,
-				refreshFiles,
-				saveFile,
-				deleteFile,
-			}}
-		>
-			{children}
-		</AppContext.Provider>
+			getRootHandle,
+			clearRootHandle,
+			refreshFiles,
+			saveFile,
+			deleteFile,
+		}),
+		[
+			files,
+			setFiles,
+			openFile,
+			openPaths,
+			setOpenPaths,
+			dirOpenStatus,
+			setDirOpenStatus,
+			selectedPath,
+			setSelectedPath,
+			loading,
+			setLoading,
+			hasNewChanges,
+			setHasNewChanges,
+			openPath,
+
+			gitConfig,
+
+			fs,
+			git,
+			head,
+			localBranches,
+			remoteBranches,
+			selectedFile,
+			root,
+
+			project,
+			saveProject,
+			generateProject,
+			isGenerating,
+			buildErrorPaths,
+			draft,
+			setDraft,
+
+			getRootHandle,
+			clearRootHandle,
+			refreshFiles,
+			saveFile,
+			deleteFile,
+		]
 	)
+
+	return <AppContext.Provider value={value}>{children}</AppContext.Provider>
 }
