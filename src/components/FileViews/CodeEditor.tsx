@@ -5,7 +5,9 @@ import { SaveIcon } from 'lucide-react'
 import { MonacoEditor } from '../MonacoEditor'
 
 export const CodeEditor = () => {
-	const { selectedFile, saveFile, project } = useApp()
+	const selectedFile = useApp((v) => v.selectedFile)
+	const saveFile = useApp((v) => v.saveFile)
+	const project = useApp((v) => v.project)
 
 	const [value, setValue] = useState(selectedFile?.content || '')
 

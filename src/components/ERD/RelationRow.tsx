@@ -6,12 +6,11 @@ import { alphabetical, camelize, cn, generateId } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { LinkIcon, Trash2Icon } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Switch } from '@/components/ui/switch'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useERDContext } from '@/lib/ERDContext'
 import { plural, singular } from 'pluralize'
-import { PanelRow } from './PanelRow'
+import { PanelRow, SwitchPanelRow } from './PanelRow'
 import { RelationType, type Model, type Relation } from '@/lib/projectSchemas'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -30,7 +29,7 @@ type RelationRowProps = {
 // const zoomSelector = (s: ReactFlowState) => s.transform[2]
 
 export const RelationRow = ({ rel, model, mode }: RelationRowProps) => {
-	const { nodes, relations, setRelations, addNode, focusOn } = useERDContext()
+	const { nodes, relations, setRelations, addNode, focusOn, userModelId } = useERDContext()
 	const attrs = nodes.flatMap((x) => x.data.attributes)
 
 	const sourceCardinality = rel.type === 'oneToMany' || rel.type === 'oneToOne' ? 'one' : 'many'
@@ -316,6 +315,15 @@ export const RelationRow = ({ rel, model, mode }: RelationRowProps) => {
 								</Tabs>
 							</PanelRow>
 
+							{rel.sourceId === userModelId && (
+								<SwitchPanelRow
+									label="Default to Auth"
+									hint="If set to true, the authenticated user's id will be the default value"
+									checked={rel.sourceDefaultToAuth}
+									onCheckedChange={(val) => updateField('sourceDefaultToAuth', val)}
+								/>
+							)}
+
 							<Separator className="my-4" />
 
 							<div className="rounded-md border bg-accent px-2 py-1">
@@ -382,21 +390,29 @@ export const RelationRow = ({ rel, model, mode }: RelationRowProps) => {
 								</Tabs>
 							</PanelRow>
 
+							{rel.targetId === userModelId && (
+								<SwitchPanelRow
+									label="Default to Auth"
+									hint="If set to true, the authenticated user's id will be the default value"
+									checked={rel.targetDefaultToAuth}
+									onCheckedChange={(val) => updateField('targetDefaultToAuth', val)}
+								/>
+							)}
+
 							<Separator className="mb-2 mt-4" />
 
-							<PanelRow label="Optional">
-								<Switch
-									checked={rel.optional}
-									onCheckedChange={(val) => updateField('optional', val)}
-								/>
-							</PanelRow>
+							<SwitchPanelRow
+								label="Optional"
+								checked={rel.optional}
+								onCheckedChange={(val) => updateField('optional', val)}
+							/>
 
-							<PanelRow
+							<SwitchPanelRow
 								label="Enabled"
 								hint="If set to false, this relationship will be omitted from the generated app and db schema"
-							>
-								<Switch checked={rel.enabled} onCheckedChange={(val) => updateField('enabled', val)} />
-							</PanelRow>
+								checked={rel.enabled}
+								onCheckedChange={(val) => updateField('enabled', val)}
+							/>
 
 							{rel.type === 'manyToMany' && (
 								<Button

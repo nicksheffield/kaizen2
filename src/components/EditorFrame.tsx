@@ -7,7 +7,8 @@ import { DiffView } from './FileViews/DiffView'
 import { Welcome } from './Welcome'
 
 export const EditorFrame = () => {
-	const { project, selectedPath } = useApp()
+	const project = useApp((v) => v.project)
+	const selectedPath = useApp((v) => v.selectedPath)
 
 	const Editor = !selectedPath ? (
 		<Welcome />

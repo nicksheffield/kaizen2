@@ -37,7 +37,7 @@ export const filterOperators: Record<string, FilterOperator> = {
 	isNotNull: (col, _) => not(isNull(col)),
 } as const
 
-export const StringFilter = g.inputType('StringFilter', {
+export const String = g.inputType('StringFilter', {
 	eq: g.string().optional(),
 	neq: g.string().optional(),
 	includes: g.string().optional(),
@@ -52,14 +52,14 @@ export const StringFilter = g.inputType('StringFilter', {
 	isNotNull: g.boolean().optional(),
 })
 
-export const BooleanFilter = g.inputType('BooleanFilter', {
+export const Boolean = g.inputType('BooleanFilter', {
 	eq: g.boolean().optional(),
 	neq: g.boolean().optional(),
 	isNull: g.boolean().optional(),
 	isNotNull: g.boolean().optional(),
 })
 
-export const NumberFilter = g.inputType('NumberFilter', {
+export const Number = g.inputType('NumberFilter', {
 	eq: g.float().optional(),
 	neq: g.float().optional(),
 	in: g.float().list().optional(),
@@ -78,7 +78,7 @@ export type FilterHandler<T> = (
 	filter: Infer<T>
 ) => SQLWrapper[]
 
-export const handleFilters = (
+export const toWhere = (
 	table: Table,
 	search: Record<string, any> | null | undefined
 ) => {
@@ -94,7 +94,7 @@ export const handleFilters = (
 			for (const filterItem of filters) {
 				ands = [
 					...ands,
-					...handleFilters(table, filterItem as Record<string, any>),
+					...toWhere(table, filterItem as Record<string, any>),
 				]
 			}
 
@@ -109,7 +109,7 @@ export const handleFilters = (
 			for (const filterItem of filters) {
 				ors = [
 					...ors,
-					...handleFilters(table, filterItem as Record<string, any>),
+					...toWhere(table, filterItem as Record<string, any>),
 				]
 			}
 

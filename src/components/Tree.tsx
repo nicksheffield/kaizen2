@@ -13,7 +13,12 @@ type TreeProps = {
 }
 
 export const Tree = ({ path, level = 0 }: TreeProps) => {
-	const { files, selectedPath, openPath, dirOpenStatus, setDirOpenStatus, deleteFile } = useApp()
+	const files = useApp((v) => v.files)
+	const selectedPath = useApp((v) => v.selectedPath)
+	const openPath = useApp((v) => v.openPath)
+	const dirOpenStatus = useApp((v) => v.dirOpenStatus)
+	const setDirOpenStatus = useApp((v) => v.setDirOpenStatus)
+	const deleteFile = useApp((v) => v.deleteFile)
 
 	// if (path === '.git') return null
 
@@ -79,7 +84,7 @@ type DescRowProps = {
 }
 
 const DescRow = ({ file, isSelected, onSelect, onDelete, level = 1, isOpen }: DescRowProps) => {
-	const { buildErrorPaths } = useApp()
+	const buildErrorPaths = useApp((v) => v.buildErrorPaths)
 
 	const hasError = buildErrorPaths.indexOf(file.path) !== -1
 

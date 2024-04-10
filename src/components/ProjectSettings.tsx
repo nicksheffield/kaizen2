@@ -10,7 +10,8 @@ import { toast } from 'sonner'
 import { useLocalStorage } from 'usehooks-ts'
 
 export const ProjectSettings = () => {
-	const { project, saveProject } = useApp()
+	const project = useApp((v) => v.project)
+	const saveProject = useApp((v) => v.saveProject)
 
 	const form = useForm({
 		initialValues: {
@@ -103,7 +104,7 @@ export const ProjectSettings = () => {
 								<CardDescription>The general settings for the project</CardDescription>
 							</div>
 
-							<div className="flex w-full flex-col gap-6 px-4 py-4">
+							<div className="flex w-full flex-col gap-8 px-4 py-4">
 								<FormInputRow name="project.name" label="Name" description="The name of the project." />
 								<FormSelectRow
 									name="project.generator"

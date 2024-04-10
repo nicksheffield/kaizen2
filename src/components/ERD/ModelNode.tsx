@@ -179,7 +179,7 @@ export const ModelNode = ({ data, selected }: NodeProps<Model>) => {
 		<div
 			className={cn(
 				'flex min-w-[216px] cursor-default flex-col overflow-hidden rounded-md border bg-background transition-shadow dark:border',
-				selected && 'ring-2 ring-ring ring-offset-2 ring-offset-muted dark:ring-offset-background',
+				selected && 'ring-2 ring-ring dark:ring-offset-background',
 				!data.enabled && 'opacity-50'
 			)}
 		>

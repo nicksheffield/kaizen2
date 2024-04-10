@@ -203,18 +203,18 @@ export const mapAttrToGQLFilter = (type: AttributeType) => {
 		case 'base64':
 		case 'password':
 		case 'id':
-			return 'StringFilter'
+			return 'String'
 		case 'int':
 		case 'float':
 		case 'a_i':
-			return 'NumberFilter'
+			return 'Number'
 		case 'boolean':
-			return 'BooleanFilter'
+			return 'Boolean'
 		case 'date':
 		case 'time':
 		case 'datetime':
-			return 'NumberFilter'
+			return 'Number'
 		default:
-			return 'StringFilter'
+			return 'String'
 	}
 }

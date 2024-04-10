@@ -4,7 +4,7 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/h
 import { HelpCircleIcon } from 'lucide-react'
 
 export const ReadonlyCodeView = () => {
-	const { selectedFile } = useApp()
+	const selectedFile = useApp((v) => v.selectedFile)
 
 	if (!selectedFile) return null
 

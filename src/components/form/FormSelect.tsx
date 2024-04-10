@@ -92,17 +92,22 @@ export const FormSelectRow = ({ label, description, hint, className, ...props }:
 	const ref = useRef<HTMLButtonElement>(null)
 
 	return (
-		<label className={cn('flex flex-col gap-2', className)}>
-			{(label || hint) && (
-				<div className="flex items-center gap-2">
-					{label && <Label onClick={() => ref.current?.focus()}>{label}</Label>}
-					{hint && <Hint content={hint} />}
+		<div className={cn('flex flex-col gap-3', className)}>
+			{(label || description) && (
+				<div className="flex flex-col gap-1">
+					{(label || hint) && (
+						<div className="flex items-center gap-2">
+							{label && <Label onClick={() => ref.current?.focus()}>{label}</Label>}
+							{hint && <Hint content={hint} />}
+						</div>
+					)}
+
+					{description && <div className="text-sm text-muted-foreground">{description}</div>}
 				</div>
 			)}
 
-			{description && <div className="text-sm text-muted-foreground">{description}</div>}
 			<FormSelect {...props} ref={ref} />
-		</label>
+		</div>
 	)
 }
 
@@ -129,15 +134,19 @@ export const SelectRow = ({
 	const ref = useRef<HTMLButtonElement>(null)
 
 	return (
-		<label className={cn('flex flex-col gap-2', className)}>
-			{(label || hint) && (
-				<div className="flex items-center gap-2">
-					{label && <Label onClick={() => ref.current?.focus()}>{label}</Label>}
-					{hint && <Hint content={hint} />}
+		<div className={cn('flex flex-col gap-3', className)}>
+			{(label || description) && (
+				<div className="flex flex-col gap-1">
+					{(label || hint) && (
+						<div className="flex items-center gap-2">
+							{label && <Label onClick={() => ref.current?.focus()}>{label}</Label>}
+							{hint && <Hint content={hint} />}
+						</div>
+					)}
+
+					{description && <div className="text-sm text-muted-foreground">{description}</div>}
 				</div>
 			)}
-
-			{description && <div className="text-sm text-muted-foreground">{description}</div>}
 
 			<Select {...props}>
 				<SelectTrigger className={cn('relative', className)} ref={ref}>
@@ -179,6 +188,6 @@ export const SelectRow = ({
 					))}
 				</SelectContent>
 			</Select>
-		</label>
+		</div>
 	)
 }

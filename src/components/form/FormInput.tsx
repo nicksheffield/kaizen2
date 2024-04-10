@@ -41,14 +41,18 @@ export const FormInputRow = ({ label, description, className, inputClassName, ..
 	const ref = useRef<HTMLInputElement>(null)
 
 	return (
-		<div className={cn('flex flex-col gap-2', className)}>
-			{label && (
-				<div className="flex items-center gap-2">
-					{label && <Label onClick={() => ref.current?.focus()}>{label}</Label>}
+		<div className={cn('flex flex-col gap-3', className)}>
+			{(label || description) && (
+				<div className="flex flex-col gap-1">
+					{label && (
+						<div className="flex items-center gap-2">
+							{label && <Label onClick={() => ref.current?.focus()}>{label}</Label>}
+						</div>
+					)}
+
+					{description && <div className="text-sm text-muted-foreground">{description}</div>}
 				</div>
 			)}
-
-			{description && <div className="text-sm text-muted-foreground">{description}</div>}
 
 			<FormInput {...props} className={inputClassName} ref={ref} autoComplete="off" />
 		</div>
@@ -65,14 +69,18 @@ export const InputRow = ({ label, description, className, ...props }: InputRowPr
 	const ref = useRef<HTMLInputElement>(null)
 
 	return (
-		<div className={cn('flex flex-col gap-2', className)}>
-			{label && (
-				<div className="flex items-center gap-2">
-					{label && <Label onClick={() => ref.current?.focus()}>{label}</Label>}
+		<div className={cn('flex flex-col gap-3', className)}>
+			{(label || description) && (
+				<div className="flex flex-col gap-1">
+					{label && (
+						<div className="flex items-center gap-2">
+							{label && <Label onClick={() => ref.current?.focus()}>{label}</Label>}
+						</div>
+					)}
+
+					{description && <div className="text-sm text-muted-foreground">{description}</div>}
 				</div>
 			)}
-
-			{description && <div className="text-sm text-muted-foreground">{description}</div>}
 
 			<Input {...props} ref={ref} autoComplete="off" />
 		</div>

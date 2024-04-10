@@ -20,7 +20,7 @@ type TreeFileIconProps = {
 }
 
 export const TreeFileIcon = ({ path, open = true, className }: TreeFileIconProps) => {
-	const { files } = useApp()
+	const files = useApp((v) => v.files)
 
 	const file = files.find((x) => x.path === path)
 

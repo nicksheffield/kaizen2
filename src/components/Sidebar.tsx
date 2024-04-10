@@ -8,19 +8,17 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import pluralize from 'pluralize'
 
 export const Sidebar = () => {
-	const {
-		files,
-		root,
-		getRootHandle,
-		clearRootHandle,
-		loading,
-		generateProject,
-		project,
-		buildErrorPaths,
-		selectedPath,
-		setSelectedPath,
-		setOpenPaths,
-	} = useApp()
+	const files = useApp((v) => v.files)
+	const root = useApp((v) => v.root)
+	const getRootHandle = useApp((v) => v.getRootHandle)
+	const clearRootHandle = useApp((v) => v.clearRootHandle)
+	const loading = useApp((v) => v.loading)
+	const generateProject = useApp((v) => v.generateProject)
+	const project = useApp((v) => v.project)
+	const buildErrorPaths = useApp((v) => v.buildErrorPaths)
+	const selectedPath = useApp((v) => v.selectedPath)
+	const setSelectedPath = useApp((v) => v.setSelectedPath)
+	const setOpenPaths = useApp((v) => v.setOpenPaths)
 
 	const firstLevelDescs = files.filter((x) => x.path !== root?.path).filter((x) => !x.path.includes('/'))
 

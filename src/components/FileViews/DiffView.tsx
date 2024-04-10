@@ -6,7 +6,10 @@ import { useEffect, useState } from 'react'
 import ReactDiffViewer from 'react-diff-viewer'
 
 export const DiffView = () => {
-	const { root, files, selectedPath, git } = useApp()
+	const root = useApp((v) => v.root)
+	const files = useApp((v) => v.files)
+	const selectedPath = useApp((v) => v.selectedPath)
+	const git = useApp((v) => v.git)
 
 	const { theme } = useTheme()
 

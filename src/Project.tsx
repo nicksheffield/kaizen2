@@ -5,7 +5,7 @@ import { useApp } from '@/lib/AppContext'
 import { UserMenu } from '@/components/UserMenu'
 
 export const Project = () => {
-	const { selectedPath } = useApp()
+	const selectedPath = useApp((v) => v.selectedPath)
 
 	return (
 		<div className="flex h-screen flex-col divide-y overflow-hidden">

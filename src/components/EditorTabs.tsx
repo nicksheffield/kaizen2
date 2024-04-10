@@ -25,7 +25,8 @@ import { useEffect, useRef, useState } from 'react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 
 export const EditorTabs = () => {
-	const { openPaths, setOpenPaths } = useApp()
+	const openPaths = useApp((v) => v.openPaths)
+	const setOpenPaths = useApp((v) => v.setOpenPaths)
 
 	const sensors = useSensors(
 		useSensor(PointerSensor, {
@@ -109,7 +110,11 @@ type FileTabProps = {
 }
 
 const FileTab = ({ filePath, index, onSelect }: FileTabProps) => {
-	const { setDirOpenStatus, openPaths, setOpenPaths, selectedPath, setSelectedPath } = useApp()
+	const setDirOpenStatus = useApp((v) => v.setDirOpenStatus)
+	const openPaths = useApp((v) => v.openPaths)
+	const setOpenPaths = useApp((v) => v.setOpenPaths)
+	const selectedPath = useApp((v) => v.selectedPath)
+	const setSelectedPath = useApp((v) => v.setSelectedPath)
 
 	const nodeRef = useRef<HTMLDivElement | null>(null)
 

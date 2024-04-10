@@ -24,7 +24,10 @@ import { cn, generateId, getUserModelFields } from '@/lib/utils'
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
 
 export const Editor = () => {
-	const { project, draft, setDraft, /*hasNewChanges, setHasNewChanges,*/ saveProject } = useApp()
+	const project = useApp((v) => v.project)
+	const draft = useApp((v) => v.draft)
+	const setDraft = useApp((v) => v.setDraft)
+	const saveProject = useApp((v) => v.saveProject)
 
 	const [max, setMax] = useState(false)
 
@@ -192,6 +195,8 @@ export const Editor = () => {
 			if (relation.targetName !== original.targetName) return true
 			if (relation.optional !== original.optional) return true
 			if (relation.enabled !== original.enabled) return true
+			if (relation.sourceDefaultToAuth !== original.sourceDefaultToAuth) return true
+			if (relation.targetDefaultToAuth !== original.targetDefaultToAuth) return true
 		}
 
 		for (const originalRelation of defaultRelations) {

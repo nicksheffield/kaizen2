@@ -1,8 +1,8 @@
-import { createContext, useContext } from 'react'
 import { DirDesc, FileDesc, FSDesc } from './handle'
 import { Project } from '@/lib/projectSchemas'
 import { FsaNodeFs } from 'memfs/lib/fsa-to-node'
 import { GitInstance } from '@/lib/git'
+import { createContext, useContextSelector } from 'use-context-selector'
 
 export type AppContextType = {
 	files: FSDesc[]
@@ -65,4 +65,4 @@ export type AppContextType = {
 
 export const AppContext = createContext<AppContextType>({} as AppContextType)
 
-export const useApp = () => useContext(AppContext)
+export const useApp = <S>(selector: (v: AppContextType) => S) => useContextSelector(AppContext, selector)

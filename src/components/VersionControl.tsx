@@ -34,7 +34,14 @@ const statusSymbol: Record<string, [string, string]> = {
 } as const
 
 export const VersionControl = () => {
-	const { git, files, root, openPath, selectedPath, saveFile, generateProject } = useApp()
+	const git = useApp((v) => v.git)
+	const files = useApp((v) => v.files)
+	const root = useApp((v) => v.root)
+	const openPath = useApp((v) => v.openPath)
+	const selectedPath = useApp((v) => v.selectedPath)
+	const saveFile = useApp((v) => v.saveFile)
+	const generateProject = useApp((v) => v.generateProject)
+
 	const [diff, setDiff] = useState<Record<string, string>>({})
 	const [commitMsg, setCommitMsg] = useState('')
 

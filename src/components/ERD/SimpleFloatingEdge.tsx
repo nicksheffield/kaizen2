@@ -47,10 +47,10 @@ const getHandleCoordsByPosition = (node: Node, handlePosition: Position, relId: 
 
 	switch (handlePosition) {
 		case Position.Left:
-			offsetX = 0
+			offsetX = handle?.width || 0
 			break
 		case Position.Right:
-			offsetX = handle?.width || 0
+			offsetX = 0
 			break
 		case Position.Top:
 			offsetY = 0

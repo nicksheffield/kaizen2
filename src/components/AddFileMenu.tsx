@@ -8,7 +8,10 @@ import { Link2Icon, MailPlusIcon, PlusCircleIcon, PlusSquareIcon } from 'lucide-
 import emailTemplate from '@/templates/email-template'
 
 export const AddFileMenu = () => {
-	const { files, saveFile, openPath, project } = useApp()
+	const files = useApp((v) => v.files)
+	const saveFile = useApp((v) => v.saveFile)
+	const openPath = useApp((v) => v.openPath)
+	const project = useApp((v) => v.project)
 
 	const projectJson = files.find((x) => x.path === 'project.json')
 

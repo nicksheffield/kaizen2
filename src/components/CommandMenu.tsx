@@ -11,7 +11,9 @@ import { useApp } from '@/lib/AppContext'
 import { openConfirm } from '@/components/Alert'
 
 export function CommandMenu() {
-	const { files, openFile, clearRootHandle } = useApp()
+	const files = useApp((v) => v.files)
+	const openFile = useApp((v) => v.openFile)
+	const clearRootHandle = useApp((v) => v.clearRootHandle)
 
 	const [open, setOpen] = useState(false)
 

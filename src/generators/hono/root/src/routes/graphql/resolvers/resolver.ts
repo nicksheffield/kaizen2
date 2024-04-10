@@ -7,7 +7,8 @@ import { plural } from 'pluralize'
 const tmpl = ({ model, project }: { model: ModelCtx; project: ProjectCtx }) => {
 	const nonSelectAttrs = model.attributes.filter((x) => !x.selectable)
 
-	const isAuthModel = project.project.userModelId === model.id
+	const authModel = project.models.find((x) => x.id === project.project.userModelId)
+	const isAuthModel = authModel?.id === model.id
 
 	return `import { db } from '@/lib/db.js'
 	import { Resolvers } from '@/routes/graphql/router.js'
@@ -31,7 +32,7 @@ const tmpl = ({ model, project }: { model: ModelCtx; project: ProjectCtx }) => {
 		.join('\n')}
 	import { removeDuplicates } from '@/lib/utils.js'
 	import { OrderDir, DateType } from './_utils.js'
-	import { handleFilters, BooleanFilter, StringFilter, NumberFilter } from './_filters.js'
+	import * as filters from './_filters.js'
 	
 	const OrderBys = g.enumType('${model.name}OrderBy', [
 		${model.attributes
@@ -120,14 +121,14 @@ const tmpl = ({ model, project }: { model: ModelCtx; project: ProjectCtx }) => {
 				.map((x) => {
 					if (!x.selectable) return null
 
-					return `${x.name}: g.ref(${mapAttrToGQLFilter(x.type)}).optional(),`
+					return `${x.name}: g.ref(filters.${mapAttrToGQLFilter(x.type)}).optional(),`
 				})
 				.filter(isNotNone)
 				.join('\n')}
 			${model.foreignKeys
 				.map((x) => {
 					// use id or string? lets go with id for now
-					return `${x.name}: g.ref(StringFilter).optional(),`
+					return `${x.name}: g.ref(filters.StringFilter).optional(),`
 				})
 				.filter(isNotNone)
 				.join('\n')}
@@ -212,7 +213,7 @@ const tmpl = ({ model, project }: { model: ModelCtx; project: ProjectCtx }) => {
 			const dir = args.orderDir === 'ASC' ? asc : desc
 	
 			const where = and(
-				...handleFilters(tables.${model.drizzleName}, args.where),
+				...filters.toWhere(tables.${model.drizzleName}, args.where),
 				isNull(tables.${model.drizzleName}.deletedAt)
 			)
 	
@@ -271,7 +272,7 @@ const tmpl = ({ model, project }: { model: ModelCtx; project: ProjectCtx }) => {
 				softDelete: g.boolean().default(true),
 			}),
 	}
-	
+
 	// the resolvers for the mutations
 	export const mutationResolvers: Resolvers['Mutation'] = {
 		create${model.name}: async (_, args, c) => {
@@ -287,6 +288,14 @@ const tmpl = ({ model, project }: { model: ModelCtx; project: ProjectCtx }) => {
 					await db.insert(tables.${model.drizzleName}).values({
 						...data,
 						id: data.id ?? newId,
+						${model.relatedModels
+							.map((x) => {
+								if (x.otherModel.id !== authModel?.id) return null
+								if (!x.defaultToAuth) return null
+								return `${x.fieldName}Id: data.${x.fieldName}Id ?? c.get('user').id`
+							})
+							.filter(isNotNone)
+							.join(',\n')}
 					})
 		
 					const item = await db.query.${model.drizzleName}.findFirst({

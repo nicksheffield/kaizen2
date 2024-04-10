@@ -13,7 +13,12 @@ import {
 import { openPrompt } from '@/components/modals/openPrompt'
 
 export const GitControls = () => {
-	const { head, localBranches, remoteBranches, root, files, git } = useApp()
+	const head = useApp((v) => v.head)
+	const localBranches = useApp((v) => v.localBranches)
+	const remoteBranches = useApp((v) => v.remoteBranches)
+	const root = useApp((v) => v.root)
+	const files = useApp((v) => v.files)
+	const git = useApp((v) => v.git)
 
 	if (!root && !files.find((x) => x.path === '.git')) return
 

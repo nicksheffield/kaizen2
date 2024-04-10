@@ -72,6 +72,8 @@ export const RelationSchema = z.object({
 	targetOrder: z.number(),
 	optional: z.boolean(),
 	enabled: z.boolean().optional(),
+	sourceDefaultToAuth: z.boolean().optional(),
+	targetDefaultToAuth: z.boolean().optional(),
 })
 
 export type Method = keyof typeof Method

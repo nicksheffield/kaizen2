@@ -17,7 +17,8 @@ const readable: Record<string, string> = {
 }
 
 export const JSONEditor = () => {
-	const { selectedFile, saveFile } = useApp()
+	const selectedFile = useApp((v) => v.selectedFile)
+	const saveFile = useApp((v) => v.saveFile)
 
 	const [value, setValue] = useState<Record<string, string>>(safeParse(selectedFile?.content || '', {}))
 
@@ -35,13 +36,13 @@ export const JSONEditor = () => {
 	if (!selectedFile) return null
 
 	return (
-		<div className="flex flex-1 flex-col relative min-h-0 overflow-hidden">
-			<div className="h-10 border-b shrink-0 flex items-center justify-center gap-2">
+		<div className="relative flex min-h-0 flex-1 flex-col overflow-hidden">
+			<div className="flex h-10 shrink-0 items-center justify-center gap-2 border-b">
 				<PipTabs value={tab} onValueChange={(val) => setTab(val)} items={{ form: 'Form', code: 'Code' }} />
 			</div>
 
 			{tab === 'form' ? (
-				<div className="p-6 mt-10 flex-1 min-h-0 self-center overflow-auto flex flex-col gap-6 max-w-[600px] w-full">
+				<div className="mt-10 flex min-h-0 w-full max-w-[600px] flex-1 flex-col gap-6 self-center overflow-auto p-6">
 					{Object.keys(value).map((key) => (
 						<div key={key} className="flex flex-col gap-2">
 							<label className="text-sm font-medium">{readable[key] || key}</label>
@@ -72,14 +73,14 @@ export const JSONEditor = () => {
 								saveFile(selectedFile.path, JSON.stringify(value, null, 4))
 							}}
 						>
-							<SaveIcon className="w-4 h-4 mr-2" />
+							<SaveIcon className="mr-2 h-4 w-4" />
 							Save
 						</Button>
 					</div>
 				</div>
 			) : (
 				<div
-					className="flex-1 min-h-0 overflow-auto flex flex-col"
+					className="flex min-h-0 flex-1 flex-col overflow-auto"
 					onKeyDown={(e) => {
 						if (e.key === 's' && e.metaKey) {
 							e.stopPropagation()
